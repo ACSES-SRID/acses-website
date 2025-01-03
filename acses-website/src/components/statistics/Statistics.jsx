@@ -15,41 +15,46 @@ import ScrollTrigger from "react-scroll-trigger";
 const stats = [
   {
     title: "Total Students",
-    value: 1200,
+    value: 552,
   },
   {
     title: "Graduates",
-    value: 450,
+    value: 31,
   },
   {
     title: "CE Students",
-    value: 800,
+    value: 412,
   },
   {
     title: "DS Students",
-    value: 400,
+    value: 140,
   },
 ];
 
 const yearlyData = [
   {
-    year: "2020",
-    "CS&E": 180,
-    DS: 80,
-  },
-  {
     year: "2021",
-    "CS&E": 200,
-    DS: 100,
+    "CE": 31,
+    DS: 0,
   },
   {
     year: "2022",
-    "CS&E": 220,
-    DS: 120,
+    "CE": 99,
+    DS: 0,
   },
   {
     year: "2023",
-    "CS&E": 240,
+    "CE": 152,
+    DS: 0,
+  },
+  {
+    year: "2024",
+    "CE": 161,
+    DS: 0,
+  },
+  {
+    year: "2025",
+    "CE": 240,
     DS: 140,
   },
 ];
@@ -79,7 +84,7 @@ const Statistics = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="text-2xl font-bold"
+                className="text-2xl font-bold text-acses-green-500"
               >
                 <ScrollTrigger
                   onEnter={() => setCounterOn(true)}
@@ -134,7 +139,7 @@ const Statistics = () => {
                 <Tooltip />
                 <Line
                   type="monotone"
-                  dataKey="CS&E"
+                  dataKey="CE"
                   stroke="hsl(200, 70%, 50%)"
                   strokeWidth={2}
                   dot={{ r: 4 }}

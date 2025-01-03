@@ -57,7 +57,7 @@ const navItems = [
           {/* Logo */}
           <NavLink 
             to="/"
-            className="flex items-center space-x-3 text-blue-600 font-bold text-2xl tracking-tight hover:text-blue-700 transition-colors duration-200"
+            className="flex items-center space-x-3 text-acses-green-600 font-bold text-2xl tracking-tight hover:text-blue-700 transition-colors duration-200"
           >
 		  {/*<Code className="w-8 h-8" />*/}
 		 <img 
@@ -75,24 +75,24 @@ const navItems = [
                 key={name}
                 to={name === 'Home' ? '/' : `/${name.toLowerCase()}`}
                 className={({ isActive }) =>
-                  `text-gray-600 hover:text-blue-600 transition-colors duration-200 
+                  `text-gray-600 hover:text-acses-green-600 transition-colors duration-200 
                    py-2 px-3 lg:px-4 rounded-md text-base lg:text-lg font-medium relative group 
-                   hover:bg-blue-50 ${
-                    isActive ? 'text-blue-600 bg-blue-50' : ''
+                   hover:bg-acses-green-50 ${
+                    isActive ? 'text-acses-green-600 bg-acses-green-50' : ''
                   }`
                 }
               >
                 {name}
                 <motion.div
-                  className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-full origin-left"
+                  className="absolute bottom-0 left-0 w-full h-0.5 bg-acses-green-600 rounded-full origin-left"
                   initial={{ scaleX: 0 }}
                   whileHover={{ scaleX: 1 }}
                   transition={{ duration: 0.3 }}
                 />
               </NavLink>
             ))}
-            <button className="px-6 py-2.5 bg-blue-600 text-white rounded-full font-medium text-base lg:text-lg
-                             hover:bg-blue-700 transition-colors duration-200 transform hover:scale-105">
+            <button className="px-6 py-2.5 bg-acses-green-600 text-white rounded-full font-medium text-base lg:text-lg
+                             hover:bg-acses-green-700 transition-colors duration-200 transform hover:scale-105">
               Sign In
             </button>
           </div>
@@ -103,7 +103,7 @@ const navItems = [
               e.stopPropagation();
               setIsOpen(!isOpen);
             }}
-            className="md:hidden flex items-center text-gray-600 hover:text-blue-600 transition-colors duration-200 menu-button"
+            className="md:hidden flex items-center text-acses-green-600 hover:text-acses-green-600 transition-colors duration-200 menu-button"
             aria-label="Toggle menu"
           >
             <Menu size={28} />

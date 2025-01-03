@@ -68,7 +68,7 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
               <div className="flex justify-between items-center p-6 border-b">
 				<NavLink 
 					to="/"
-					className="flex items-center space-x-3 text-blue-600 font-bold text-2xl tracking-tight hover:text-blue-700 transition-colors duration-200"
+					className="flex items-center space-x-3 text-acses-green-600 font-bold text-2xl tracking-tight hover:text-acses-green-700 transition-colors duration-200"
 				  >
 				  {/*<Code className="w-8 h-8" />*/}
 				 <img 
@@ -80,7 +80,7 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
 				  </NavLink>
                 <button
                   onClick={onClose}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-acses-green-500 hover:text-acses-green-700"
                 >
                   <X size={24} />
                 </button>
@@ -101,8 +101,8 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
 						`flex items-center px-4 py-3 rounded-lg text-lg font-medium 
 						 transition-all duration-200 mb-2 ${
 						  isActive
-							? 'text-blue-600 bg-blue-50'
-							: 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+							? 'text-acses-green-600 bg-acses-green-50'
+							: 'text-gray-600 hover:text-acses-green-600 hover:bg-acses-green-50'
 						}`
 					  }
 					>
@@ -118,8 +118,8 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
 
               {/* Sidebar Footer */}
               <div className="p-6 border-t">
-                <button className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium text-lg
-                                hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center space-x-2">
+                <button className="w-full py-3 bg-acses-green-600 text-white rounded-lg font-medium text-lg
+                                hover:bg-acses-green-700 transition-colors duration-200 flex items-center justify-center space-x-2">
                   <span>Sign In</span>
                   <ArrowRight className="w-5 h-5" />
                 </button>

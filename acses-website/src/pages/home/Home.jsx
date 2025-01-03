@@ -9,6 +9,7 @@ import Statistics from "../../components/statistics/Statistics";
 import Footer from "../../components/footer/Footer";
 import Contact from "../../components/contact/Contact";
 import Events from "../../components/events/Events";
+import News from "../../components/news/News";
 
 const Home = () => {
   return (
@@ -22,6 +23,7 @@ const Home = () => {
         <Programs />
         <Statistics />
         <Events />
+        <News />
         <Contact />
         <Footer />
       </main>

@@ -1,29 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Menu, Code, Info, Calendar, Newspaper, Users, Mail } from 'lucide-react';
-import Sidebar from './Sidebar';
-import mLogo from '@/assets/react.svg';
+import React, { useState, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Menu,
+  Code,
+  Info,
+  Calendar,
+  Newspaper,
+  Users,
+  Mail,
+} from "lucide-react";
+import Sidebar from "./Sidebar";
+import mLogo from "/logo/logo.jpg";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
-const navItems = [
-  { name: 'About', icon: <Info className="w-5 h-5 mr-2" /> },
-  { name: 'Events', icon: <Calendar className="w-5 h-5 mr-2" /> },
-  { name: 'News', icon: <Newspaper className="w-5 h-5 mr-2" /> },
-  { name: 'Team', icon: <Users className="w-5 h-5 mr-2" /> },
-  { name: 'Contact', icon: <Mail className="w-5 h-5 mr-2" /> },
-];
+  const navItems = [
+    { name: "About", icon: <Info className="w-5 h-5 mr-2" /> },
+    { name: "Events", icon: <Calendar className="w-5 h-5 mr-2" /> },
+    { name: "News", icon: <Newspaper className="w-5 h-5 mr-2" /> },
+    { name: "Team", icon: <Users className="w-5 h-5 mr-2" /> },
+    { name: "Contact", icon: <Mail className="w-5 h-5 mr-2" /> },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Close sidebar when route changes
@@ -34,38 +42,41 @@ const navItems = [
   // Close sidebar when clicking outside
   useEffect(() => {
     const handleClick = (e) => {
-      if (isOpen && !e.target.closest('.sidebar') && !e.target.closest('.menu-button')) {
+      if (
+        isOpen &&
+        !e.target.closest(".sidebar") &&
+        !e.target.closest(".menu-button")
+      ) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
   }, [isOpen]);
 
   return (
-    <motion.nav 
+    <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-lg' : 'bg-white'
+        isScrolled ? "bg-white shadow-lg" : "bg-white"
       }`}
     >
       <div className="max-w-[2000px] mx-auto px-4">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <NavLink 
+          <NavLink
             to="/"
-            className="flex items-center space-x-3 text-acses-green-600 font-bold text-2xl tracking-tight hover:text-blue-700 transition-colors duration-200"
+            className="flex items-center space-x-3 text-acses-green-500 font-bold text-3xl tracking-tight hover:text-acses-green-600 transition-colors duration-200"
           >
-		  {/*<Code className="w-8 h-8" />*/}
-		 <img 
-			src= {mLogo}
-			alt="ACSES Logo" 
-			className="w-8 h-8"
-		  />
-            <span>ACSES</span>
+            {/*<Code className="w-8 h-8" />*/}
+            <img src={mLogo} alt="ACSES Logo" className="w-[60px] h-[60px]" />
+            <div className="flex flex-col items-center w-[120px] leading-tight">
+              <span>ACSES</span>
+              <span className="text-acses-green-600 text-center text-[8px]">Association of Computer Science and Engineering Students - SRID, UMaT</span>
+            </div>
           </NavLink>
 
           {/* Desktop Navigation */}
@@ -73,13 +84,13 @@ const navItems = [
             {navItems.map(({ name, icon }) => (
               <NavLink
                 key={name}
-                to={name === 'Home' ? '/' : `/${name.toLowerCase()}`}
+                to={name === "Home" ? "/" : `/${name.toLowerCase()}`}
                 className={({ isActive }) =>
                   `text-gray-600 hover:text-acses-green-600 transition-colors duration-200 
                    py-2 px-3 lg:px-4 rounded-md text-base lg:text-lg font-medium relative group 
                    hover:bg-acses-green-50 ${
-                    isActive ? 'text-acses-green-600 bg-acses-green-50' : ''
-                  }`
+                     isActive ? "text-acses-green-600 bg-acses-green-50" : ""
+                   }`
                 }
               >
                 {name}
@@ -91,8 +102,10 @@ const navItems = [
                 />
               </NavLink>
             ))}
-            <button className="px-6 py-2.5 bg-acses-green-600 text-white rounded-full font-medium text-base lg:text-lg
-                             hover:bg-acses-green-700 transition-colors duration-200 transform hover:scale-105">
+            <button
+              className="px-6 py-2.5 bg-acses-green-600 text-white rounded-full font-medium text-base lg:text-lg
+                             hover:bg-acses-green-700 transition-colors duration-200 transform hover:scale-105"
+            >
               Sign In
             </button>
           </div>
@@ -112,7 +125,7 @@ const navItems = [
       </div>
 
       {/* Sidebar Component */}
-      <Sidebar 
+      <Sidebar
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         navItems={navItems}

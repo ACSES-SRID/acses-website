@@ -1,4 +1,5 @@
 import React from "react";
+import Xlogo from '../xlogo/XLogo';
 
 const HeroSection = () => {
   return (
@@ -8,7 +9,7 @@ const HeroSection = () => {
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-2">
               <h1 className="text-3xl text-white font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                Association of Computer Science and Engineering Students
+                Association of Computer Science and Engineering Students, SRID
               </h1>
               <p className="max-w-[600px] text-white md:text-xl">
                 Empowering future tech leaders through innovation,
@@ -16,14 +17,43 @@ const HeroSection = () => {
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
+              <div className="flex justify-center items-center space-x-4 py-3 px-3 bg-white rounded-md h-full md:py-0">
+                <a
+                  href="https://linkedin.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center text-gray-900 hover:text-blue-600 transition-colors"
+                >
+                  <i className="fab fa-linkedin fa-lg"></i>
+                </a>
+                <a
+                  href="https://twitter.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center text-gray-900 hover:text-blue-400 transition-colors"
+                >
+                  <Xlogo style={{ width: '18px', height: '18px' }} />
+                </a>
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center text-gray-900 hover:text-pink-500 transition-colors"
+                >
+                  <i className="fab fa-instagram fa-lg"></i>
+                </a>
+                <a
+                  href="https://tiktok.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center text-gray-900 hover:text-black transition-colors"
+                >
+                  <i className="fab fa-tiktok fa-lg"></i>
+                </a>
+              </div>
+
               <a
-                className="inline-flex h-10 items-center justify-center rounded-md bg-white px-8 text-sm font-medium text-gray-900 shadow transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
-                href="#contact"
-              >
-                Join ACSES
-              </a>
-              <a
-                className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex h-10 py-4 items-center font-bold justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
                 href="#about"
               >
                 Learn More

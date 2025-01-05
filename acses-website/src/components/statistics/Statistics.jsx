@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { } from "react";
 import {
   LineChart,
   Line,
@@ -9,8 +9,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { motion } from "framer-motion";
-import CountUp from "react-countup";
-import ScrollTrigger from "react-scroll-trigger";
+import Counter from "./Counter";
 
 const stats = [
   {
@@ -34,34 +33,32 @@ const stats = [
 const yearlyData = [
   {
     year: "2021",
-    "CE": 31,
+    CE: 31,
     DS: 0,
   },
   {
     year: "2022",
-    "CE": 99,
+    CE: 99,
     DS: 0,
   },
   {
     year: "2023",
-    "CE": 152,
+    CE: 152,
     DS: 0,
   },
   {
     year: "2024",
-    "CE": 161,
+    CE: 161,
     DS: 0,
   },
   {
     year: "2025",
-    "CE": 240,
+    CE: 240,
     DS: 140,
   },
 ];
 
 const Statistics = () => {
-  const [counterOn, setCounterOn] = useState(false);
-
   return (
     <section className="flex justify-center py-16 bg-gray-100 md:py-24">
       <div className="container px-6 md:px-32">
@@ -86,19 +83,7 @@ const Statistics = () => {
                 transition={{ delay: index * 0.1 }}
                 className="text-2xl font-bold text-acses-green-500"
               >
-                <ScrollTrigger
-                  onEnter={() => setCounterOn(true)}
-                  onExit={() => setCounterOn(false)}
-                >
-                  {counterOn && (
-                    <CountUp
-                      start={0}
-                      end={stat.value}
-                      duration={2}
-                      delay={0}
-                    />
-                  )}
-                </ScrollTrigger>
+                <Counter stat={stat.value} />
               </motion.div>
 
               {/* Duplicate Counter with Style Adjustments */}
@@ -108,19 +93,7 @@ const Statistics = () => {
                 transition={{ delay: index * 0.1 }}
                 className="absolute bottom-0 right-0 text-5xl font-bold text-gray-300 opacity-20"
               >
-                <ScrollTrigger
-                  onEnter={() => setCounterOn(true)}
-                  onExit={() => setCounterOn(false)}
-                >
-                  {counterOn && (
-                    <CountUp
-                      start={0}
-                      end={stat.value}
-                      duration={2}
-                      delay={0}
-                    />
-                  )}
-                </ScrollTrigger>
+                <Counter stat={stat.value} />
               </motion.div>
             </div>
           ))}

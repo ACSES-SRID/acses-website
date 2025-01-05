@@ -1,125 +1,65 @@
-import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import { motion } from 'framer-motion';
+import FooterLogo from './FooterLogo';
+import FooterLinks from './FooterLinks';
+import FooterSocial from './FooterSocial';
+import { BookOpen, GraduationCap, Users, FileText, Phone } from 'lucide-react';
+
+const quickLinks = [
+  { label: "About Us", href: "#about", icon: Users },
+  { label: "Programs", href: "#programs", icon: BookOpen },
+  { label: "Academics", href: "#academics", icon: GraduationCap },
+  { label: "Resources", href: "#resources", icon: FileText },
+  { label: "Contact", href: "#contact", icon: Phone },
+];
 
 const Footer = () => {
   return (
-    <footer className="border-t flex justify-center">
-      <div className="container px-4 md:px-6 py-12 bg-acses-green-500 text-white">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold">About ACSES</h4>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  History
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  Mission & Vision
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  Leadership
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Programs</h4>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  Computer Science
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  Data Science
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  Course Catalog
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Resources</h4>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  Student Portal
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  Library
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-sm text-muted-foreground hover:underline"
-                >
-                  Research
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Connect</h4>
-            <div className="flex space-x-4">
-              <a href="#" className="text-muted-foreground hover:text-primary">
-                <Facebook className="h-5 w-5" />
-                <span className="sr-only">Facebook</span>
+    <footer className="bg-gradient-to-br from-acses-green-800 to-acses-green-900">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          <FooterLogo />
+          
+          <FooterLinks
+            title="Quick Links"
+            links={quickLinks}
+          />
+          
+          <FooterLinks
+            title="Resources"
+            links={[
+              { label: "Student Portal", href: "#" },
+              { label: "E-Library", href: "#" },
+              { label: "Research Papers", href: "#" },
+              { label: "Course Materials", href: "#" },
+            ]}
+          />
+          
+          <FooterSocial />
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-12 pt-8 border-t border-gray-700"
+        >
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <p className="text-sm text-gray-300">
+              © {new Date().getFullYear()} ACSES. All rights reserved.
+            </p>
+            <div className="flex space-x-6">
+              <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors">
+                Privacy Policy
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary">
-                <Twitter className="h-5 w-5" />
-                <span className="sr-only">Twitter</span>
+              <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors">
+                Terms of Service
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary">
-                <Linkedin className="h-5 w-5" />
-                <span className="sr-only">LinkedIn</span>
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary">
-                <Instagram className="h-5 w-5" />
-                <span className="sr-only">Instagram</span>
+              <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors">
+                Cookie Policy
               </a>
             </div>
           </div>
-        </div>
-        <div className="mt-12 pt-8 border-t">
-          <p className="text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Association of Computer Science and
-            Engineering Students (ACSES). All rights reserved.
-          </p>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );

@@ -1,5 +1,7 @@
-import React from "react";
-import Xlogo from '../xlogo/XLogo';
+import {} from "react";
+import { motion } from "framer-motion";
+import Xlogo from "../xlogo/XLogo";
+import StackedImages from "./StackedImages";
 
 const HeroSection = () => {
   return (
@@ -39,40 +41,54 @@ const HeroSection = () => {
                 collaboration, and excellence.
               </motion.p>
             </div>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              <div className="flex justify-center items-center space-x-4 py-3 px-3 bg-white rounded-md h-full md:py-0">
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center text-gray-900 hover:text-blue-600 transition-colors"
-                >
-                  <i className="fab fa-linkedin fa-lg"></i>
-                </a>
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center text-gray-900 hover:text-blue-400 transition-colors"
-                >
-                  <Xlogo style={{ width: '18px', height: '18px' }} />
-                </a>
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center text-gray-900 hover:text-pink-500 transition-colors"
-                >
-                  <i className="fab fa-instagram fa-lg"></i>
-                </a>
-                <a
-                  href="https://tiktok.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center text-gray-900 hover:text-black transition-colors"
-                >
-                  <i className="fab fa-tiktok fa-lg"></i>
-                </a>
+            {/* Social Links and Button */}
+            <motion.div
+              className="flex flex-col gap-4 min-[400px]:flex-row"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8, duration: 1 }}
+            >
+              <div className="flex items-center justify-center h-full px-3 py-3 space-x-4 bg-white rounded-md md:py-0">
+                {[
+                  {
+                    link: "https://linkedin.com",
+                    icon: "linkedin",
+                    color: "blue-600",
+                  },
+                  {
+                    link: "https://twitter.com",
+                    icon: "twitter",
+                    color: "blue-400",
+                  },
+                  {
+                    link: "https://instagram.com",
+                    icon: "instagram",
+                    color: "pink-500",
+                  },
+                  {
+                    link: "https://tiktok.com",
+                    icon: "tiktok",
+                    color: "black",
+                  },
+                ].map((social, idx) => (
+                  <motion.a
+                    key={idx}
+                    href={social.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center justify-center text-gray-900 transition-colors hover:text-${social.color}`}
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    {social.icon === "twitter" ? (
+                      <Xlogo style={{ width: "18px", height: "18px" }} />
+                    ) : (
+                      <i
+                        className={`fab fa-${social.icon} w-[18px] h-[18px]`}
+                      ></i>
+                    )}
+                  </motion.a>
+                ))}
               </div>
               <motion.a
                 className="inline-flex items-center justify-center h-10 px-8 py-4 text-sm font-bold transition-colors bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"

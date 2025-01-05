@@ -147,8 +147,8 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
                   className="w-full py-3 bg-acses-green-600 text-white rounded-lg font-medium text-lg
                                 hover:bg-acses-green-700 transition-colors duration-200 flex items-center justify-center space-x-2"
                 >
-                  <span>Sign In</span>
-                  <ArrowRight className="w-5 h-5" />
+                  <Info className="w-5 h-5" />
+                  <span>Learn More</span>
                 </button>
               </div>
             </div>

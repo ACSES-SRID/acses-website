@@ -3,7 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Menu,
-  Code,
+  Home,
   Info,
   Calendar,
   Newspaper,
@@ -18,12 +18,39 @@ const NavBar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
+  // Scroll to the section when the hash changes
+  useEffect(() => {
+    if (location.hash) {
+      const section = document.querySelector(location.hash);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [location.hash]);
+
   const navItems = [
-    { name: "About", icon: <Info className="w-5 h-5 mr-2" /> },
-    { name: "Events", icon: <Calendar className="w-5 h-5 mr-2" /> },
-    { name: "News", icon: <Newspaper className="w-5 h-5 mr-2" /> },
-    { name: "Team", icon: <Users className="w-5 h-5 mr-2" /> },
-    { name: "Contact", icon: <Mail className="w-5 h-5 mr-2" /> },
+    { name: "Home", link: "/", icon: <Home className="w-5 h-5 mr-2" /> },
+    { name: "About", link: "#about", icon: <Info className="w-5 h-5 mr-2" /> },
+    {
+      name: "Events",
+      link: "#events",
+      icon: <Calendar className="w-5 h-5 mr-2" />,
+    },
+    {
+      name: "Executives",
+      link: "/executives",
+      icon: <Users className="w-5 h-5 mr-2" />,
+    },
+    {
+      name: "Gallery",
+      link: "/gallery",
+      icon: <Newspaper className="w-5 h-5 mr-2" />,
+    },
+    {
+      name: "Contact",
+      link: "#contact",
+      icon: <Mail className="w-5 h-5 mr-2" />,
+    },
   ];
 
   useEffect(() => {
@@ -75,39 +102,46 @@ const NavBar = () => {
             <img src={mLogo} alt="ACSES Logo" className="w-[60px] h-[60px]" />
             <div className="flex flex-col items-center w-[120px] leading-tight">
               <span>ACSES</span>
-              <span className="text-acses-green-600 text-center text-[8px]">Association of Computer Science and Engineering Students - SRID, UMaT</span>
+              <span className="text-acses-green-600 text-center text-[8px]">
+                Association of Computer Science and Engineering Students - SRID,
+                UMaT
+              </span>
             </div>
           </NavLink>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
-            {navItems.map(({ name, icon }) => (
-              <NavLink
-                key={name}
-                to={name === "Home" ? "/" : `/${name.toLowerCase()}`}
-                className={({ isActive }) =>
-                  `text-gray-600 hover:text-acses-green-600 transition-colors duration-200 
-                   py-2 px-3 lg:px-4 rounded-md text-base lg:text-lg font-medium relative group 
-                   hover:bg-acses-green-50 ${
-                     isActive ? "text-acses-green-600 bg-acses-green-50" : ""
-                   }`
-                }
-              >
-                {name}
-                <motion.div
-                  className="absolute bottom-0 left-0 w-full h-0.5 bg-acses-green-600 rounded-full origin-left"
-                  initial={{ scaleX: 0 }}
-                  whileHover={{ scaleX: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </NavLink>
-            ))}
-            <button
-              className="px-6 py-2.5 bg-acses-green-600 text-white rounded-full font-medium text-base lg:text-lg
-                             hover:bg-acses-green-700 transition-colors duration-200 transform hover:scale-105"
-            >
-              Sign In
-            </button>
+            {navItems.map(({ name, link, icon }) => {
+              // Ensure hash links start with a slash to prevent appending
+              const normalizedLink = link.startsWith("#") ? `/${link}` : link;
+
+              // Determine active state for links
+              const isActive = link.startsWith("#")
+                ? location.hash === link
+                : location.pathname === link && !location.hash; // Only match "/" if there's no hash
+
+              return (
+                <NavLink
+                  key={name}
+                  to={normalizedLink}
+                  className={() =>
+                    `text-gray-600 hover:text-acses-green-600 transition-colors duration-200 
+               py-2 px-3 lg:px-4 rounded-md text-base lg:text-lg font-medium relative group 
+               hover:bg-acses-green-50 ${
+                 isActive ? "text-acses-green-600 bg-acses-green-50" : ""
+               }`
+                  }
+                >
+                  {name}
+                  <motion.div
+                    className="absolute bottom-0 left-0 w-full h-0.5 bg-acses-green-600 rounded-full origin-left"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </NavLink>
+              );
+            })}
           </div>
 
           {/* Mobile Menu Button */}

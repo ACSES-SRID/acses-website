@@ -14,66 +14,68 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 
+ 
+
 const executives = [
   {
-    name: "HE.John Doe",
+    name: "Lawson Buabassah",
     role: "President",
     image: "/images/placeholder.svg?height=400&width=400",
     icon: Crown,
     description: "Leading ACSES towards technological excellence",
   },
   {
-    name: "HE. Jane Smith",
+    name: "Boafo Nana Komarfo",
     role: "Vice President",
     image: "/images/placeholder.svg?height=400&width=400",
     icon: UserCog,
     description: "Supporting innovative initiatives",
   },
   {
-    name: "Mike Johnson",
+    name: "Evans Ankomah",
     role: "Financial Secretary",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Evans.jpg?height=400&width=400",
     icon: Wallet,
     description: "Managing association resources",
   },
   {
-    name: "Sarah Williams",
+    name: "Benedicta Nyamekye",
     role: "General Secretary",
     image: "/images/placeholder.svg?height=400&width=400",
     icon: ScrollText,
     description: "Coordinating administrative affairs",
   },
   {
-    name: "David Brown",
+    name: "Henry Antwi",
     role: "Communications Officer",
     image: "/images/placeholder.svg?height=400&width=400",
     icon: MessageSquare,
     description: "Handling internal and external communications",
   },
   {
-    name: "Emily Davis",
+    name: "Olivia Dosimey",
     role: "Women's Commissioner",
     image: "/images/placeholder.svg?height=400&width=400",
     icon: Users,
     description: "Promoting women in technology",
   },
   {
-    name: "Alex Wilson",
+    name: "Owusu Ansah Lucky",
     role: "Organizer",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Lucky.jpg?height=400&width=400",
     icon: Calendar,
     description: "Planning and executing events",
   },
   {
-    name: "Chris Thompson",
+    name: "Justin Asante",
     role: "Sports Chairman",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Justin.jpg?height=400&width=400",
     icon: Trophy,
     description:
       "Coordinating sports activities and promoting physical wellness",
   },
   {
-    name: "Rachel Chen",
+    name: "Harris Abdallah Musah",
     role: "Project Manager",
     image: "/images/placeholder.svg?height=400&width=400",
     icon: ClipboardCheck,
@@ -108,9 +110,9 @@ const executives = [
     description: "Managing and overseeing electoral processes",
   },
   {
-    name: "Sophia Carter",
+    name: "Debazar Yinpang",
     role: "Audit Chairman",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Yinpang.jpg?height=400&width=400",
     icon: Calculator,
     description: "Ensuring financial transparency and accountability",
   },

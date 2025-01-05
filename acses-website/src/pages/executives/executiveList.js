@@ -14,6 +14,8 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 
+ 
+
 const executives = [
   {
     name: "Lawson Buabassah",
@@ -32,7 +34,7 @@ const executives = [
   {
     name: "Evans Ankomah",
     role: "Financial Secretary",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Evans.jpg?height=400&width=400",
     icon: Wallet,
     description: "Managing association resources",
   },
@@ -60,14 +62,14 @@ const executives = [
   {
     name: "Owusu Ansah Lucky",
     role: "Organizer",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Lucky.jpg?height=400&width=400",
     icon: Calendar,
     description: "Planning and executing events",
   },
   {
-    name: "Chris Thompson",
+    name: "Justin Asante",
     role: "Sports Chairman",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Justin.jpg?height=400&width=400",
     icon: Trophy,
     description:
       "Coordinating sports activities and promoting physical wellness",
@@ -108,9 +110,9 @@ const executives = [
     description: "Managing and overseeing electoral processes",
   },
   {
-    name: "Sophia Carter",
+    name: "Debazar Yinpang",
     role: "Audit Chairman",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Yinpang.jpg?height=400&width=400",
     icon: Calculator,
     description: "Ensuring financial transparency and accountability",
   },

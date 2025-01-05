@@ -9,7 +9,7 @@ const lecturers = [
     role: "Head of Department",
     image: "https://www.umat.edu.gh/staffinfo/staffpix/afkansah211296852.jpg",
     field:
-      " Blockchain Technology, LAN/WLAN Network Design and Implementation ",
+      " Blockchain Technology",
     isHOD: true,
   },
   {
@@ -18,10 +18,10 @@ const lecturers = [
     role: "Patron",
     image: "https://www.umat.edu.gh/staffinfo/staffpix/afkansah211296852.jpg",
     field:
-      " Blockchain Technology, LAN/WLAN Network Design and Implementation ",
+      " Blockchain Technology ",
     isHOD: true,
   },
-  
+
   {
     id: 59,
     name: "Prof. Yosh Ninja",
@@ -50,7 +50,6 @@ const lecturers = [
     image: "https://www.umat.edu.gh/staffinfo/staffpix/afkansah211296852.jpg",
     field: "Ninja Moves, Silent Kills",
   },
- 
 ];
 
 const cardVariants = {
@@ -92,11 +91,11 @@ const Patrons = () => {
                   href={`https://www.umat.edu.gh/staffinfo/staffDetailed.php?contactID=${leader.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block relative bg-white rounded-2xl p-6 transform hover:-translate-y-2 transition-all duration-300 hover:shadow-2xl"
+                  className="block relative bg-white rounded-2xl p-4 transform hover:-translate-y-2 transition-all duration-300 hover:shadow-2xl"
                 >
                   <div className="flex flex-col items-center">
                     <motion.div
-                      className="relative w-full h-[23rem] lg:h-[30rem] mb-6" // Static dimensions
+                      className="relative w-full h-[17rem] lg:h-[18rem] mb-6" // Static dimensions
                       whileHover={{ scale: 1.02 }}
                     >
                       <img
@@ -113,7 +112,7 @@ const Patrons = () => {
                       </div>
                     </motion.div>
                     <div className="text-center">
-                      <h3 className="text-3xl font-bold mb-2">{leader.name}</h3>
+                      <h3 className="text-2xl font-bold mb-2">{leader.name}</h3>
                       <span className="inline-block px-4 py-1 rounded-full bg-[#124824] text-white text-sm font-medium mb-3">
                         {leader.role}
                       </span>
@@ -151,16 +150,16 @@ const Patrons = () => {
                 viewport={{ once: true }}
                 className="group relative"
               >
-                <div className="absolute inset-0 bg-[#124824]/5 rounded-xl transform group-hover:scale-105 transition-transform duration-300"></div>
+                <div className="absolute border inset-0 bg-[#124824]/5 rounded-xl transform group-hover:scale-105 transition-transform duration-300"></div>
                 <a
                   href={`https://www.umat.edu.gh/staffinfo/staffDetailed.php?contactID=${lecturer.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block relative bg-white rounded-xl p-3 hover:shadow-xl transition-all duration-300"
+                  className="block border relative bg-white rounded-xl p-3 hover:shadow-xl transition-all duration-300"
                 >
                   <motion.div
-  className="relative w-full h-[12.5rem] sm:h-[13.75rem] md:h-[15rem] mb-3 overflow-hidden rounded-xl"
-  whileHover={{ scale: 1.05 }}
+                    className="relative w-full h-[9.5rem] sm:h-[10.75rem] md:h-[13rem] mb-3 overflow-hidden rounded-xl"
+                    whileHover={{ scale: 1.05 }}
                   >
                     <img
                       src={lecturer.image}

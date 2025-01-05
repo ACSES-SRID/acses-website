@@ -65,13 +65,9 @@ const Patrons = () => {
   return (
     <section className="py-16 bg-gradient-to-br from-[#124824]/10 via-white to-gray-50">
       <div className="container mx-auto px-4">
-        <motion.h2
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-4xl font-bold text-center mb-16 bg-clip-text text-transparent bg-gradient-to-r from-[#124824] to-emerald-700"
-        >
-          Our Department Leadership
-        </motion.h2>
+        <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12">
+          Departmental Heads
+        </h1>
 
         {/* Leadership Section */}
         <div className="grid md:grid-cols-2 gap-20 mb-20 max-w-6xl mx-auto">

@@ -27,7 +27,7 @@ const executives = [
   {
     name: "Boafo Nana Komarfo",
     role: "Vice President",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Boafo.jpg?height=400&width=400",
     icon: UserCog,
     description: "Supporting innovative initiatives",
   },

@@ -45,7 +45,7 @@ const Contact = () => {
             <div className="mb-6">
               <h3 className="text-lg font-bold">Send us a message</h3>
               <p className="text-gray-500">
-                We'll get back to you as soon as possible.
+                We&apos;ll get back to you as soon as possible.
               </p>
             </div>
             <form className="grid gap-4">

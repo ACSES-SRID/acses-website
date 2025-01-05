@@ -69,7 +69,7 @@ const HeroSection = () => {
                 ))}
               </div>
               <motion.a
-                className="inline-flex items-center justify-center h-10 px-8 py-4 text-sm font-medium transition-colors bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex items-center justify-center h-10 px-8 py-4 text-sm font-bold transition-colors bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
                 href="#about"
                 whileHover={{ scale: 1.1 }}
               >

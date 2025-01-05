@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 
 const socialLinks = [
@@ -10,7 +10,7 @@ const socialLinks = [
 
 const FooterSocial = () => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

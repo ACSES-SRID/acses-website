@@ -1,8 +1,9 @@
-import { motion } from 'framer-motion';
+/* eslint-disable react/prop-types */
+import { motion } from "framer-motion";
 
 const FooterLinks = ({ title, links }) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

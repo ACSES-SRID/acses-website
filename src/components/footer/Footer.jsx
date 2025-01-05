@@ -1,9 +1,9 @@
-import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react'
+import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 
 const Footer = () => {
   return (
     <footer className="border-t flex justify-center">
-      <div className="container px-4 md:px-6 py-12">
+      <div className="container px-4 md:px-6 py-12 bg-acses-green-500 text-white">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">About ACSES</h4>
@@ -95,31 +95,19 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">Connect</h4>
             <div className="flex space-x-4">
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-primary"
-              >
+              <a href="#" className="text-muted-foreground hover:text-primary">
                 <Facebook className="h-5 w-5" />
                 <span className="sr-only">Facebook</span>
               </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-primary"
-              >
+              <a href="#" className="text-muted-foreground hover:text-primary">
                 <Twitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-primary"
-              >
+              <a href="#" className="text-muted-foreground hover:text-primary">
                 <Linkedin className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-primary"
-              >
+              <a href="#" className="text-muted-foreground hover:text-primary">
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </a>

@@ -1,5 +1,4 @@
-import React from "react";
-import Xlogo from '../xlogo/XLogo';
+import Xlogo from "../xlogo/XLogo";
 
 const HeroSection = () => {
   return (
@@ -32,7 +31,7 @@ const HeroSection = () => {
                   rel="noopener noreferrer"
                   className="flex items-center justify-center text-gray-900 hover:text-blue-400 transition-colors"
                 >
-                  <Xlogo style={{ width: '18px', height: '18px' }} />
+                  <Xlogo style={{ width: "18px", height: "18px" }} />
                 </a>
                 <a
                   href="https://instagram.com"

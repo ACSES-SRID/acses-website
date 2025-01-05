@@ -79,11 +79,18 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
                   className="flex items-center space-x-3 text-acses-green-600 font-bold text-2xl tracking-tight hover:text-acses-green-700 transition-colors duration-200"
                 >
                   {/*<Code className="w-8 h-8" />*/}
-                  <img src={mLogo} alt="ACSES Logo" className="w-[60px] h-[60px]" />
-                              <div className="flex flex-col items-center w-[120px] leading-tight">
-                                <span>ACSES</span>
-                                <span className="text-acses-green-600 text-center text-[8px]">Association of Computer Science and Engineering Students - SRID, UMaT</span>
-                              </div>
+                  <img
+                    src={mLogo}
+                    alt="ACSES Logo"
+                    className="w-[60px] h-[60px]"
+                  />
+                  <div className="flex flex-col items-center w-[120px] leading-tight">
+                    <span>ACSES</span>
+                    <span className="text-acses-green-600 text-center text-[8px]">
+                      Association of Computer Science and Engineering Students -
+                      SRID, UMaT
+                    </span>
+                  </div>
                 </NavLink>
                 <button
                   onClick={onClose}
@@ -95,31 +102,43 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
 
               {/* Sidebar Content */}
               <div className="flex-1 overflow-y-auto py-6 px-4">
-                {navItems.map(({ name, icon, index }) => (
-                  <motion.div
-                    key={name}
-                    variants={menuItemVariants}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <NavLink
-                      to={name === "Home" ? "/" : `/${name.toLowerCase()}`}
-                      onClick={onClose}
-                      className={({ isActive }) =>
-                        `flex items-center px-4 py-3 rounded-lg text-lg font-medium 
-						 transition-all duration-200 mb-2 ${
+                {navItems.map(({ name, link, icon, index }) => {
+                  // Ensure hash links start with a slash to prevent appending
+                  const normalizedLink = link.startsWith("#")
+                    ? `/${link}`
+                    : link;
+
+                  // Determine active state for links
+                  const isActive = link.startsWith("#")
+                    ? location.hash === link
+                    : location.pathname === link && !location.hash; // Only match "/" if there's no hash
+
+                  return (
+                    <motion.div
+                      key={name}
+                      variants={menuItemVariants}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <NavLink
+                        to={normalizedLink}
+                        onClick={onClose}
+                        className={() =>
+                          `flex items-center px-4 py-3 rounded-lg text-lg font-medium 
+             transition-all duration-200 mb-2 ${
                isActive
                  ? "text-acses-green-600 bg-acses-green-50"
                  : "text-gray-600 hover:text-acses-green-600 hover:bg-acses-green-50"
              }`
-                      }
-                    >
-                      <div className="flex items-center space-x-2">
-                        {icon}
-                        <span>{name}</span>
-                      </div>
-                    </NavLink>
-                  </motion.div>
-                ))}
+                        }
+                      >
+                        <div className="flex items-center space-x-2">
+                          {icon}
+                          <span>{name}</span>
+                        </div>
+                      </NavLink>
+                    </motion.div>
+                  );
+                })}
               </div>
 
               {/* Sidebar Footer */}

@@ -1,4 +1,4 @@
-import { } from "react";
+import {} from "react";
 import { motion } from "framer-motion";
 import Xlogo from "../xlogo/XLogo";
 import StackedImages from "./StackedImages";
@@ -50,10 +50,26 @@ const HeroSection = () => {
             >
               <div className="flex items-center justify-center h-full px-3 py-3 space-x-4 bg-white rounded-md md:py-0">
                 {[
-                  { link: "https://linkedin.com", icon: "linkedin", color: "blue-600" },
-                  { link: "https://twitter.com", icon: "twitter", color: "blue-400" },
-                  { link: "https://instagram.com", icon: "instagram", color: "pink-500" },
-                  { link: "https://tiktok.com", icon: "tiktok", color: "black" },
+                  {
+                    link: "https://linkedin.com",
+                    icon: "linkedin",
+                    color: "blue-600",
+                  },
+                  {
+                    link: "https://twitter.com",
+                    icon: "twitter",
+                    color: "blue-400",
+                  },
+                  {
+                    link: "https://instagram.com",
+                    icon: "instagram",
+                    color: "pink-500",
+                  },
+                  {
+                    link: "https://tiktok.com",
+                    icon: "tiktok",
+                    color: "black",
+                  },
                 ].map((social, idx) => (
                   <motion.a
                     key={idx}
@@ -64,7 +80,13 @@ const HeroSection = () => {
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    {social.icon === "twitter" ? <Xlogo style={{ width: '18px', height: '18px' }} /> : <i className={`fab fa-${social.icon} w-[18px] h-[18px]`}></i>}
+                    {social.icon === "twitter" ? (
+                      <Xlogo style={{ width: "18px", height: "18px" }} />
+                    ) : (
+                      <i
+                        className={`fab fa-${social.icon} w-[18px] h-[18px]`}
+                      ></i>
+                    )}
                   </motion.a>
                 ))}
               </div>

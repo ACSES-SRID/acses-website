@@ -9,7 +9,7 @@ const WelcomeMessage = () => {
         </h1>
         <div className="grid md:grid-cols-2 gap-6 items-start">
           {/* Card for HOD */}
-          <div className="w-full border rounded-lg shadow-md p-6">
+          <div className="w-full border rounded-lg shadow-md p-6 h-64"> {/* Fixed height added */}
             <div className="flex items-center gap-4 mb-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden">
                 <img
@@ -34,7 +34,7 @@ const WelcomeMessage = () => {
             </div>
           </div>
           {/* Card for President */}
-          <div className="w-full border rounded-lg shadow-md p-6">
+          <div className="w-full border rounded-lg shadow-md p-6 h-64"> {/* Fixed height added */}
             <div className="flex items-center gap-4 mb-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden">
                 <img

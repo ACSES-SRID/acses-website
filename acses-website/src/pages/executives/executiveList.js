@@ -22,7 +22,7 @@ const executives = [
     role: "President",
     image: "/images/executives/Lawson.jpg?height=400&width=400",
     icon: Crown,
-    description: "Leading the vision of ACSES",
+    description: "Leading the association's mission.",
   },
   {
     name: "H.E. Boafo Nana Komarfo",
@@ -89,14 +89,14 @@ const executives = [
     description: "Assisting in administrative tasks and record-keeping",
   },
   {
-    name: "Hon. Daniel Lee",
+    name: "Hon. Rodney Hagan",
     role: "Senate Chairman",
     image: "/images/executives/Rodney.jpg?height=400&width=400",
     icon: Gavel,
     description: "Overseeing legislative matters within the association",
   },
   {
-    name: "Hon. Grace Taylor",
+    name: "Hon. Donkor Aaron Ofori",
     role: "Judicial Chairman",
     image: "/images/placeholder.svg?height=400&width=400",
     icon: Scale,

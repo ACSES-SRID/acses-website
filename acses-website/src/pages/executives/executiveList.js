@@ -41,7 +41,7 @@ const executives = [
   {
     name: "Hon. Benedicta Nyamekye",
     role: "General Secretary",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Bendicta.jpg?height=400&width=400",
     icon: ScrollText,
     description: "Coordinating administrative affairs",
   },
@@ -77,7 +77,7 @@ const executives = [
   {
     name: "Hon. Harris Abdallah Musah",
     role: "Project Manager",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Harris.jpg?height=400&width=400",
     icon: ClipboardCheck,
     description: "Overseeing technical projects and student innovations",
   },

@@ -9,7 +9,7 @@ const WelcomeMessage = () => {
         </h1>
         <div className="grid md:grid-cols-2 gap-6 items-start">
           {/* Card for HOD */}
-          <div className="w-full border rounded-lg shadow-md p-6 flex flex-col">
+          <div className="w-full border rounded-lg shadow-md p-6 h-64"> {/* Fixed height added */}
             <div className="flex items-center gap-4 mb-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden">
                 <img
@@ -24,7 +24,7 @@ const WelcomeMessage = () => {
                 <p className="text-sm text-gray-500">Prof. John Smith</p>
               </div>
             </div>
-            <div className="flex-grow">
+            <div>
               <p className="text-gray-600">
                 Welcome to the Association of Computer Science and Engineering Students (ACSES).
                 Our department strives for excellence in education and research in the fields of
@@ -34,7 +34,7 @@ const WelcomeMessage = () => {
             </div>
           </div>
           {/* Card for President */}
-          <div className="w-full border rounded-lg shadow-md p-6 flex flex-col">
+          <div className="w-full border rounded-lg shadow-md p-6 h-64"> {/* Fixed height added */}
             <div className="flex items-center gap-4 mb-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden">
                 <img
@@ -49,7 +49,7 @@ const WelcomeMessage = () => {
                 <p className="text-sm text-gray-500">Jane Doe</p>
               </div>
             </div>
-            <div className="flex-grow">
+            <div>
               <p className="text-gray-600">
                 As the President of ACSES, I welcome you to our vibrant community.
                 Our association represents the diverse talents and aspirations of students

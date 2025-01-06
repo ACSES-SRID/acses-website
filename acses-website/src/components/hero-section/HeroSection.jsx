@@ -1,7 +1,7 @@
 import {} from "react";
 import { motion } from "framer-motion";
-import Xlogo from "../xlogo/XLogo";
 import StackedImages from "./StackedImages";
+import SocialLinks from "./SocialLinks";
 
 const HeroSection = () => {
   return (
@@ -13,14 +13,14 @@ const HeroSection = () => {
           alt="Hero Background"
           className="object-cover w-full h-full"
         />
-        <div className="absolute inset-0 bg-acses-green-500/90"></div>
+        <div className="absolute inset-0 bg-acses-green-500/95"></div>
       </div>
 
       <div className="container relative z-10 px-4 md:px-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
           {/* Text Content */}
-          <div className="flex flex-col justify-center space-y-4">
-            <div className="space-y-2">
+          <div className="flex flex-col justify-center space-y-8 sm:space-y-[4rem]">
+            <div className="space-y-2 sm:space-y-6">
               {/* Animated Heading */}
               <motion.h1
                 className="text-3xl font-bold tracking-tighter text-white sm:text-5xl xl:text-6xl/none"
@@ -32,7 +32,7 @@ const HeroSection = () => {
               </motion.h1>
               {/* Animated Slogan */}
               <motion.p
-                className="max-w-[600px] text-white md:text-xl"
+                className="max-w-[600px] text-acses-green-100 md:text-xl italic"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 1 }}
@@ -41,63 +41,9 @@ const HeroSection = () => {
                 collaboration, and excellence.
               </motion.p>
             </div>
+            
             {/* Social Links and Button */}
-            <motion.div
-              className="flex flex-col gap-4 min-[400px]:flex-row"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8, duration: 1 }}
-            >
-              <div className="flex items-center justify-center h-full px-3 py-3 space-x-4 bg-white rounded-md md:py-0">
-                {[
-                  {
-                    link: "https://linkedin.com",
-                    icon: "linkedin",
-                    color: "blue-600",
-                  },
-                  {
-                    link: "https://twitter.com",
-                    icon: "twitter",
-                    color: "blue-400",
-                  },
-                  {
-                    link: "https://instagram.com",
-                    icon: "instagram",
-                    color: "pink-500",
-                  },
-                  {
-                    link: "https://tiktok.com",
-                    icon: "tiktok",
-                    color: "black",
-                  },
-                ].map((social, idx) => (
-                  <motion.a
-                    key={idx}
-                    href={social.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`flex items-center justify-center text-gray-900 transition-colors hover:text-${social.color}`}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    {social.icon === "twitter" ? (
-                      <Xlogo style={{ width: "18px", height: "18px" }} />
-                    ) : (
-                      <i
-                        className={`fab fa-${social.icon} w-[18px] h-[18px]`}
-                      ></i>
-                    )}
-                  </motion.a>
-                ))}
-              </div>
-              <motion.a
-                className="inline-flex items-center justify-center h-10 px-8 py-4 text-sm font-bold transition-colors bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
-                href="#about"
-                whileHover={{ scale: 1.1 }}
-              >
-                Learn More
-              </motion.a>
-            </motion.div>
+            <SocialLinks />
           </div>
 
           {/* Stacked Images with Tilt Effect */}

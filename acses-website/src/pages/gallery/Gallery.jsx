@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 import NavBar from "../../components/navbar/NavBar";
 import Footer from "../../components/footer/Footer";
 import { ArrowRight, ArrowLeft } from "lucide-react";
@@ -25,12 +27,18 @@ const Gallery = () => {
   };
 
   const CustomImage = ({ src, alt, width, height, className }) => (
-    <img
+    <LazyLoadImage
       src={src}
       alt={alt}
       width={width}
       height={height}
       className={className}
+      effect="blur"
+      placeholderSrc="/images/placeholder.svg" 
+      onError={(e) => {
+        e.target.onerror = null; 
+        e.target.src = "/images/placeholder.svg";
+      }}
     />
   );
 

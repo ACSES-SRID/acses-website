@@ -14,12 +14,33 @@ registerRoute(
     plugins: [
       new ExpirationPlugin({
         maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-        maxEntries: 50, // Limit cache to 50 images
+        maxEntries: 200, // Updated maxEntries to 200
       }),
     ],
   })
 );
 
+// Force the new service worker to take control immediately
+self.addEventListener('install', (event) => {
+  self.skipWaiting(); // Skip waiting and activate the new SW immediately
+});
+
+// Ensure the new service worker takes control of open pages
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    (async () => {
+      const currentCaches = ['image-cache'];
+      const cacheNames = await caches.keys();
+
+      // Clear any old cache that isn't part of the updated configuration
+      await Promise.all(
+        cacheNames.map((cacheName) => {
+          if (!currentCaches.includes(cacheName)) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })()
+  );
+  self.clients.claim(); // Take control of all open pages
 });

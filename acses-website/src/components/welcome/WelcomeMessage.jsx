@@ -3,7 +3,7 @@ import MessageCard from "./MessageCard";
 
 const WelcomeMessage = () => {
   return (
-    <section className="py-16 flex justify-center md:py-24">
+    <section className="py-16 flex justify-center md:py-24 bg-acses-yellow-500">
       <div className="container px-4 md:px-6">
         <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12">
           Welcome to ACSES

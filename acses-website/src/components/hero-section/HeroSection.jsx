@@ -13,14 +13,14 @@ const HeroSection = () => {
           alt="Hero Background"
           className="object-cover w-full h-full"
         />
-        <div className="absolute inset-0 bg-acses-green-500/90"></div>
+        <div className="absolute inset-0 bg-acses-green-500/95"></div>
       </div>
 
       <div className="container relative z-10 px-4 md:px-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
           {/* Text Content */}
-          <div className="flex flex-col justify-center space-y-4">
-            <div className="space-y-2">
+          <div className="flex flex-col justify-center space-y-8 sm:space-y-[4rem]">
+            <div className="space-y-2 sm:space-y-6">
               {/* Animated Heading */}
               <motion.h1
                 className="text-3xl font-bold tracking-tighter text-white sm:text-5xl xl:text-6xl/none"
@@ -32,7 +32,7 @@ const HeroSection = () => {
               </motion.h1>
               {/* Animated Slogan */}
               <motion.p
-                className="max-w-[600px] text-white md:text-xl"
+                className="max-w-[600px] text-acses-green-100 md:text-xl italic"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 1 }}
@@ -41,6 +41,7 @@ const HeroSection = () => {
                 collaboration, and excellence.
               </motion.p>
             </div>
+            
             {/* Social Links and Button */}
             <motion.div
               className="flex flex-col gap-4 min-[400px]:flex-row"

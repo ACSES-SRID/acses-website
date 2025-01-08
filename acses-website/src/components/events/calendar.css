@@ -1,0 +1,107 @@
+/* Calendar.css */
+:root {
+    --rdp-accent-color: #114924;
+    /* Green for selected days */
+    --rdp-background-color: #f0f9ff;
+    /* Light blue for the calendar background */
+}
+
+.rdp {
+    --rdp-cell-size: 36px;
+    margin: 0;
+    width: 100%;
+}
+
+.rdp-months {
+    justify-content: center;
+    width: 100%;
+}
+
+.rdp-month {
+    width: 100%;
+    padding: 16px;
+}
+
+.rdp-caption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--rdp-background-color);
+    margin: -16px -16px 8px -16px;
+}
+
+.rdp-caption_label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--rdp-accent-color);
+    text-transform: capitalize;
+}
+
+.rdp-nav {
+    display: flex;
+    gap: 4px;
+}
+
+.rdp-nav_button {
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    color: #0369a1;
+    background: white;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.rdp-nav_button:hover {
+    background: #e0f2fe;
+    transform: scale(1.05);
+}
+
+.rdp-head_cell {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.rdp-cell {
+    height: 36px;
+}
+
+.rdp-button {
+    font-size: 0.875rem;
+    border-radius: 9999px;
+    color: #334155;
+    transition: all 0.2s;
+    width: 32px;
+    height: 32px;
+    margin: 2px;
+}
+
+.rdp-day_selected {
+    background: linear-gradient(45deg, #0ea5e9, #0284c7) !important;
+    color: white !important;
+    font-weight: 600;
+    transform: scale(1.1);
+}
+
+.rdp-day_today {
+    color: var(--rdp-accent-color);
+    font-weight: 600;
+    border: 2px solid var(--rdp-accent-color);
+}
+
+.rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+    background: var(--rdp-background-color) !important;
+    transform: scale(1.1);
+}
+
+.rdp-day_outside {
+    opacity: 0 !important;
+    pointer-events: none;
+}

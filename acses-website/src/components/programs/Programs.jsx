@@ -1,4 +1,5 @@
 import { Code2, Database } from "lucide-react";
+import ProgramCard from "./ProgramCard";
 
 const Programs = () => {
   return (
@@ -9,51 +10,20 @@ const Programs = () => {
         </h2>
         <div className="grid gap-8 md:grid-cols-2">
           {/* Program Card: Computer Science & Engineering */}
-          <div className="w-full transition duration-300 transform bg-white rounded-lg shadow-lg hover:shadow-xl hover:scale-105">
-            <div className="p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <Code2 className="w-10 h-10 text-acses-green-600" />
-                <h3 className="text-2xl font-semibold text-gray-800">
-                  Computer Science & Engineering
-                </h3>
-              </div>
-              <p className="mb-4 text-gray-700">
-                Our Computer Science & Engineering program offers a
-                comprehensive curriculum that combines theoretical foundations
-                with practical applications. Students learn software
-                development, computer systems, algorithms, and more.
-              </p>
-              <ul className="space-y-2 text-gray-700 list-disc list-inside">
-                <li>Software Engineering</li>
-                <li>Computer Networks</li>
-                <li>Artificial Intelligence</li>
-                <li>Operating Systems</li>
-                <li>Web Development</li>
-              </ul>
-            </div>
-          </div>
+          <ProgramCard 
+            icon={<Code2 className="w-10 h-10 text-white" />} 
+            title="Computer Science & Engineering" 
+            description="Our Computer Science & Engineering program offers a comprehensive curriculum that combines theoretical foundations with practical applications. Students learn software development, computer systems, algorithms, and more." 
+            lists={["Software Engineering", "Computer Networks", "Artificial Intelligence", "Operating Systems", "Web Development"]} 
+          />
 
           {/* Program Card: Data Science */}
-          <div className="w-full transition duration-300 transform bg-white rounded-lg shadow-lg hover:shadow-xl hover:scale-105">
-            <div className="p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <Database className="w-10 h-10 text-acses-green-600" />
-                <h3 className="text-2xl font-semibold text-gray-800">Data Science</h3>
-              </div>
-              <p className="mb-4 text-gray-700">
-                The Data Science program equips students with the skills to
-                analyze and interpret complex data. Students learn statistical
-                methods, machine learning, and data visualization techniques.
-              </p>
-              <ul className="space-y-2 text-gray-700 list-disc list-inside">
-                <li>Machine Learning</li>
-                <li>Statistical Analysis</li>
-                <li>Big Data Processing</li>
-                <li>Data Visualization</li>
-                <li>Predictive Modeling</li>
-              </ul>
-            </div>
-          </div>
+          <ProgramCard 
+            icon={<Database className="w-10 h-10 text-white" />} 
+            title="Data Science" 
+            description="The Data Science program equips students with the skills to analyze and interpret complex data. Students learn statistical methods, machine learning, and data visualization techniques." 
+            lists={["Machine Learning", "Statistical Analysis", "Big Data Processing", "Data Visualization", "Predictive Modeling"]}
+          />
         </div>
       </div>
     </section>

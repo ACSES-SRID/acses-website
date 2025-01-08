@@ -18,10 +18,10 @@ const Home = () => {
       <main className="flex-1">
         <HeroSection />
         <WelcomeMessage />
-        <Patrons />
         <About />
         <Programs />
         <Statistics />
+        <Patrons />
         <Events />
         <News />
         <Contact />

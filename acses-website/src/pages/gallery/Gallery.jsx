@@ -1,10 +1,9 @@
 import React, { useState } from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 import NavBar from "../../components/navbar/NavBar";
 import Footer from "../../components/footer/Footer";
-import {
-  ArrowRight,
-  ArrowLeft
-} from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import galleryItems from "./galleryItems";
 
 const itemsPerPage = 9; // Number of items per page
@@ -16,7 +15,10 @@ const Gallery = () => {
   const totalPages = Math.ceil(galleryItems.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = galleryItems.slice(startIndex, startIndex + itemsPerPage);
+  const currentItems = galleryItems.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const goToPage = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -24,13 +26,28 @@ const Gallery = () => {
     }
   };
 
+  // const CustomImage = ({ src, alt, width, height, className }) => (
+  //   <img
+  //     src={src}
+  //     alt={alt}
+  //     width={width}
+  //     height={height}
+  //     className={className}
+  //   />
+  // );
+
   const CustomImage = ({ src, alt, width, height, className }) => (
-    <img
+    <LazyLoadImage
       src={src}
       alt={alt}
       width={width}
       height={height}
       className={className}
+      effect="blur"
+      placeholderSrc="/images/placeholder.svg" 
+      onError={(e) => {
+        e.target.src = src;
+      }}
     />
   );
 
@@ -96,8 +113,8 @@ const Gallery = () => {
                   src={item.src}
                   alt={item.alt}
                   width={600}
-                  height={400}
-                  className="object-cover w-full h-[300px] transition-transform duration-300 group-hover:scale-105"
+                  height={390}
+                  className="object-cover w-full transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
@@ -158,6 +175,28 @@ const Gallery = () => {
             </>
           )}
         </Dialog>
+        <div className="mt-3 ml-4 md:ml-12">
+          <h3 className="text-xl  font-bold  text-left mb-2 bg-clip-text text-transparent bg-gradient-to-r from-[#124824] to-emerald-700">
+            More Photos!
+          </h3>
+          <ul className="list-disc ml-8 text-gray-700">
+            <li>
+              <a href="https://braoseistudios.picflow.com/ojf97nk5dn" className="hover:underline">
+                Bits to Bytes 2024
+              </a>
+            </li>
+            <li>
+              <a href="https://drive.google.com/drive/folders/1f_-_UB2GcLYEVTJCXPb92LjX2x5eR-KP?usp=sharing" className="hover:underline">
+                ACSES Week 2024
+              </a>
+            </li>
+            {/* <li>
+              <a href="/activities" className="hover:underline">
+                Activities
+              </a>
+            </li> */}
+          </ul>
+        </div>
       </div>
       <Footer />
     </>

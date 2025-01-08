@@ -202,7 +202,7 @@ const HeroSection01 = () => {
 
           {/* Animated Cards */}
           <motion.div
-            className="absolute flex space-x-2 bottom-[-70px] md:bottom-[-40px] left-[-20px] w-[300px] bg-acses-green-800 text-acses-green-200 p-4 rounded-lg shadow-lg"
+            className="absolute flex space-x-2 bottom-[-70px] md:bottom-[-20px] left-[-20px] w-[300px] bg-acses-green-800 text-acses-green-200 p-4 rounded-lg shadow-lg"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 1 }}

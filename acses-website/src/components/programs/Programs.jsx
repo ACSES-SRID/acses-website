@@ -17,11 +17,11 @@ const Programs = () => {
             lists={["Software Engineering", "Computer Networks", "Artificial Intelligence", "Operating Systems", "Web Development"]} 
           />
 
-          {/* Program Card: Data Science */}
+          {/* Program Card: Data Science & Analytics */}
           <ProgramCard 
             icon={<Database className="w-10 h-10 text-white" />} 
-            title="Data Science" 
-            description="The Data Science program equips students with the skills to analyze and interpret complex data. Students learn statistical methods, machine learning, and data visualization techniques." 
+            title="Data Science & Analytics" 
+            description="The Data Science & Analytics program equips students with the skills to analyze and interpret complex data. Students learn statistical methods, machine learning, and data visualization techniques." 
             lists={["Machine Learning", "Statistical Analysis", "Big Data Processing", "Data Visualization", "Predictive Modeling"]}
           />
         </div>

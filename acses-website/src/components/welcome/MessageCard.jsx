@@ -13,12 +13,12 @@ const MessageCard = ({ title, name, imageSrc, message }) => {
           />
         </div>
         <div>
-          <h2 className="text-xl font-semibold">{title}</h2>
-          <p className="text-sm text-black-500">{name}</p>
+          <h2 className="text-xl font-semibold text-white">{title}</h2>
+          <p className="text-sm text-white">{name}</p>
         </div>
       </div>
       <div>
-      <p className="text-black-6000 font-bold">{message}</p>
+      <p className="text-white font-bold">{message}</p>
 
       </div>
     </div>

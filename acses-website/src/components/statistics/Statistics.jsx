@@ -25,7 +25,7 @@ const stats = [
     value: 412,
   },
   {
-    title: "DS Students",
+    title: "DA Students",
     value: 140,
   },
 ];
@@ -34,27 +34,27 @@ const yearlyData = [
   {
     year: "2021",
     CE: 31,
-    DS: 0,
+    DA: 0,
   },
   {
     year: "2022",
     CE: 99,
-    DS: 0,
+    DA: 0,
   },
   {
     year: "2023",
     CE: 152,
-    DS: 0,
+    DA: 0,
   },
   {
     year: "2024",
     CE: 161,
-    DS: 0,
+    DA: 0,
   },
   {
     year: "2025",
     CE: 240,
-    DS: 140,
+    DA: 140,
   },
 ];
 
@@ -120,7 +120,7 @@ const Statistics = () => {
                 />
                 <Line
                   type="monotone"
-                  dataKey="DS"
+                  dataKey="DA"
                   stroke="hsl(100, 70%, 50%)"
                   strokeWidth={2}
                   dot={{ r: 4 }}

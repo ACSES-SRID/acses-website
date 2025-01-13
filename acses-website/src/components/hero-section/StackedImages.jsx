@@ -7,6 +7,12 @@ const StackedImages = () => {
     "https://i.pinimg.com/736x/b5/78/5a/b5785af39d097409d685d68c242c146a.jpg",
     "https://i.pinimg.com/736x/8c/a5/26/8ca526b2042d2dae10511a80f3d5866a.jpg",
   ];
+  
+  // const initialImages = [
+  //   "/images/executives/Yinpang.jpg",
+  //   "/images/executives/Lucky.jpg",
+  //   "/images/executives/Evans.jpg",
+  // ];
 
   const [images, setImages] = useState(initialImages);
   const [isAnimating, setIsAnimating] = useState(false); // Tracks if animation is in progress
@@ -39,7 +45,7 @@ const StackedImages = () => {
         {images.map((image, index) => (
           <div
             key={index}
-            className={`absolute w-full h-full overflow-hidden rounded-lg transition-transform duration-500 ease-in-out border border-gray-500 ${
+            className={`absolute w-full h-full overflow-hidden rounded-lg transition-transform duration-500 ease-in-out border border-acses-green-200 ${
               isAnimating ? "transform-scale" : ""
             }`}
             style={{

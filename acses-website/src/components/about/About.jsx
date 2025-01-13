@@ -54,7 +54,7 @@ const About = () => {
             alt="About ACSES"
             className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
             height="310"
-            src="/images/placeholder.svg?height=350&width=600"
+            src="/images/about/Bits2Bytes_BraoseiStudios (86).jpg?height=350&width=600"
             width="550"
           />
         </div>

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 import NavBar from "../../components/navbar/NavBar";
 import Footer from "../../components/footer/Footer";
 import { ArrowRight, ArrowLeft } from "lucide-react";
@@ -96,7 +98,7 @@ const Gallery = () => {
                   src={item.src}
                   alt={item.alt}
                   width={600}
-                  height={400}
+                  height={390}
                   className="object-cover w-full h-[300px] transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300">

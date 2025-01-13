@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import mLogo from "/logo/logo.jpg";
+import mLogo from "/logo/logo1.png";
 
 const FooterLogo = () => {
   return (

@@ -4,6 +4,7 @@ import {
   createRoutesFromElements,
   RouterProvider,
 } from "react-router-dom";
+import { useEffect } from "react";
 
 // Pages
 import Home from "./pages/home/Home";
@@ -36,7 +37,6 @@ function App() {
 }
 
 function AppInitializer() {
-  const { fetchBlogPosts } = useBlogContext();
 
   useEffect(() => {
     // Wake server

@@ -2,7 +2,7 @@ import React from "react";
 
 const MessageCard = ({ title, name, imageSrc, message }) => {
   return (
-    <div className="w-full border rounded-lg shadow-md p-6 min-h-[16rem] md:min-h-[20rem] transition-transform transform hover:scale-105 hover:shadow-lg bg-acses-green-500">
+    <div className="w-full border rounded-lg shadow-md p-6 transition-transform transform hover:scale-105 hover:shadow-lg bg-acses-green-500">
 
       <div className="flex items-center gap-4 mb-4">
         <div className="relative w-16 h-16 rounded-full overflow-hidden">
@@ -18,8 +18,7 @@ const MessageCard = ({ title, name, imageSrc, message }) => {
         </div>
       </div>
       <div>
-      <p className="text-white font-bold">{message}</p>
-
+        <p className="text-white font-bold leading-relaxed break-words">{message}</p>
       </div>
     </div>
   );

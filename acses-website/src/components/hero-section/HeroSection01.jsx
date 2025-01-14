@@ -27,7 +27,7 @@ const HeroSection01 = () => {
     // Change the image every 5 seconds
     const interval = setInterval(() => {
         setImageIndex((prevIndex) => (prevIndex + 1) % images.length); // Cycle through images
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(interval); // Cleanup on component unmount
   }, [images.length]);

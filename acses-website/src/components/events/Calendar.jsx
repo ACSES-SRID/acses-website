@@ -20,7 +20,9 @@ const Calendar = ({ onDateSelect }) => {
   };
 
   const hasEvent = (date) => {
-    return events.some((event) => event.date === format(date, "yyyy-MM-dd"));
+    const formattedDate = format(date, "dd-MM-yyyy");
+    console.log("Checking date:", formattedDate);
+    return events.some((event) => event.date === formattedDate);
   };
 
   return (
@@ -45,26 +47,12 @@ const Calendar = ({ onDateSelect }) => {
             displayStaticWrapperAs="desktop"
             value={selectedDate}
             onChange={handleDateSelect}
-            renderInput={({ inputRef, inputProps }) => (
-              <div ref={inputRef} {...inputProps} />
-            )}
-            components={{
-              LeftArrowIcon: () => (
-                <IconButton>
-                  <ChevronLeft sx={{ color: "#4CAF50" }} /> {/* Green color */}
-                </IconButton>
-              ),
-              RightArrowIcon: () => (
-                <IconButton>
-                  <ChevronRight sx={{ color: "#4CAF50" }} /> {/* Green color */}
-                </IconButton>
-              ),
-            }}
             renderDay={(day, _value, DayComponentProps) => {
               const isSelected =
                 DayComponentProps.selected && isValid(selectedDate);
               const isToday =
-                format(new Date(), "yyyy-MM-dd") === format(day, "yyyy-MM-dd");
+                format(new Date(), "yyyy-MM-dd") ===
+                format(day, "yyyy-MM-dd");
               const isEventDay = hasEvent(day);
 
               return (
@@ -77,7 +65,7 @@ const Calendar = ({ onDateSelect }) => {
                       fontSize: "1.5rem",
                       bottom: "8px",
                       right: "8px",
-                      color: "#4CAF50", // Green color for event dot
+                      color: "#0d5323",
                     },
                   }}
                 >
@@ -86,12 +74,20 @@ const Calendar = ({ onDateSelect }) => {
                       width: 36,
                       height: 36,
                       borderRadius: "50%",
-                      bgcolor: isSelected ? "#4CAF50" : "transparent", // Green background for selected date
+                      bgcolor: isSelected
+                        ? "#0d5323 !important"
+                        : isEventDay
+                        ? "#b2d8c2 !important"
+                        : "transparent",
                       color: isSelected ? "common.white" : "text.primary",
-                      border: isToday ? "2px solid" : "none",
-                      borderColor: isToday ? "#4CAF50" : "none", // Green border for today's date
+                      border: isToday ? "2px solid !important" : "none",
+                      borderColor: isToday ? "#0d5323 !important" : "none",
                       "&:hover": {
-                        bgcolor: isSelected ? "#388E3C" : "#E8F5E9", // Darker green for hover
+                        bgcolor: isSelected
+                          ? "#083d1a !important"
+                          : isEventDay
+                          ? "#99c8ae !important"
+                          : "#E8F5E9 !important",
                       },
                     }}
                     {...DayComponentProps}

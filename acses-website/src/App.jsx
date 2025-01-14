@@ -11,7 +11,7 @@ import Home from "./pages/home/Home";
 import Error404 from "./pages/error/Error404";
 import Gallery from "./pages/gallery/Gallery";
 import Executives from "./pages/executives/Executives";
-
+ 
 // Layout
 import RouteLayout from "./layouts/RouteLayout.jsx";
 

@@ -9,7 +9,7 @@ const MessageCard = ({ title, name, imageSrc, message }) => {
           <img
             src={imageSrc}
             alt={name}
-            className="object-cover w-full h-full"
+            className="object-cover w-full h-full rounded-full"
           />
         </div>
         <div>

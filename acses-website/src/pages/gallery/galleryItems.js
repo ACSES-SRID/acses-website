@@ -92,7 +92,7 @@ const galleryItems = [
   },
   {
     id: 14,
-    src: "https://acses-cdn.onrender.com/gallery/acses24/ACSES24-24.JPG",
+    src: "https://acses-cdn.onrender.com/gallery/acses24/ACSES24-2.JPG",
     alt: "ACSES WEEK 24",
     description: "Our annual week celebration",
     category: "Events",

@@ -2,7 +2,7 @@ import React from "react";
 
 const MessageCard = ({ title, name, imageSrc, message }) => {
   return (
-    <div className="w-full border rounded-lg shadow-md p-6 transition-transform transform hover:scale-105 hover:shadow-lg bg-acses-green-500">
+    <div className="w-full border rounded-lg shadow-md p-6 transition-transform transform hover:scale-105 hover:shadow-lg">
 
       <div className="flex items-center gap-4 mb-4">
         <div className="relative w-16 h-16 rounded-full overflow-hidden">
@@ -13,12 +13,12 @@ const MessageCard = ({ title, name, imageSrc, message }) => {
           />
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-white">{title}</h2>
-          <p className="text-sm text-white">{name}</p>
+          <h2 className="text-xl font-semibold text-black">{title}</h2>
+          <p className="text-sm text-black">{name}</p>
         </div>
       </div>
       <div>
-        <p className="text-white font-bold leading-relaxed break-words">{message}</p>
+        <p className="text-black font-bold leading-relaxed break-words">{message}</p>
       </div>
     </div>
   );

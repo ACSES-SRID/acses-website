@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import FooterLogo from "./FooterLogo";
+import FooterLogo1 from "./FooterLogo1";
 import FooterLinks from "./FooterLinks";
 import FooterSocial from "./FooterSocial";
 import { BookOpen, GraduationCap, Users, FileText, Phone } from "lucide-react";
@@ -17,8 +18,9 @@ const Footer = () => {
     <footer className="bg-gradient-to-br from-acses-green-800 to-acses-green-900 w-full">
       <div className="w-full py-12">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-            <FooterLogo />
+          <FooterLogo />
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            <FooterLogo1 />
             <FooterLinks title="Quick Links" links={quickLinks} />
             <FooterLinks
               title="Resources"

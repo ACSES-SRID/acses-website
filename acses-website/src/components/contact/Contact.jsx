@@ -80,7 +80,7 @@ const Contact = () => {
                   <motion.div
                     key={index}
                     className="flex items-start space-x-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.02 }} 
                   >
                     <div className="rounded-full bg-acses-green-50 p-3">
                       <item.icon className="w-6 h-6 text-acses-green-600" />

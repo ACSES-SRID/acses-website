@@ -3,22 +3,22 @@ import { motion } from 'framer-motion';
 
 const newsList = [
   {
-    title: 'ACSES Wins National Coding Competition',
-    date: 'February 28, 2024',
+    title: 'ACSES Welcomes a New Program: Data Science & Analytics',
+    date: 'July 30, 2024',
     description:
-      'Our team secured first place in the National Collegiate Coding Competition, showcasing exceptional problem-solving skills.',
+      "We're happy to welcome a new program to our community. The Data Science and Analytics program is designed to provide students with the skills and knowledge needed to analyze and interpret complex data sets.",
   },
   {
-    title: 'New Partnership with Tech Giant',
-    date: 'February 25, 2024',
+    title: 'ACSES Launches a Dues Collection App for Students',
+    date: 'January 2, 2025',
     description:
-      'ACSES has established a new partnership with a leading tech company to provide internship opportunities for members.',
+      'We have successfully launched our very own dues collection app, which streamlines dues collection for our members. This innovative platform is not only beneficial to ACSES but also to other associations on campus.',
   },
   {
-    title: 'Annual Tech Symposium Announced',
-    date: 'February 20, 2024',
+    title: 'Course Registration Commences',
+    date: 'January 17, 2025',
     description:
-      'Mark your calendars for the upcoming Annual Tech Symposium, featuring keynote speakers from industry leaders.',
+      'Courses for the 2024/2025 academic year has been released. Make sure to check your student portal for your courses and register them. Continuing students need to pay at least half of their fees to be eligible for registration.',
   },
 ];
 

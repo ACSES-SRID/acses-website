@@ -62,19 +62,19 @@ const Contact = () => {
                     icon: MapPin,
                     title: "Visit Us",
                     content:
-                      "Department of Computer Science, University Campus, Tarkwa, Ghana",
+                      "UMaT, School of Railways and Infrastructure Development",
                   },
                   {
                     icon: Phone,
                     title: "Call Us",
-                    content: "+233 12 345 6789",
-                    link: "tel:+233123456789",
+                    content: "+233 55 360 6820",
+                    link: "tel:+233553606820",
                   },
                   {
                     icon: Mail,
                     title: "Email Us",
-                    content: "contact@acses.org",
-                    link: "mailto:contact@acses.org",
+                    content: "info@acsessrid.com",
+                    link: "mailto:info@acsessrid.com",
                   },
                 ].map((item, index) => (
                   <motion.div

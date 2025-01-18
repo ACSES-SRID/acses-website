@@ -11,10 +11,10 @@ const WelcomeMessage = () => {
         <div className="grid md:grid-cols-2 gap-6 items-start">
           {/* HOD Card */}
           <MessageCard
-            title="Message from the HOD"
-            name="Prof. John Smith"
-            imageSrc="/images/placeholder.svg"
-            message="Welcome to the Association of Computer Science and Engineering Students (ACSES). Our department strives for excellence in education and research in the fields of Computer Science, Engineering, and Data Science. We are committed to nurturing talented individuals who will shape the future of technology."
+            title="Message from the HoD"
+            name="Dr. Albert Kofi Kwansah Ansah"
+            imageSrc="/images/lecturers/ansah.jpg"
+            message="Welcome to the Association of Computer Science and Engineering Students (ACSES). Our department strives for excellence in education and research in the fields of Computer Science & Engineering, and Data Science & Analytics. We are committed to nurturing talented individuals who will shape the future of technology."
           />
 
           {/* President Card */}

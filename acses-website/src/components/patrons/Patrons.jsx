@@ -12,11 +12,11 @@ const lecturers = [
     isHOD: true,
   },
   {
-    id: 59,
-    name: "Dr. Albert Kofi Kwansah Ansah",
+    id: 840,
+    name: "Dr. Ezekiel Mensah Martey",
     role: "Patron",
-    image: "https://www.umat.edu.gh/staffinfo/staffpix/afkansah211296852.jpg",
-    field: "Blockchain Technology",
+    image: "/images/lecturers/martey.jpg",
+    field: "AI in Image Processing",
     isHOD: true,
   },
   {

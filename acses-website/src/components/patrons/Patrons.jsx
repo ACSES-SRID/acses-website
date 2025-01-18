@@ -12,19 +12,12 @@ const lecturers = [
     isHOD: true,
   },
   {
-    id: 59,
-    name: "Dr. Albert Kofi Kwansah Ansah",
-    role: "Head of Department",
-    image: "https://www.umat.edu.gh/staffinfo/staffpix/afkansah211296852.jpg",
-    field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",
-    isHOD: true,
-  },
-  {
-    id: 119,  //Mr Kwantwi's name wasn't in SRID List so I added the one already there dunno If they will change it
-    name: "Mr. Kwantwi",
+    id: 840,
+    name: "Dr. Ezekiel Mensah Martey",
     role: "Lecturer",
-    image: "/images/patrons/Mr_Kwantwi.jpg",
-    field: "Computer Networks and Security, Computer Architecture, Embedded systems Design, Database sysrems",
+    image: "/images/patrons/Dr_Martey.jpg",
+    field: "Artificial intelligence and Machine Learning, Software Engineering, Cloud Computing, Computer Programming",
+    isHOD:true,
   },
   {
     id: 831,
@@ -34,11 +27,18 @@ const lecturers = [
     field: "Software Engineering, Cloud Computing, Educational Technology, Computer Networks and Security",
   },
   {
-    id: 840,
-    name: "Dr. Ezekiel Mensah Martey",
+    id: 119,  //Mr Kwantwi's name wasn't in SRID List so I added the one already there dunno If they will change it
+    name: "Mr. Thomas Kwantwi",
+    role: "Lecturer",
+    image: "/images/patrons/Mr_Kwantwi.jpg",
+    field: "Computer Networks and Security, Computer Architecture, Embedded systems Design, Database sysrems",
+  },
+  {
+    id: 59,
+    name: "Mr A. Adutwum Amponsah",
     role: "Lecturer",
     image: "/images/placeholder.svg",
-    field: "Artificial intelligence and Machine Learning, Software Engineering, Cloud Computing, Computer Programming",
+    field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",
   },
 ];
 

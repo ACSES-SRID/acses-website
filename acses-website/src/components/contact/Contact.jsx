@@ -62,25 +62,25 @@ const Contact = () => {
                     icon: MapPin,
                     title: "Visit Us",
                     content:
-                      "Department of Computer Science, University Campus, Tarkwa, Ghana",
+                      "UMaT, School of Railways and Infrastructure Development",
                   },
                   {
                     icon: Phone,
                     title: "Call Us",
-                    content: "+233 12 345 6789",
-                    link: "tel:+233123456789",
+                    content: "+233 55 360 6820",
+                    link: "tel:+233553606820",
                   },
                   {
                     icon: Mail,
                     title: "Email Us",
-                    content: "contact@acses.org",
-                    link: "mailto:contact@acses.org",
+                    content: "info@acsessrid.com",
+                    link: "mailto:info@acsessrid.com",
                   },
                 ].map((item, index) => (
                   <motion.div
                     key={index}
                     className="flex items-start space-x-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.02 }} 
                   >
                     <div className="rounded-full bg-acses-green-50 p-3">
                       <item.icon className="w-6 h-6 text-acses-green-600" />

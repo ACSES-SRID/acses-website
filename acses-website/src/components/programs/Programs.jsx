@@ -3,7 +3,7 @@ import ProgramCard from "./ProgramCard";
 
 const Programs = () => {
   return (
-    <section className="flex justify-center py-16 md:py-24 bg-gradient-to-br from-acses-green-800 via-acses-green-700 to-acses-green-900">
+    <section id="programs" className="flex justify-center py-16 md:py-24 bg-gradient-to-br from-acses-green-800 via-acses-green-700 to-acses-green-900">
       <div className="container px-6 md:px-32">
         <h2 className="mb-12 text-4xl font-extrabold tracking-tight text-center text-acses-yellow-50 sm:text-5xl md:text-6xl">
           Explore Our Programs

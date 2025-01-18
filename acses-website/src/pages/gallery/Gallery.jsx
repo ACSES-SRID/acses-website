@@ -26,28 +26,13 @@ const Gallery = () => {
     }
   };
 
-  // const CustomImage = ({ src, alt, width, height, className }) => (
-  //   <img
-  //     src={src}
-  //     alt={alt}
-  //     width={width}
-  //     height={height}
-  //     className={className}
-  //   />
-  // );
-
   const CustomImage = ({ src, alt, width, height, className }) => (
-    <LazyLoadImage
+    <img
       src={src}
       alt={alt}
       width={width}
       height={height}
       className={className}
-      effect="blur"
-      placeholderSrc="/images/placeholder.svg" 
-      onError={(e) => {
-        e.target.src = src;
-      }}
     />
   );
 
@@ -114,7 +99,7 @@ const Gallery = () => {
                   alt={item.alt}
                   width={600}
                   height={390}
-                  className="object-cover w-full transition-transform duration-300 group-hover:scale-105"
+                  className="object-cover w-full h-[300px] transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-0 left-0 right-0 p-4 text-white">

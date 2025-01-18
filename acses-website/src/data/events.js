@@ -2,7 +2,7 @@
 export const events = [
   {
     id: 1,
-    date: "2025-03-15",
+    date: "15-03-2025",
     events: [
       {
         id: "e1",
@@ -12,6 +12,7 @@ export const events = [
           "Join us for an insightful discussion on the role of AI in modern software development.",
         location: "CS Auditorium",
         type: "workshop",
+        link: 'https://eyarko.vercel.app',
       },
       {
         id: "e2",
@@ -20,12 +21,13 @@ export const events = [
         description: "Hands-on session on web development fundamentals.",
         location: "Lab 2",
         type: "workshop",
+        link: null,
       },
     ],
   },
   {
     id: 2,
-    date: "2025-03-16",
+    date: "16-03-2025",
     events: [
       {
         id: "e3",
@@ -34,7 +36,9 @@ export const events = [
         description: "Learn about opportunities in tech industry.",
         location: "Main Hall",
         type: "career",
+        link: null,
       },
     ],
   },
 ];
+

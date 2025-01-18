@@ -143,13 +143,9 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
 
               {/* Sidebar Footer */}
               <div className="p-6 border-t">
-                <button
-                  className="w-full py-3 bg-acses-green-600 text-white rounded-lg font-medium text-lg
-                                hover:bg-acses-green-700 transition-colors duration-200 flex items-center justify-center space-x-2"
-                >
-                  <Info className="w-5 h-5" />
-                  <span>Learn More</span>
-                </button>
+              <p className="flex text-acses-green-500 text-center font-bold">
+                 BUABASSAH-BOAFO LED ADMINISTRATION
+              </p>
               </div>
             </div>
           </motion.div>

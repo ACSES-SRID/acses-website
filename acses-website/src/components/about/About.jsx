@@ -10,7 +10,7 @@ const About = () => {
               About ACSES
             </h2>
             <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              ACSES is a student-led organization dedicated to fostering
+              ACSES is a student-led group dedicated to fostering
               academic excellence, professional development, and community
               engagement in the field of computer science and engineering.
             </p>
@@ -24,8 +24,8 @@ const About = () => {
                   <h3 className="text-xl font-bold">Our Mission</h3>
                   <p className="text-gray-500">
                     To create a vibrant community that promotes learning,
-                    innovation, and professional growth among computer science
-                    and engineering students.
+                    innovation, and professional growth among Computer Science
+                    & Engineering and Data Science & Analytics students.
                   </p>
                 </div>
               </li>
@@ -54,7 +54,7 @@ const About = () => {
             alt="About ACSES"
             className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
             height="310"
-            src="/images/placeholder.svg?height=350&width=600"
+            src="/images/about/Bits2Bytes_BraoseiStudios (86).jpg?height=350&width=600"
             width="550"
           />
         </div>

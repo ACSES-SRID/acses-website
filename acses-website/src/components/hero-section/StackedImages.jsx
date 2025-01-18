@@ -2,17 +2,17 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const StackedImages = () => {
-  const initialImages = [
-    "https://i.pinimg.com/736x/64/a4/c2/64a4c212a61a5c47f4b859d4b2046d0c.jpg",
-    "https://i.pinimg.com/736x/b5/78/5a/b5785af39d097409d685d68c242c146a.jpg",
-    "https://i.pinimg.com/736x/8c/a5/26/8ca526b2042d2dae10511a80f3d5866a.jpg",
-  ];
-  
   // const initialImages = [
-  //   "/images/executives/Yinpang.jpg",
-  //   "/images/executives/Lucky.jpg",
-  //   "/images/executives/Evans.jpg",
+  //   "https://i.pinimg.com/736x/64/a4/c2/64a4c212a61a5c47f4b859d4b2046d0c.jpg",
+  //   "https://i.pinimg.com/736x/b5/78/5a/b5785af39d097409d685d68c242c146a.jpg",
+  //   "https://i.pinimg.com/736x/8c/a5/26/8ca526b2042d2dae10511a80f3d5866a.jpg",
   // ];
+  
+  const initialImages = [
+    "/images/heroSection/ACSES24-67.JPG",
+    "/images/heroSection/ACSES24-5.JPG",
+    "/images/heroSection/ACSES24-77.JPG",
+  ];
 
   const [images, setImages] = useState(initialImages);
   const [isAnimating, setIsAnimating] = useState(false); // Tracks if animation is in progress

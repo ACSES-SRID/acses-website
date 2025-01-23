@@ -98,7 +98,7 @@ const executives = [
   {
     name: "Hon. Donkor Aaron Ofori",
     role: "Judicial Chairman",
-    image: "/images/placeholder.svg?height=400&width=400",
+    image: "/images/executives/Aaron.jpg?height=400&width=400",
     icon: Scale,
     description: "Ensuring fairness and justice in the association",
   },

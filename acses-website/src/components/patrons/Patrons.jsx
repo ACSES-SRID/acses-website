@@ -35,7 +35,7 @@ const lecturers = [
   },
   {
     id: 59,
-    name: "Mr A. Adutwum Amponsah",
+    name: "Mr Alfred Adutwum Amponsah",
     role: "Lecturer",
     image: "/images/placeholder.svg",
     field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",

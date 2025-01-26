@@ -14,28 +14,28 @@ const lecturers = [
   {
     id: 840,
     name: "Dr. Ezekiel Mensah Martey",
-    role: "Lecturer",
+    role: "Patron",
     image: "/images/patrons/Dr_Martey.jpg",
     field: "Artificial intelligence and Machine Learning, Software Engineering, Cloud Computing, Computer Programming",
     isHOD:true,
   },
   {
     id: 831,
-    name: "Mr. Evans Obu",
+    name: "Dr. Evans Obu",
     role: "Lecturer",
     image: "/images/patrons/Mr_Obu.jpg",
     field: "Software Engineering, Cloud Computing, Educational Technology, Computer Networks and Security",
   },
   {
     id: 119,  //Mr Kwantwi's name wasn't in SRID List so I added the one already there dunno If they will change it
-    name: "Mr. Thomas Kwantwi",
+    name: "Dr. Thomas Kwantwi",
     role: "Lecturer",
     image: "/images/patrons/Mr_Kwantwi.jpg",
-    field: "Computer Networks and Security, Computer Architecture, Embedded systems Design, Database sysrems",
+    field: "Computer Networks and Security, Computer Architecture, Embedded systems Design, Database systems",
   },
   {
     id: 59,
-    name: "Mr Alfred Adutwum Amponsah",
+    name: "Dr. Alfred Adutwum Amponsah",
     role: "Lecturer",
     image: "/images/placeholder.svg",
     field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",

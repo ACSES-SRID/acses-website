@@ -39,6 +39,13 @@ const executives = [
     description: "Managing association's financial resources",
   },
   {
+    name: "Hon. Ohemaa Abena Gyanewaa Dzudzonu",
+    role:"Deputy Financial Secretary",
+    image:"/images/placeholder.svg?width=40&height=40",
+    icon: Wallet,
+    description: " Managing association's financially resources",
+  },
+  {
     name: "Hon. Benedicta Nyamekye",
     role: "General Secretary",
     image: "/images/executives/Bendicta.jpg?height=400&width=400",

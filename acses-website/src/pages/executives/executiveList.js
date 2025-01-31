@@ -41,7 +41,7 @@ const executives = [
   {
     name: "Hon. Ohemaa Abena Gyanewaa Dzudzonu",
     role:"Deputy Financial Secretary",
-    image:"/images/placeholder.svg?width=40&height=40",
+    image:"/images/executives/Abena.jpg?width=400&height=400",
     icon: Wallet,
     description: " Managing association's financially resources",
   },

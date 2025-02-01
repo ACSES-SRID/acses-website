@@ -5,7 +5,7 @@ import { Briefcase, Network, ExternalLink, GraduationCap } from "lucide-react";
 const lecturers = [
   {
     id: 59,
-    name: "Dr. Albert Kofi Kwansah Ansah",
+    name: "Engr. Dr Albert Kofi Kwansah Ansah",
     role: "Head of Department",
     image: "https://www.umat.edu.gh/staffinfo/staffpix/afkansah211296852.jpg",
     field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",
@@ -13,7 +13,7 @@ const lecturers = [
   },
   {
     id: 840,
-    name: "Dr. Ezekiel Mensah Martey",
+    name: "Engr. Dr Ezekiel Mensah Martey",
     role: "Patron",
     image: "/images/patrons/Dr_Martey.jpg",
     field: "Artificial intelligence and Machine Learning, Software Engineering, Cloud Computing, Computer Programming",
@@ -28,14 +28,14 @@ const lecturers = [
   },
   {
     id: 119,  //Mr Kwantwi's name wasn't in SRID List so I added the one already there dunno If they will change it
-    name: "Dr. Thomas Kwantwi",
+    name: "Mr Thomas Kwantwi",
     role: "Lecturer",
     image: "/images/patrons/Mr_Kwantwi.jpg",
     field: "Computer Networks and Security, Computer Architecture, Embedded systems Design, Database systems",
   },
   {
     id: 59,
-    name: "Dr. Alfred Adutwum Amponsah",
+    name: "Mr Alfred Adutwum Amponsah",
     role: "Lecturer",
     image: "/images/placeholder.svg",
     field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",

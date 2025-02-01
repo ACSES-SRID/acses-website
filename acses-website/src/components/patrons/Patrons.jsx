@@ -21,7 +21,7 @@ const lecturers = [
   },
   {
     id: 831,
-    name: "Dr. Evans Obu",
+    name: "Mr Evans Obu",
     role: "Lecturer",
     image: "/images/patrons/Mr_Obu.jpg",
     field: "Software Engineering, Cloud Computing, Educational Technology, Computer Networks and Security",
@@ -36,6 +36,20 @@ const lecturers = [
   {
     id: 59,
     name: "Mr Alfred Adutwum Amponsah",
+    role: "Lecturer",
+    image: "/images/patrons/Mr_Amponsah.jpg",
+    field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",
+  },
+  {
+    id: 59,
+    name: "Mr Emmanual Asante",
+    role: "Lecturer",
+    image: "/images/placeholder.svg",
+    field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",
+  },
+  {
+    id: 59,
+    name: "Mr Ernest Ampomah",
     role: "Lecturer",
     image: "/images/placeholder.svg",
     field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",

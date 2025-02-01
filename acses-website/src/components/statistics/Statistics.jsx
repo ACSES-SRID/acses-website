@@ -14,7 +14,7 @@ import Counter from "./Counter";
 const stats = [
   {
     title: "Total Students",
-    value: 552,
+    value: 602,
   },
   {
     title: "Graduates",
@@ -22,11 +22,11 @@ const stats = [
   },
   {
     title: "CE Students",
-    value: 412,
+    value: 537,
   },
   {
-    title: "DA Students",
-    value: 140,
+    title: "DS Students",
+    value: 65,
   },
 ];
 
@@ -34,27 +34,27 @@ const yearlyData = [
   {
     year: "2021",
     CE: 31,
-    DA: 0,
+    DS: 0,
   },
   {
     year: "2022",
     CE: 99,
-    DA: 0,
+    DS: 0,
   },
   {
     year: "2023",
     CE: 152,
-    DA: 0,
+    DS: 0,
   },
   {
     year: "2024",
     CE: 161,
-    DA: 0,
+    DS: 0,
   },
   {
     year: "2025",
-    CE: 240,
-    DA: 140,
+    CE: 125,
+    DS: 65,
   },
 ];
 
@@ -120,7 +120,7 @@ const Statistics = () => {
                 />
                 <Line
                   type="monotone"
-                  dataKey="DA"
+                  dataKey="DS"
                   stroke="hsl(100, 70%, 50%)"
                   strokeWidth={2}
                   dot={{ r: 4 }}

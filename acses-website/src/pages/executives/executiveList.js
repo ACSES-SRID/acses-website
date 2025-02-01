@@ -39,13 +39,6 @@ const executives = [
     description: "Managing association's financial resources",
   },
   {
-    name: "Hon. Ohemaa Abena Gyanewaa Dzudzonu",
-    role:"Deputy Financial Secretary",
-    image:"/images/executives/Abena.jpg?width=400&height=400",
-    icon: Wallet,
-    description: " Managing association's financially resources",
-  },
-  {
     name: "Hon. Benedicta Nyamekye",
     role: "General Secretary",
     image: "/images/executives/Bendicta.jpg?height=400&width=400",
@@ -94,6 +87,13 @@ const executives = [
     image: "/images/executives/Ishanee.jpg?height=400&width=400",
     icon: ScrollText,
     description: "Assisting in administrative tasks and record-keeping",
+  },
+  {
+    name: "Hon. Ohemaa Abena Gyanewaa Dzudzonu",
+    role:"Deputy Financial Secretary",
+    image:"/images/executives/Abena.jpg?width=400&height=400",
+    icon: Wallet,
+    description: " Managing association's financially resources",
   },
   {
     name: "Hon. Rodney Hagan",

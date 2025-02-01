@@ -4,17 +4,19 @@ import { format, parseISO, isFuture, isValid } from "date-fns";
 import { motion } from "framer-motion";
 import { CalendarIcon, Clock, MapPin, ArrowRight, Users } from "lucide-react";
 import { events } from "../../data/events";
+import EventCard from "./EventCard"; // Import the EventCard component
 
 const Events = () => {
   const [selectedDateEvents, setSelectedDateEvents] = useState([]);
   const [nextEvent, setNextEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null); // State to hold the selected event
 
   useEffect(() => {
     const formatDateToISO = (date) => {
       const [day, month, year] = date.split("-");
       return `${year}-${month}-${day}`;
     };
-  
+
     const futureEvents = events
       .flatMap((day) =>
         day.events.map((event) => ({
@@ -24,13 +26,11 @@ const Events = () => {
       )
       .filter((event) => isFuture(parseISO(event.date)))
       .sort((a, b) => parseISO(a.date) - parseISO(b.date));
-  
+
     if (futureEvents.length > 0) {
-      setNextEvent(futureEvents[0]); 
+      setNextEvent(futureEvents[0]);
     }
   }, []);
-
-
 
   const handleDateSelect = (date) => {
     if (isValid(date)) {
@@ -40,6 +40,10 @@ const Events = () => {
     } else {
       setSelectedDateEvents([]);
     }
+  };
+
+  const handleViewDetails = (event) => {
+    setSelectedEvent(event); // Set the selected event when "View Details" is clicked
   };
 
   return (
@@ -146,7 +150,10 @@ const Events = () => {
                         {event.description.slice(0, 85)}{event.description.length > 85 ? "..." : ""}
                       </p>
                     </div>
-                    <button className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-acses-green-500 text-white rounded-lg font-semibold hover:bg-acses-green-600  transition-colors group">
+                    <button
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-acses-green-500 text-white rounded-lg font-semibold hover:bg-acses-green-600  transition-colors group"
+                      onClick={() => handleViewDetails(event)} // Trigger the modal
+                    >
                       View Details
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
@@ -180,6 +187,14 @@ const Events = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Render the EventCard modal if an event is selected */}
+      {selectedEvent && (
+        <EventCard
+          eventDetails={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
     </section>
   );
 };

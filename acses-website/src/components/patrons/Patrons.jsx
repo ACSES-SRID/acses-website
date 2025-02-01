@@ -8,7 +8,7 @@ const lecturers = [
     name: "Engr. Dr Albert Kofi Kwansah Ansah",
     role: "Head of Department",
     image: "https://www.umat.edu.gh/staffinfo/staffpix/afkansah211296852.jpg",
-    field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",
+    field: "As the Head of Department, I am proud to see the vibrant energy and enthusiasm that ACSES brings to our departmental activities. Your commitment to fostering a sense of community, promoting academic excellence, and providing a platform for students to explore their interests is truly commendabl.",
     isHOD: true,
   },
   {

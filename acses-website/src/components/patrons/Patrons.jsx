@@ -49,7 +49,7 @@ const lecturers = [
   },
   {
     id: 59,
-    name: "Mr Ernest Ampomah",
+    name: "Dr Ernest Ampomah",
     role: "Lecturer",
     image: "/images/placeholder.svg",
     field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",

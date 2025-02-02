@@ -7,7 +7,7 @@ const MessageCard = ({ title, name, imageSrc, message }) => {
 
   // Truncate message to 100 characters if necessary
   const truncatedMessage =
-    message.length > 300 ? message.slice(0, 300) + "..." : message;
+    message.length > 275 ? message.slice(0, 275) + "..." : message;
 
   return (
     <>

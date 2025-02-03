@@ -44,7 +44,7 @@ const lecturers = [
     id: 59,
     name: "Mr Emmanual Asante",
     role: "Lecturer",
-    image: "/images/lecturers/asante.jpg",
+    image: "/images/patrons/Asante.jpg",
     field: "Data Science and Analytics, Expert in Python || R || SQL || MATLAB || ML || AI",
   },
   {

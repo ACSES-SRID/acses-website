@@ -44,8 +44,8 @@ const lecturers = [
     id: 59,
     name: "Mr Emmanual Asante",
     role: "Lecturer",
-    image: "/images/placeholder.svg",
-    field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",
+    image: "/images/lecturers/asante.jpg",
+    field: "Data Science and Analytics, Expert in Python || R || SQL || MATLAB || ML || AI",
   },
   {
     id: 59,

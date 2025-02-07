@@ -5,6 +5,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { useEffect } from "react";
+import { Analytics } from '@vercel/analytics/react';
 
 // Pages
 import Home from "./pages/home/Home";
@@ -32,6 +33,7 @@ function App() {
     <>
       <AppInitializer />
       <RouterProvider router={routes} />
+      <Analytics />
     </>
   );
 }

@@ -12,7 +12,7 @@ const WelcomeMessage = () => {
           {/* HOD Card */}
           <MessageCard
             title="Message from the HoD"
-            name="Dr. Albert Kofi Kwansah Ansah"
+            name="Engr Dr Albert Kofi Kwansah Ansah"
             imageSrc="/images/lecturers/ansah.jpg"
             message="Welcome to the Association of Computer Science and Engineering Students (ACSES). Our department strives for excellence in education and research in the fields of Computer Science & Engineering, and Data Science & Analytics. We are committed to nurturing talented individuals who will shape the future of technology.
             As the Head of Department, I am proud to see the vibrant energy and enthusiasm that ACSES brings to our departmental activities. Your commitment to fostering a sense of community, promoting academic excellence, and providing a platform for students to explore their interests is truly commendable

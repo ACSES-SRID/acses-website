@@ -52,7 +52,7 @@ const HeroSection = () => {
               <div className="flex items-center justify-center h-full px-3 py-3 space-x-4 bg-white rounded-md md:py-0">
                 {[
                   {
-                    link: "https://www.linkedin.com/in/acses-srid-068296343/",
+                    link: "https://www.linkedin.com/in/association-of-computer-science-and-engineering-students-srid-068296343/",
                     icon: "linkedin",
                     color: "blue-600",
                   },

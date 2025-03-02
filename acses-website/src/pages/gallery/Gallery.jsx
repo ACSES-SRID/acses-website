@@ -166,12 +166,18 @@ const Gallery = () => {
           </h3>
           <ul className="list-disc ml-8 text-gray-700">
             <li>
-              <a href="https://braoseistudios.picflow.com/ojf97nk5dn" className="hover:underline">
+              <a
+                href="https://braoseistudios.picflow.com/ojf97nk5dn"
+                className="hover:underline"
+              >
                 Bits to Bytes 2024
               </a>
             </li>
             <li>
-              <a href="https://drive.google.com/drive/folders/1f_-_UB2GcLYEVTJCXPb92LjX2x5eR-KP?usp=sharing" className="hover:underline">
+              <a
+                href="https://drive.google.com/drive/folders/1f_-_UB2GcLYEVTJCXPb92LjX2x5eR-KP?usp=sharing"
+                className="hover:underline"
+              >
                 ACSES Week 2024
               </a>
             </li>

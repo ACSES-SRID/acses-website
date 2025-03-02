@@ -50,7 +50,7 @@ export const events = [
   },
   {
     id: 4,
-    date: "07-03-2025",
+    date: "00-03-2025",
     events: [
       {
         id: "e1",
@@ -66,7 +66,7 @@ export const events = [
   },
   {
     id: 5,
-    date: "07-03-2025",
+    date: "00-03-2025",
     events: [
       {
         id: "e1",
@@ -82,7 +82,7 @@ export const events = [
   },
   {
     id: 6,
-    date: "07-03-2025",
+    date: "00-03-2025",
     events: [
       {
         id: "e1",
@@ -97,7 +97,7 @@ export const events = [
   },
   {
     id: 7,
-    date: "07-03-2025",
+    date: "00-03-2025",
     events: [
       {
         id: "e1",
@@ -112,7 +112,7 @@ export const events = [
   },
   {
     id: 8,
-    date: "07-03-2025",
+    date: "00-03-2025",
     events: [
       {
         id: "e1",
@@ -127,7 +127,7 @@ export const events = [
   },
   {
     id: 9,
-    date: "07-03-2025",
+    date: "00-03-2025",
     events: [
       {
         id: "e1",

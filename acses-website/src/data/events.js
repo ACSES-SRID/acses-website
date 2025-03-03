@@ -44,7 +44,7 @@ export const events = [
           "this Program provide us with discussions with experts in various tech space",
         location: "Computer Lab",
         type: "meeting",
-        link: "https://calendar.app.google/mhiBw9V9Z66Nn3CL6",
+        link: "https://lu.ma/1lu7fvwj",
       },
     ],
   },

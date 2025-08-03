@@ -95,10 +95,10 @@ const Events = () => {
                         <MapPin className="w-5 h-5" />
                         {nextEvent.location}
                       </span>
-                      <span className="flex items-center gap-2">
+                      {/* <span className="flex items-center gap-2">
                         <Users className="w-5 h-5" />
                         Limited Spots
-                      </span>
+                      </span> */}
                     </div>
                   </div>
                   <div className="flex gap-3">
@@ -106,7 +106,7 @@ const Events = () => {
                       className="bg-white text-acses-green-500 px-6 py-2 rounded-md font-semibold hover:bg-gray-100 transition-colors"
                       onClick={() => window.open(nextEvent.link, "_blank")}
                     >
-                      Add to Calendar
+                      Register
                     </button>
                   </div>
                 </div>
@@ -147,7 +147,8 @@ const Events = () => {
                         </span>
                       </div>
                       <p className="text-gray-600 line-clamp-2">
-                        {event.description.slice(0, 85)}{event.description.length > 85 ? "..." : ""}
+                        {event.description.slice(0, 85)}
+                        {event.description.length > 85 ? "..." : ""}
                       </p>
                     </div>
                     <button
@@ -171,7 +172,8 @@ const Events = () => {
                   No Events Scheduled
                 </h3>
                 <p className="text-gray-600 text-lg mb-8">
-                  There are no events scheduled for this date. You can check other dates.
+                  There are no events scheduled for this date. You can check
+                  other dates.
                 </p>
               </motion.div>
             )}

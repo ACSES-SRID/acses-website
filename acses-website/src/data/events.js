@@ -141,4 +141,19 @@ export const events = [
       },
     ],
   },
+  {
+    id: 10,
+    date: "06-08-2025",
+    events: [
+      {
+        id: "e1",
+        time: "12:30 PM",
+        title: "Hackathon",
+        description: "Build to solve. Pitch to win. Grow to lead.",
+        location: "SR 1A",
+        type: "meeting",
+        link: "https://docs.google.com/forms/d/e/1FAIpQLScy0aok6L9--hcW6YjQJdXLlkeecrJtHpEVap31sAauFU4g3g/viewform?usp=header",
+      },
+    ],
+  },
 ];

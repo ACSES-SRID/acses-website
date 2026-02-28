@@ -3,12 +3,16 @@ import { NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
-  ArrowRight,
   Info,
   Calendar,
   Newspaper,
   Users,
   Mail,
+  BookOpen,
+  FolderOpen,
+  ShoppingBag,
+  FolderGit2,
+  LogIn,
 } from "lucide-react";
 import mLogo from "/logo/logo.jpg";
 
@@ -117,7 +121,7 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
                     <motion.div
                       key={name}
                       variants={menuItemVariants}
-                      transition={{ delay: index * 0.1 }}
+                      transition={{ delay: index * 0.05 }}
                     >
                       <NavLink
                         to={normalizedLink}
@@ -144,7 +148,7 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
               {/* Sidebar Footer */}
               <div className="p-6 border-t">
               <p className="flex text-acses-green-500 text-center font-bold">
-                 BUABASSAH-BOAFO LED ADMINISTRATION
+                 SARPONG-OWUSU ANSAH LED ADMINISTRATION
               </p>
               </div>
             </div>

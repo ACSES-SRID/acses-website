@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import NavBar from "../../components/navbar/NavBar";
-import Footer from "../../components/footer/Footer";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import galleryItems from "./galleryItems";
 
@@ -67,9 +65,7 @@ const Gallery = () => {
   );
 
   return (
-    <>
-      <NavBar />
-      <div className="min-h-screen bg-gray-100 pt-24 py-32">
+    <div className="min-h-screen bg-gray-100 pt-24 py-32">
         <div className="container mx-auto py-8 px-4">
           <h2 className="mb-4 text-3xl font-bold tracking-tighter text-center sm:text-4xl md:text-5xl">
             ACSES Gallery
@@ -189,8 +185,6 @@ const Gallery = () => {
           </ul>
         </div>
       </div>
-      <Footer />
-    </>
   );
 };
 

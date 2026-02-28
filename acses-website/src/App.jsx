@@ -11,8 +11,12 @@ import { Analytics } from '@vercel/analytics/react';
 import Home from "./pages/home/Home";
 import Error404 from "./pages/error/Error404";
 import Gallery from "./pages/gallery/Gallery";
-import Executives from "./pages/executives/Executives";
- 
+import Leadership from "./pages/leadership/Leadership";
+import ProgramsPage from "./pages/programs/ProgramsPage";
+import ResourcesPage from "./pages/resources/ResourcesPage";
+import StorePage from "./pages/store/StorePage";
+import StudentProjectsPage from "./pages/student-projects/StudentProjectsPage";
+
 // Layout
 import RouteLayout from "./layouts/RouteLayout.jsx";
 
@@ -21,8 +25,12 @@ const routes = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RouteLayout />}>
       <Route index element={<Home />} />
-      <Route path="gallery/" element={<Gallery />} />
-      <Route path="executives/" element={<Executives />} />
+      <Route path="leadership" element={<Leadership />} />
+      <Route path="programs" element={<ProgramsPage />} />
+      <Route path="resources" element={<ResourcesPage />} />
+      <Route path="store" element={<StorePage />} />
+      <Route path="gallery" element={<Gallery />} />
+      <Route path="student-projects" element={<StudentProjectsPage />} />
       <Route path="*" element={<Error404 />} />
     </Route>
   )

@@ -35,22 +35,16 @@ const NavBar = () => {
 
   const navItems = [
     { name: "Home", link: "/", icon: <Home className="w-5 h-5 mr-2" /> },
-    { name: "About", link: "#about", icon: <Info className="w-5 h-5 mr-2" /> },
     {
       name: "Leadership",
       link: "/leadership",
       icon: <Users className="w-5 h-5 mr-2" />,
     },
-    {
-      name: "Programs & Activities",
-      link: "/programs",
-      icon: <BookOpen className="w-5 h-5 mr-2" />,
-    },
-    {
-      name: "Events",
-      link: "#events",
-      icon: <Calendar className="w-5 h-5 mr-2" />,
-    },
+    // {
+    //   name: "Programs & Activities",
+    //   link: "/programs",
+    //   icon: <BookOpen className="w-5 h-5 mr-2" />,
+    // },
     {
       name: "Resources",
       link: "/resources",
@@ -65,11 +59,6 @@ const NavBar = () => {
       name: "Gallery",
       link: "/gallery",
       icon: <Newspaper className="w-5 h-5 mr-2" />,
-    },
-    {
-      name: "Contact",
-      link: "#contact",
-      icon: <Mail className="w-5 h-5 mr-2" />,
     },
     {
       name: "Student Projects",

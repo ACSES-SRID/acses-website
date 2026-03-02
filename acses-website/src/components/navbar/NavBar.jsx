@@ -9,6 +9,11 @@ import {
   Newspaper,
   Users,
   Mail,
+  BookOpen,
+  FolderOpen,
+  ShoppingBag,
+  FolderGit2,
+  LogIn,
 } from "lucide-react";
 import Sidebar from "./Sidebar";
 import mLogo from "/logo/logo.jpg";
@@ -30,16 +35,25 @@ const NavBar = () => {
 
   const navItems = [
     { name: "Home", link: "/", icon: <Home className="w-5 h-5 mr-2" /> },
-    { name: "About", link: "#about", icon: <Info className="w-5 h-5 mr-2" /> },
     {
-      name: "Events",
-      link: "#events",
-      icon: <Calendar className="w-5 h-5 mr-2" />,
+      name: "Leadership",
+      link: "/leadership",
+      icon: <Users className="w-5 h-5 mr-2" />,
+    },
+    // {
+    //   name: "Programs & Activities",
+    //   link: "/programs",
+    //   icon: <BookOpen className="w-5 h-5 mr-2" />,
+    // },
+    {
+      name: "Resources",
+      link: "/resources",
+      icon: <FolderOpen className="w-5 h-5 mr-2" />,
     },
     {
-      name: "Executives",
-      link: "/executives",
-      icon: <Users className="w-5 h-5 mr-2" />,
+      name: "Store",
+      link: "/store",
+      icon: <ShoppingBag className="w-5 h-5 mr-2" />,
     },
     {
       name: "Gallery",
@@ -47,10 +61,16 @@ const NavBar = () => {
       icon: <Newspaper className="w-5 h-5 mr-2" />,
     },
     {
-      name: "Contact",
-      link: "#contact",
-      icon: <Mail className="w-5 h-5 mr-2" />,
+      name: "Student Projects",
+      link: "/student-projects",
+      icon: <FolderGit2 className="w-5 h-5 mr-2" />,
     },
+    // {
+    //   name: "Student Portal",
+    //   link: "https://portal.umat.edu.gh/students/",
+    //   icon: <LogIn className="w-5 h-5 mr-2" />,
+    //   external: true,
+    // },
   ];
 
   useEffect(() => {
@@ -110,7 +130,7 @@ const NavBar = () => {
           </NavLink>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
+          <div className="hidden lg:flex items-center space-x-1 xl:space-x-2">
             {navItems.map(({ name, link, icon }) => {
               // Ensure hash links start with a slash to prevent appending
               const normalizedLink = link.startsWith("#") ? `/${link}` : link;
@@ -126,7 +146,7 @@ const NavBar = () => {
                   to={normalizedLink}
                   className={() =>
                     `text-gray-600 hover:text-acses-green-600 transition-colors duration-200 
-               py-2 px-3 lg:px-4 rounded-md text-base lg:text-lg font-medium relative group 
+               py-2 px-2 xl:px-3 rounded-md text-sm xl:text-base font-medium relative group 
                hover:bg-acses-green-50 ${
                  isActive ? "text-acses-green-600 bg-acses-green-50" : ""
                }`
@@ -150,7 +170,7 @@ const NavBar = () => {
               e.stopPropagation();
               setIsOpen(!isOpen);
             }}
-            className="md:hidden flex items-center text-acses-green-600 hover:text-acses-green-600 transition-colors duration-200 menu-button"
+            className="lg:hidden flex items-center text-acses-green-600 hover:text-acses-green-600 transition-colors duration-200 menu-button"
             aria-label="Toggle menu"
           >
             <Menu size={28} />

@@ -8,7 +8,7 @@ import { BookOpen, GraduationCap, Users, FileText, CreditCard, AtSign } from "lu
 const quickLinks = [
   { label: "About Us", href: "#about", icon: Users },
   { label: "Programs", href: "#programs", icon: BookOpen },
-  { label: "Resources", href: "#resources", icon: FileText },
+  { label: "Resources", href: "/resources", icon: FileText },
   { label: "E-Voting Platform", href: "https://acses-e-voting-frontend.vercel.app", icon: AtSign },
   { label: "Payment Gateway", href: "https://payments.acsessrid.com", icon: CreditCard },
 ];
@@ -42,7 +42,7 @@ const Footer = () => {
           >
             <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
               <div className="flex text-white text-center font-bold">
-                <span className="font-normal pr-2">Launched by</span> BUABASSAH-BOAFO LED ADMINISTRATION
+                <span className="font-normal pr-2">Launched by</span> SARPONG-OWUSU ANSAH LED ADMINISTRATION
               </div>
               <p className="text-sm text-gray-300">
                 © {new Date().getFullYear()} ACSES. All rights reserved.

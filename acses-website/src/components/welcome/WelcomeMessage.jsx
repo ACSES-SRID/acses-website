@@ -22,7 +22,7 @@ const WelcomeMessage = () => {
           {/* President Card */}
           <MessageCard
             title="Message from the President"
-            name="Lawson Buabassah"
+            name="Judah Larbi Sarpong"
             imageSrc="/images/executives/Lawson.jpg"
             message="As the President of ACSES, I welcome you to our vibrant community. Our association represents the diverse talents and aspirations of students in Computer Science, Engineering, and Data Science. Together, we create opportunities for growth, learning, and professional development."
           />

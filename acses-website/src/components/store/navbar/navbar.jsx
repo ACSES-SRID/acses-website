@@ -23,8 +23,8 @@ const Navbar = ({ cartCount, onCartClick }) => (
 
     {/* Links + Cart */}
     <div style={{ display: "flex", alignItems: "center", gap: 38 }}>
-      <a href="#" style={{ color: "#111", fontWeight: 500, fontSize: 15, textDecoration: "none" }}>Home</a>
-      <a href="#" style={{ color: "#111", fontWeight: 500, fontSize: 15, textDecoration: "none" }}>About</a>
+      <a href="/" style={{ color: "#111", fontWeight: 500, fontSize: 15, textDecoration: "none" }}>Home</a>
+      <a href="/about" style={{ color: "#111", fontWeight: 500, fontSize: 15, textDecoration: "none" }}>About</a>
       <button onClick={onCartClick} style={{ position: "relative", background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", alignItems: "center" }}>
         <ShoppingCart size={24} color="#111" />
         {cartCount > 0 && (

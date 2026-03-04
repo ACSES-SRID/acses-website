@@ -1,0 +1,13 @@
+## Store Page Changelog
+
+**Components:**
+- **`Navbar`** — fixed top bar with the ACSES-SRID logo, Home/About links, and a live cart badge counter
+- **`Hero`** — dark green banner with "Official Swag" headline, decorative circles, and the tagline
+- **`FiltersCard`** — sidebar with radio category filters, a sort dropdown, and the "Need to pay dues?" portal banner
+- **`ProductCard`** — product image area with BESTSELLER/SALE badges, name, description, green price, and "Add" button (with strikethrough original price for sale items)
+- **`StorePage`** — main page wiring all components together with filter/sort state and cart count logic
+
+**Behaviors:**
+- Category filter radio buttons update the product grid live
+- Sort by price (low/high) works out of the box
+- Clicking "Add" increments the cart badge in the navbar

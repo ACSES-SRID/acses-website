@@ -50,39 +50,82 @@ const StorePage = () => {
     });
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f3f4f6", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
-      <Navbar cartCount={totalCount} onCartClick={() => setPage("cart")} />
+    <>
+      <style>{`
+        .store-layout {
+          display: flex; gap: 28px; align-items: flex-start;
+          max-width: 1280px; margin: 0 auto; padding: 32px 32px 64px;
+        }
+        .store-sidebar {
+          width: 248px; flex-shrink: 0; position: sticky; top: 100px;
+        }
+        .store-products-grid {
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+        }
+        .store-mobile-topbar { display: none; }
+        @media (max-width: 1024px) {
+          .store-products-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+          .store-layout { padding: 16px 14px 48px; gap: 0; }
+          .store-sidebar { display: none; }
+          .store-mobile-topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px;
+          }
+          .store-products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        }
+        @media (max-width: 420px) {
+          .store-products-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+        }
+      `}</style>
+      <div style={{ minHeight: "100vh", background: "#f3f4f6", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
+        <Navbar cartCount={totalCount} onCartClick={() => setPage("cart")} />
 
-      {page === "store" ? (
-        <div style={{ paddingTop: 84 }}>
-          <Hero />
-          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "32px 32px 64px", display: "flex", gap: 28, alignItems: "flex-start" }}>
-            <div style={{ width: 248, flexShrink: 0, position: "sticky", top: 100 }}>
-              <FiltersCard selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} sortBy={sortBy} setSortBy={setSortBy} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 20 }}>
-                <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111" }}>New Arrivals</h2>
-                <span style={{ fontSize: 14, color: "#9ca3af" }}>Showing {filtered.length} product{filtered.length !== 1 ? "s" : ""}</span>
+        {page === "store" ? (
+          <div style={{ paddingTop: 84 }}>
+            <Hero />
+            <div className="store-layout">
+              {/* Desktop sidebar */}
+              <div className="store-sidebar">
+                <FiltersCard selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} sortBy={sortBy} setSortBy={setSortBy} />
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
-                {filtered.map((product) => (
-                  <ProductCard key={product.id} product={product} onAdd={handleAdd} />
-                ))}
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {/* Mobile top bar with filter button + count */}
+                <div className="store-mobile-topbar">
+                  <div>
+                    <h2 style={{ fontWeight: 800, fontSize: 18, color: "#111", margin: 0 }}>New Arrivals</h2>
+                    <span style={{ fontSize: 13, color: "#9ca3af" }}>{filtered.length} product{filtered.length !== 1 ? "s" : ""}</span>
+                  </div>
+                  <FiltersCard selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} sortBy={sortBy} setSortBy={setSortBy} />
+                </div>
+
+                {/* Desktop heading */}
+                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 20 }} className="desktop-only-heading">
+                  <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111" }}>New Arrivals</h2>
+                  <span style={{ fontSize: 14, color: "#9ca3af" }}>Showing {filtered.length} product{filtered.length !== 1 ? "s" : ""}</span>
+                </div>
+
+                <div className="store-products-grid">
+                  {filtered.map((product) => (
+                    <ProductCard key={product.id} product={product} onAdd={handleAdd} />
+                  ))}
+                </div>
+                {filtered.length === 0 && (
+                  <div style={{ textAlign: "center", padding: "60px 0", color: "#9ca3af", fontSize: 15 }}>No products found in this category.</div>
+                )}
               </div>
-              {filtered.length === 0 && (
-                <div style={{ textAlign: "center", padding: "60px 0", color: "#9ca3af", fontSize: 15 }}>No products found in this category.</div>
-              )}
             </div>
           </div>
-        </div>
-      ) : (
-        <CartPage cart={cartItems} onUpdateQty={handleUpdateQty} onRemove={handleRemove} onBack={() => setPage("store")} onCheckout={() => setShowCheckout(true)} />
-      )}
+        ) : (
+          <CartPage cart={cartItems} onUpdateQty={handleUpdateQty} onRemove={handleRemove} onBack={() => setPage("store")} onCheckout={() => setShowCheckout(true)} />
+        )}
 
-      {showCheckout && <CheckoutModal cart={cartItems} onClose={() => setShowCheckout(false)} onSuccess={handleSuccess} />}
-      {showSuccess && <SuccessModal customerName={customerName} onClose={() => { setShowSuccess(false); setPage("store"); }} />}
-    </div>
+        {showCheckout && <CheckoutModal cart={cartItems} onClose={() => setShowCheckout(false)} onSuccess={handleSuccess} />}
+        {showSuccess && <SuccessModal customerName={customerName} onClose={() => { setShowSuccess(false); setPage("store"); }} />}
+      </div>
+    </>
   );
 };
 

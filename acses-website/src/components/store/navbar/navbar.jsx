@@ -7,7 +7,7 @@ const Navbar = ({ cartCount, onCartClick }) => (
         position: fixed; top: 0; left: 0; right: 0; z-index: 100;
         background: #fff; border-bottom: 1px solid #e5e7eb;
         display: flex; align-items: center; justify-content: space-between;
-        padding: 0 52px; height: 84px;
+        padding: 0 52px; height: 90px;
         box-shadow: 0 1px 6px rgba(0,0,0,0.07);
       }
       .navbar-brand-sub {

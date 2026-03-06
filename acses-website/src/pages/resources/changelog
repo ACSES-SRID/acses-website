@@ -1,0 +1,31 @@
+### Changelog
+
+**Layout & Structure**
+- Replaced the sparse placeholder layout with the full multi-section page matching the design: Data Science banner, Academic Materials grid, Tools & Platforms panel, Career & Internships corner, and a "Suggest a resource" footer strip.
+
+**Filter Tabs**
+- Added four interactive filter pill buttons — `All`, `Academic Materials`, `Tools & Platforms`, `Career & Internships` — with active/inactive states using green highlight.
+- Clicking a filter dynamically shows/hides the relevant sections.
+
+**Data Science Banner**
+- Added a dark green (`bg-green-800`) rounded banner with heading, subtext, and a "View Resources ›" link button.
+
+**Academic Materials Grid**
+- Built a 2-column responsive card grid (stacks to 1 column on mobile) for the four course resources: *Computer Lab Work*, *Numerical Analysis*, *Intro. to Python Programming*, and *Java Programming*.
+- Each card includes title, description, tag pills (green-tinted), and a "Learn More »" link.
+
+**Tools & Platforms**
+- Added a white card panel with a 4-column icon grid (2-column on mobile) for GitHub, w3Schools, VS Code, and Swift Code, with hover highlight states.
+- Custom inline SVG icons for each tool.
+
+**Career & Internships Corner**
+- Added a green banner header followed by a 4-column responsive card grid (collapses to 2 on tablet, 1 on mobile) for CV Template, Interview Checklist, LinkedIn Guide, and Git Fundamentals.
+
+**Mobile Responsiveness**
+- All grids use `grid-cols-1 sm:grid-cols-2` (and `lg:grid-cols-4` for career section) to stack gracefully on small screens.
+- Filter tabs wrap naturally on narrow viewports.
+
+**Styling & Polish**
+- Consistent `rounded-2xl`, `shadow-sm`, and `border` treatments on all cards.
+- Green color palette (`green-700`, `green-800`) aligned to the ACSES brand from the screenshot.
+- Hover states on tool icons and filter buttons for interactivity.

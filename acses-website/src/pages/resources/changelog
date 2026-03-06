@@ -29,3 +29,30 @@
 - Consistent `rounded-2xl`, `shadow-sm`, and `border` treatments on all cards.
 - Green color palette (`green-700`, `green-800`) aligned to the ACSES brand from the screenshot.
 - Hover states on tool icons and filter buttons for interactivity.
+
+Looking at the screenshot, I can see the nav takes up space at the top and the content needs proper padding adjustments. Let me update the component to match the layout exactly.Here's the changelog for this update:
+
+---
+
+### Changelog v2 — Layout & Scale Updates
+
+**RouteLayout Compatibility**
+- Removed the outer `min-h-screen` wrapper — height is now managed by `RouteLayout`'s `<main className="flex-1">` as intended.
+- Added `pt-24` to the page root to create clearance below the fixed NavBar, matching what's visible in your screenshot.
+
+**Typography & Text Scaling**
+- Page heading bumped from `text-4xl` → `text-5xl` to match the weight of other pages.
+- Body/description text scaled from `text-xs` → `text-sm` across all cards for better readability.
+- Section headings (Data Science, Tools & Platforms, Career & Internships Corner) scaled up from `text-lg/xl` → `text-2xl/3xl`.
+
+**Card Sizing**
+- Academic cards: padding increased from `p-6` → `p-8`, card titles from `text-base` → `text-xl font-bold`.
+- Career cards: padding increased from `p-5` → `p-6`, titles from `text-sm` → `text-base font-bold`.
+- Tool icons: wrapper size increased and padding from `py-4` → `py-6` for better presence.
+- "Learn More »" links: scaled from `text-xs` → `text-sm font-bold` to match design.
+
+**Spacing & Layout**
+- Max width widened from `max-w-5xl` → `max-w-6xl` to use more horizontal space on desktop.
+- Section gap increased from `space-y-10` → `space-y-12`, card gaps from `gap-5/6` → `gap-6`.
+- Filter tab padding increased to `px-6 py-2.5` for a larger, more clickable feel.
+- Tag pills updated to match the outlined style seen in the screenshot (white bg + green border).

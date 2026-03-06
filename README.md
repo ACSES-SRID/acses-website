@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="public/logo/logo1.png" alt="ACSES Logo" width="200"/>
+<img src="https://raw.githubusercontent.com/ACSES-SRID/acses-website/Mmabiaa/acses-website/public/logo/logo1.png" alt="ACSES Logo" width="200"/>
 
 **Official website for the Association of Computer Science and Engineering Students (ACSES)**
 

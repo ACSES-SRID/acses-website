@@ -36,7 +36,7 @@ const NavBar = () => {
   const navItems = [
     { name: "Home", link: "/", icon: <Home className="w-5 h-5 mr-2" /> },
     {
-      name: "Leadership",
+      name: "Faculty",
       link: "/leadership",
       icon: <Users className="w-5 h-5 mr-2" />,
     },

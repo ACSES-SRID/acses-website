@@ -16,6 +16,7 @@ import ProgramsPage from "./pages/programs/ProgramsPage";
 import ResourcesPage from "./pages/resources/ResourcesPage";
 import StorePage from "./pages/store/StorePage";
 import StudentProjectsPage from "./pages/student-projects/StudentProjectsPage";
+import SubmitProjectPage from "./pages/student-projects/SubmitProjectPage";
 
 // Layout
 import RouteLayout from "./layouts/RouteLayout.jsx";
@@ -32,6 +33,7 @@ const routes = createBrowserRouter(
       <Route path="gallery" element={<Gallery />} />
       <Route path="student-projects" element={<StudentProjectsPage />} />
       <Route path="*" element={<Error404 />} />
+      <Route path="/submit-project" element={<SubmitProjectPage />} />
     </Route>
   )
 );

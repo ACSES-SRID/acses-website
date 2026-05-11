@@ -1,7 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import executives from "../executives/executiveList";
 
 const Leadership = () => {
+  const [executivesData, setExecutivesData] = useState([]);
+
+  useEffect(() => {
+    const fetchExecutives = async () => {
+      try {
+        // Use API-managed leadership profiles when available.
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/leadership`);
+        const data = await res.json();
+        setExecutivesData(data);
+      } catch (error) {
+        // Fall back to static data so the public page still renders offline.
+        setExecutivesData(executives);
+      }
+    };
+    fetchExecutives();
+  }, []);
+
   const Card = ({ children, className }) => (
     <div
       className={`rounded-lg shadow-md overflow-hidden bg-white ${className}`}
@@ -28,9 +45,9 @@ const Leadership = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {executives.map((executive, index) => (
+          {executivesData.map((executive, index) => (
             <Card
-              key={index}
+              key={executive._id || index}
               className="group overflow-hidden hover:shadow-xl transition-shadow duration-300 dark:hover:shadow-primary/20"
             >
               <CardContent className="p-0">

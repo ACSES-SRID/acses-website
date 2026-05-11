@@ -27,8 +27,8 @@ const CardTitle = ({ children }) => (
 
 const Dialog = ({ open, onOpenChange, children }) => (
   open && (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full mx-3">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" onClick={() => onOpenChange(false)}>
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full mx-3" onClick={(e) => e.stopPropagation()}>
         {children}
         <div className="mt-4 text-right">
           <Button onClick={() => onOpenChange(false)}>Close</Button>
@@ -75,6 +75,13 @@ const EventCard = ({ eventDetails, onClose }) => {
             <div className="space-y-2">
               <h3 className="font-semibold">About this event</h3>
               <p className="text-gray-600 leading-relaxed">{eventDetails.description}</p>
+              {eventDetails.link && eventDetails.link !== "#" && (
+                <div className="mt-4">
+                  <Button onClick={() => window.open(eventDetails.link, "_blank")}>
+                    Register / Learn More
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </DialogContent>

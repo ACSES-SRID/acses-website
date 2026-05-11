@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PRODUCTS } from "../../data/storeData";
+import { fetchApi } from "../../utils/api";
 import Navbar from "../../components/store/navbar/navbar";
 import Hero from "../../components/store/hero/hero";
 import FiltersCard from "../../components/store/filter-card/FiltersCard";
@@ -16,9 +17,30 @@ const StorePage = () => {
   const [showCheckout, setShowCheckout] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [customerName, setCustomerName] = useState("");
+  const [products, setProducts] = useState(PRODUCTS);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        // Prefer admin-managed products, but keep bundled data available if the API is down.
+        const data = await fetchApi("/api/store");
+        const normalized = data.map((product) => ({
+          id: product._id || product.id,
+          ...product,
+        }));
+        setProducts(normalized);
+      } catch (error) {
+        console.error("Failed to load store products from API:", error);
+        setProducts(PRODUCTS);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   const handleAdd = (product) => {
     setCartItems((prev) => {
+      // Merge duplicate products into one cart row and increment the quantity.
       const existing = prev.find((i) => i.id === product.id);
       if (existing) return prev.map((i) => i.id === product.id ? { ...i, qty: i.qty + 1 } : i);
       return [...prev, { ...product, cartId: `${product.id}-${Date.now()}`, qty: 1 }];
@@ -41,7 +63,8 @@ const StorePage = () => {
 
   const totalCount = cartItems.reduce((s, i) => s + i.qty, 0);
 
-  const filtered = PRODUCTS
+  const filtered = products
+    // Filtering and sorting happen client-side because the product list is currently small.
     .filter((p) => selectedCategory === "All Products" || p.category === selectedCategory)
     .sort((a, b) => {
       if (sortBy === "Price: Low to High") return a.price - b.price;

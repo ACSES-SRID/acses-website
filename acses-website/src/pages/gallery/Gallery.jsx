@@ -1,16 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import galleryItems from "./galleryItems";
+import { fetchApi } from "../../utils/api";
+import fallbackGalleryItems from "./galleryItems";
 
 const itemsPerPage = 9; // Number of items per page
 
 const Gallery = () => {
+  const [galleryItems, setGalleryItems] = useState(fallbackGalleryItems);
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(galleryItems.length / itemsPerPage);
+  useEffect(() => {
+    const loadGallery = async () => {
+      try {
+        // The admin-managed gallery can replace or extend the bundled gallery list.
+        const data = await fetchApi("/api/gallery");
+        const normalized = data.map((item) => ({
+          id: item._id || item.id,
+          ...item,
+        }));
+        setGalleryItems(normalized);
+      } catch (error) {
+        // Use bundled images when API data cannot be reached.
+        console.error("Failed to load gallery from API:", error);
+        setGalleryItems(fallbackGalleryItems);
+      }
+    };
+
+    loadGallery();
+  }, []);
+
+  const totalPages = Math.max(1, Math.ceil(galleryItems.length / itemsPerPage));
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = galleryItems.slice(

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import { fetchApi } from "../../utils/api";
 
 // Mock data for student projects
-const projects = [
+const fallbackProjects = [
   {
     id: 1,
     title: "AI-Powered Study Assistant",
@@ -67,6 +68,28 @@ const projects = [
 ];
 
 const StudentProjectsPage = () => {
+  const [projects, setProjects] = useState(fallbackProjects);
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        // Load admin-managed projects when the API is available.
+        const data = await fetchApi("/api/student-projects");
+        const normalized = data.map((project) => ({
+          id: project._id || project.id,
+          ...project,
+        }));
+        setProjects(normalized);
+      } catch (error) {
+        // Keep the page usable during local development or API outages.
+        console.error("Failed to load student projects from API:", error);
+        setProjects(fallbackProjects);
+      }
+    };
+
+    loadProjects();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">

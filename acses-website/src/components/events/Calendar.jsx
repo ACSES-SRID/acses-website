@@ -4,9 +4,8 @@ import { format, isSameMonth, isSameDay, addMonths, subMonths, startOfMonth, end
 import { Paper, IconButton, Typography, Badge } from "@mui/material";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { motion } from "framer-motion";
-import { events } from "../../data/events";
 
-const Calendar = ({ onDateSelect }) => {
+const Calendar = ({ onDateSelect, events = [] }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -141,6 +140,7 @@ const Calendar = ({ onDateSelect }) => {
 
 Calendar.propTypes = {
   onDateSelect: PropTypes.func.isRequired,
+  events: PropTypes.array,
 };
 
 export default Calendar;

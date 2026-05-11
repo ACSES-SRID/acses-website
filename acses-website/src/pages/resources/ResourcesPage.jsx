@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Data
-import { academicResources, careerResources } from "../../data/ResourcesData";
+import { academicResources as fallbackAcademicResources, careerResources as fallbackCareerResources } from "../../data/ResourcesData";
+import { fetchApi } from "../../utils/api";
 
 // Components
 import ResourceHero     from "../../components/resources/hero/ResourceHero";
@@ -13,10 +14,33 @@ import SuggestStrip     from "../../components/resources/suggest-strip/SuggestSt
 
 const ResourcesPage = () => {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [academicResources, setAcademicResources] = useState(fallbackAcademicResources);
+  const [careerResources, setCareerResources] = useState(fallbackCareerResources);
+  const [loading, setLoading] = useState(true);
 
   const showAcademic = activeFilter === "All" || activeFilter === "Academic Materials";
   const showTools    = activeFilter === "All" || activeFilter === "Tools & Platforms";
   const showCareer   = activeFilter === "All" || activeFilter === "Career & Internships";
+
+  useEffect(() => {
+    const loadResources = async () => {
+      try {
+        // Resources are grouped by the API into page sections.
+        const data = await fetchApi("/api/resources");
+        setAcademicResources(data.academic || fallbackAcademicResources);
+        setCareerResources(data.career || fallbackCareerResources);
+      } catch (error) {
+        // Local fallback keeps the resource page visible when the API is unavailable.
+        console.error("Failed to load resources from API:", error);
+        setAcademicResources(fallbackAcademicResources);
+        setCareerResources(fallbackCareerResources);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadResources();
+  }, []);
 
   return (
     // pt-24 offsets the fixed NavBar from RouteLayout.

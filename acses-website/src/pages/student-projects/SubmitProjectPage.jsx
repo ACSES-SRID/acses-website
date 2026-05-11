@@ -14,6 +14,7 @@ const SubmitProjectPage = () => {
           to showcase your work.
         </p>
 
+        {/* TODO: Wire this form to POST /api/student-projects and add moderation status. */}
         <form className="space-y-6">
 
           <div>

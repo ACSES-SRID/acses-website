@@ -3,42 +3,106 @@ import Calendar from "./Calendar";
 import { format, parseISO, isFuture, isValid } from "date-fns";
 import { motion } from "framer-motion";
 import { CalendarIcon, Clock, MapPin, ArrowRight, Users } from "lucide-react";
-import { events } from "../../data/events";
+import { fetchApi } from "../../utils/api";
 import EventCard from "./EventCard"; // Import the EventCard component
 
 const Events = () => {
-  const [selectedDateEvents, setSelectedDateEvents] = useState([]);
+  //const [selectedDateEvents, setSelectedDateEvents] = useState([]);
   const [nextEvent, setNextEvent] = useState(null);
-  const [selectedEvent, setSelectedEvent] = useState(null); // State to hold the selected event
+  const [selectedEvent, setSelectedEvent] = useState(null); 
+  const [allEvents, setAllEvents] = useState([]);
+  const [loading, setLoading] = useState(true);  //fetching events from backend 
+  const [EventData, setEventData] = useState([]);
 
   useEffect(() => {
-    const formatDateToISO = (date) => {
-      const [day, month, year] = date.split("-");
-      return `${year}-${month}-${day}`;
+    const fetchEvents = async () => {
+      try {
+        // Pull events from the API first so admin changes appear on the public site.
+        const apiEvents = await fetchApi('/api/events');
+        console.log('Fetched events:', apiEvents);
+        // Transform API data to match the calendar/event-card structure.
+        const transformedEvents = apiEvents.map(event => {
+          let formattedDate;
+          let parsedDate;
+          try {
+            parsedDate = parseISO(event.date);
+            formattedDate = format(parsedDate, "dd-MM-yyyy");
+          } catch {
+            // assume event.date is dd-MM-yyyy
+            formattedDate = event.date;
+            parsedDate = parseISO(event.date.split('-').reverse().join('-')); // dd-MM-yyyy to yyyy-MM-dd
+          }
+          return {
+            id: event._id,
+            time: "TBD", // API doesn't provide time, set default
+            title: event.title,
+            description: event.description,
+            location: event.venue,
+            type: event.category,
+            link: event.flyer || "#",
+            date: parsedDate, // Store parsed date for sorting
+            formattedDate, // For grouping and display
+          };
+        });
+
+        // Group events by formatted date for quick lookup when a calendar day is selected.
+        const groupedEvents = transformedEvents.reduce((acc, event) => {
+          const dateKey = event.formattedDate;
+          if (!acc[dateKey]) {
+            acc[dateKey] = [];
+          }
+          acc[dateKey].push(event);
+          return acc;
+        }, {});
+
+        // Convert to the array format expected by Calendar.
+        const eventsArray = Object.keys(groupedEvents).map(date => ({
+          date,
+          events: groupedEvents[date],
+        }));
+
+        setAllEvents(eventsArray);
+        setLoading(false);
+        
+        // Initially show all events
+        const allEventList = eventsArray.flatMap(day => day.events);
+        setEventData(allEventList);
+      } catch (error) {
+        // If the API fails, show the empty state instead of breaking the home page.
+        console.error('Error fetching events:', error);
+        setLoading(false);
+        setEventData([]);
+      }
     };
 
-    const futureEvents = events
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    if (allEvents.length === 0) return;
+
+    const futureEvents = allEvents
       .flatMap((day) =>
         day.events.map((event) => ({
           ...event,
-          date: formatDateToISO(day.date),
+          date: event.date, // Already Date object
         }))
       )
-      .filter((event) => isFuture(parseISO(event.date)))
-      .sort((a, b) => parseISO(a.date) - parseISO(b.date));
+      .filter((event) => isFuture(event.date))
+      .sort((a, b) => a.date - b.date);
 
     if (futureEvents.length > 0) {
       setNextEvent(futureEvents[0]);
     }
-  }, []);
+  }, [allEvents]);
 
   const handleDateSelect = (date) => {
     if (isValid(date)) {
       const formattedDate = format(date, "dd-MM-yyyy");
-      const dayEvents = events.find((event) => event.date === formattedDate);
-      setSelectedDateEvents(dayEvents ? dayEvents.events : []);
+      const dayEvents = allEvents.find((event) => event.date === formattedDate);
+      setEventData(dayEvents ? dayEvents.events : []);
     } else {
-      setSelectedDateEvents([]);
+      setEventData([]);
     }
   };
 
@@ -85,7 +149,7 @@ const Events = () => {
                     <div className="flex flex-wrap gap-4 text-white/90">
                       <span className="flex items-center gap-2">
                         <CalendarIcon className="w-5 h-5" />
-                        {nextEvent.date}
+                        {format(nextEvent.date, "dd-MM-yyyy")}
                       </span>
                       <span className="flex items-center gap-2">
                         <Clock className="w-5 h-5" />
@@ -122,8 +186,22 @@ const Events = () => {
             viewport={{ once: true }}
             className="space-y-6"
           >
-            {selectedDateEvents.length > 0 ? (
-              selectedDateEvents.map((event, index) => (
+            {loading ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white rounded-xl shadow-md p-12 text-center"
+              >
+                <CalendarIcon className="w-16 h-16 mx-auto mb-4 text-acses-green-500" />
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">
+                  Loading Events
+                </h3>
+                <p className="text-gray-600 text-lg">
+                  Please wait while we fetch the latest events...
+                </p>
+              </motion.div>
+            ) : (EventData && EventData.length > 0) ? (
+              EventData.map((event, index) => (
                 <motion.div
                   key={event.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -185,7 +263,7 @@ const Events = () => {
             viewport={{ once: true }}
             className="space-y-6"
           >
-            <Calendar onDateSelect={handleDateSelect} />
+            <Calendar onDateSelect={handleDateSelect} events={allEvents} />
           </motion.div>
         </div>
       </div>

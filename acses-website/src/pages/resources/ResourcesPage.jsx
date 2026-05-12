@@ -33,13 +33,13 @@ const ResourcesPage = () => {
             id: r._id || r.id,
             tags: Array.isArray(r.tags) ? r.tags : [],
           }));
-        setAcademicResources(mapAcademic(data.academic) || fallbackAcademicResources);
-        setCareerResources(
-          (data.career || []).map((r) => ({
+        const mapCareer = (list) =>
+          (list || []).map((r) => ({
             ...r,
             id: r._id || r.id,
-          })) || fallbackCareerResources
-        );
+          }));
+        setAcademicResources(data.academic != null ? mapAcademic(data.academic) : fallbackAcademicResources);
+        setCareerResources(data.career != null ? mapCareer(data.career) : fallbackCareerResources);
       } catch (error) {
         // Local fallback keeps the resource page visible when the API is unavailable.
         console.error("Failed to load resources from API:", error);

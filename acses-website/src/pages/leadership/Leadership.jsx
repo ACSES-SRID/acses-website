@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import executives from "../executives/executiveList";
+import { fetchApi } from "../../utils/api";
 
 const Leadership = () => {
   const [executivesData, setExecutivesData] = useState([]);
@@ -8,9 +8,9 @@ const Leadership = () => {
     const fetchExecutives = async () => {
       try {
         // Use API-managed leadership profiles when available.
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/leadership`);
-        const data = await res.json();
-        setExecutivesData(data);
+        const data = await fetchApi("/api/leadership");
+        const list = Array.isArray(data) ? data : [];
+        setExecutivesData(list);
       } catch (error) {
         // Fall back to static data so the public page still renders offline.
         setExecutivesData(executives);

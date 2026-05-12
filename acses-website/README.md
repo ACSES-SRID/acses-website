@@ -71,7 +71,7 @@ The ACSES-SRID Official Website serves as the digital hub for the Association of
 - **Resources**: Educational materials and learning resources
 - **Store**: ACSES merchandise and products
 - **Gallery**: Photo gallery of events and activities
-- **Student Projects**: Showcase of member projects and achievements
+- **Student Projects**: Public directory and **Submit project** (`/submit-project`) for pending submissions
 
 ---
 

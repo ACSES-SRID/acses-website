@@ -148,7 +148,17 @@ Start the development server with hot module replacement (HMR):
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The application will be available at `http://localhost:5173`.
+
+### Backend API URL
+
+In the **inner** `acses-website/` folder (next to `package.json`), create `.env`:
+
+```bash
+VITE_API_BASE_URL=http://localhost:3002
+```
+
+Restart the dev server after changing environment variables. See `acses-website/ADMIN_BACKEND_INTEGRATION.md` for API alignment notes.
 
 ### Building for Production
 
@@ -168,53 +178,18 @@ npm run preview
 
 ## 📁 Project Structure
 
+This repository contains the Vite React app under **`acses-website/acses-website/`**. Use that inner folder for `npm install`, `.env`, and day-to-day development. A fuller `src/` tree (including `components/home`, `components/shared`, and `pages/admin/{context,layout,lib,views}`) lives in **`acses-website/README.md`**.
+
 ```
-acses-website/
-├── public/                  # Static assets
-│   ├── images/             # Image assets
-│   ├── logo/               # ACSES logos
-│   └── Screenshots/        # Application screenshots
-├── src/
-│   ├── assets/             # Source assets (images, fonts, etc.)
-│   ├── components/         # Reusable React components
-│   │   ├── about/
-│   │   ├── contact/
-│   │   ├── events/
-│   │   ├── footer/
-│   │   ├── hero-section/
-│   │   ├── navbar/
-│   │   ├── news/
-│   │   ├── patrons/
-│   │   ├── programs/
-│   │   ├── resources/
-│   │   ├── statistics/
-│   │   ├── store/
-│   │   ├── welcome/
-│   │   └── xlogo/
-│   ├── data/               # Static data and constants
-│   ├── layouts/            # Layout components
-│   ├── pages/              # Page components
-│   │   ├── error/
-│   │   ├── executives/
-│   │   ├── gallery/
-│   │   ├── home/
-│   │   ├── leadership/
-│   │   ├── programs/
-│   │   ├── resources/
-│   │   ├── store/
-│   │   └── student-projects/
-│   ├── App.jsx             # Main application component
-│   ├── main.jsx            # Application entry point
-│   ├── index.css           # Global styles
-│   └── service-worker.js   # PWA service worker
-├── .gitignore
-├── eslint.config.js        # ESLint configuration
-├── index.html              # HTML entry point
-├── package.json            # Project dependencies
-├── postcss.config.js       # PostCSS configuration
-├── tailwind.config.js      # Tailwind CSS configuration
-├── vercel.json             # Vercel deployment config
-└── vite.config.js          # Vite configuration
+acses-website/                    # Repository root (this README)
+├── acses-website/                # Vite app — `package.json`, `vite.config.js`, `src/`
+│   ├── ADMIN_BACKEND_INTEGRATION.md
+│   ├── CHANGELOG.md
+│   ├── README.md                 # App-focused documentation
+│   ├── public/
+│   └── src/
+├── README.md                     # You are here (repo overview)
+└── …
 ```
 
 ---

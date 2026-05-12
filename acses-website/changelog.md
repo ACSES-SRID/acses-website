@@ -22,12 +22,12 @@ This section records the full set of changes from the integration and UX work th
 - **`CHANGELOG.md`** (this file) for tracking product and integration changes over time.
 - **`ADMIN_BACKEND_INTEGRATION.md`** — integration plan for the OpenAPI v2 backend.
 - **`src/utils/api.js`:** `VITE_API_BASE_URL`, `unwrapList()` for paginated `{ items, total, page, limit }` responses, `fetchApi` with optional `auth: true` (Bearer JWT from session storage), clearer errors, 401 / 429 handling, `acses-admin-session-expired` event on auth failure, token helpers (`getAdminToken`, `setAdminToken`, `clearAdminToken`).
-- **Admin navigation:** Store link in `AdminShell.jsx` gated with `hasAccess("store")`.
+- **Admin navigation:** Store link in `layout/AdminShell.jsx` gated with `hasAccess("store")`.
 - **Submit project page:** Form wired to `POST /api/student-projects` with success redirect.
 
 ### Changed
 
-- **Admin login (`AdminContext.jsx`):** `POST /api/auth/login`; stores JWT + user; logout clears token and user; session restored only when token and stored user match; listens for session-expired event.
+- **Admin login (`context/AdminContext.jsx`):** `POST /api/auth/login`; stores JWT + user; logout clears token and user; session restored only when token and stored user match; listens for session-expired event.
 - **Editor permissions:** Include `resources` and `store` for non–super-admin roles where applicable.
 - **Admin CRUD:** Events, announcements, gallery, users, student projects, home editor — REST paths with `:id`, Bearer on mutating requests, paginated list handling where needed.
 - **Admin leadership / resources / store:** Implemented on `fetchApi` with auth and API-aligned payloads (leadership `order` / `icon`; resources `ResourceInput`; store numeric prices and paginated `GET`).

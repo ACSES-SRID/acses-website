@@ -10,6 +10,7 @@ All notable changes to the ACSES website frontend (Vite app in this directory) a
 ### Changed
 
 - **Student project submissions:** Public submit form and admin copy now treat new submissions as **`pending`** (not `draft`), aligned with the API. Pending rows stay sorted to the **end** of the admin list.
+- **Admin student projects form:** Replaced the approval-only checkbox with an explicit **Publication status** control (`pending` / `approved`) on both **add** and **edit**, so admins can assign visibility on the public `/student-projects` page for every project.
 
 ---
 
@@ -30,7 +31,7 @@ All notable changes to the ACSES website frontend (Vite app in this directory) a
 - **Admin CRUD:** Events, announcements, gallery, users, student projects, home editor — correct REST paths (`/api/.../:id`), Bearer auth on mutating requests, paginated list handling where needed.
 - **Admin leadership / resources / store:** Reimplemented on `fetchApi` with auth and API-aligned payloads (leadership `order`/`icon`; resources `ResourceInput`; store numeric prices and paginated `GET`).
 - **Admin overview:** Loads protected endpoints only when `hasAccess` allows; uses `unwrapList` for paginated routes.
-- **Admin student projects:** Loads `GET /api/student-projects/all` with auth; table **Status** column; sorts **pending** rows last (by `createdAt`); approve via checkbox → `approved`, else `pending`; admin “add” uses public `POST` with full payload including `status`.
+- **Admin student projects:** Loads `GET /api/student-projects/all` with auth; table **Status** column; sorts **pending** rows last (by `createdAt`); **publication status** (`pending` / `approved`) set via form select on create and edit; admin “add” uses public `POST` with full payload including `status`.
 - **`App.jsx`:** API warm-up uses `GET /health` instead of hitting leadership data.
 - **`Admin.jsx`:** Demo credentials hint only in development (`import.meta.env.DEV`).
 - **Public `Events.jsx`, `StorePage.jsx`, `Gallery.jsx`, `StudentProjectsPage.jsx`:** Use `unwrapList` and query limits where helpful.

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { User } from "lucide-react";
 import executives from "../executives/executiveList";
 import { fetchApi } from "../../utils/api";
@@ -13,7 +13,7 @@ const Leadership = () => {
         const data = await fetchApi("/api/leadership");
         const list = Array.isArray(data) ? data : [];
         setExecutivesData(list);
-      } catch (error) {
+      } catch {
         // Fall back to static data so the public page still renders offline.
         setExecutivesData(executives);
       }

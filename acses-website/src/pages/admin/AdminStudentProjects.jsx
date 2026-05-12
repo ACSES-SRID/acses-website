@@ -1,16 +1,28 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAdmin } from "./AdminContext";
 import { exportToCsv } from "./adminUtils";
 import { fetchApi, unwrapList } from "../../utils/api";
 
+/** Draft submissions (e.g. from the public form) are listed last, oldest → newest within each group. */
+const sortProjectsForAdmin = (normalized) => {
+  const drafts = normalized.filter((p) => p.status === "draft");
+  const rest = normalized.filter((p) => p.status !== "draft");
+  const byCreated = (a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+  rest.sort(byCreated);
+  drafts.sort(byCreated);
+  return [...rest, ...drafts];
+};
+
 const normalizeProject = (item) => {
   const id = item._id || item.id;
   const technologies = Array.isArray(item.technologies) ? item.technologies : [];
-  const approved = item.status === "approved";
+  const status = item.status || "pending";
+  const approved = status === "approved";
   const student = item.submittedBy || item.student || "";
   return {
     id,
     ...item,
+    status,
     technologies,
     approved,
     student,
@@ -37,7 +49,7 @@ const AdminStudentProjects = () => {
     try {
       const data = await fetchApi("/api/student-projects/all?limit=100", { auth: true });
       const list = unwrapList(data);
-      setProjects(list.map(normalizeProject));
+      setProjects(sortProjectsForAdmin(list.map(normalizeProject)));
     } catch (error) {
       console.error("Failed to load projects from API:", error);
       setProjects([]);
@@ -49,7 +61,7 @@ const AdminStudentProjects = () => {
   }, []);
 
   const saveProjects = (items) => {
-    setProjects(items);
+    setProjects(sortProjectsForAdmin(items.map(normalizeProject)));
   };
 
   const filteredProjects = useMemo(
@@ -75,6 +87,16 @@ const AdminStudentProjects = () => {
     );
   }
 
+  const resolveStatusForSave = () => {
+    if (form.approved) return "approved";
+    if (editingId) {
+      const prev = projects.find((p) => p.id === editingId);
+      if (prev?.status === "draft") return "draft";
+      return "pending";
+    }
+    return "pending";
+  };
+
   const buildPayload = () => {
     const technologies = form.technologies.split(",").map((item) => item.trim()).filter(Boolean);
     return {
@@ -86,7 +108,7 @@ const AdminStudentProjects = () => {
       demo: form.demo,
       video: form.video || undefined,
       submittedBy: form.student,
-      status: form.approved ? "approved" : "pending",
+      status: resolveStatusForSave(),
     };
   };
 
@@ -105,16 +127,20 @@ const AdminStudentProjects = () => {
           body: JSON.stringify(payload),
           auth: true,
         });
-        setProjects(projects.map((project) => (project.id === editingId ? normalizeProject({ ...project, ...payload, _id: editingId }) : project)));
+        setProjects(
+          sortProjectsForAdmin(
+            projects.map((project) => (project.id === editingId ? normalizeProject({ ...project, ...payload, _id: editingId }) : project))
+          )
+        );
         showToast("Project updated successfully.");
       } else {
-        const { status: _s, ...createBody } = payload;
         await fetchApi("/api/student-projects", {
           method: "POST",
-          body: JSON.stringify(createBody),
+          body: JSON.stringify(payload),
+          auth: true,
         });
         await loadProjects();
-        showToast("Project submitted.");
+        showToast("Project added.");
       }
     } catch (error) {
       console.error("API save failed:", error);
@@ -162,16 +188,22 @@ const AdminStudentProjects = () => {
     <div className="space-y-6">
       <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 px-6 py-5 shadow-xl shadow-acses-green-900/20">
         <h1 className="text-2xl font-semibold text-white">Student Projects / Initiatives</h1>
-        <p className="mt-2 text-sm text-acses-yellow-100">Approve student submissions and manage the details for public display.</p>
+        <p className="mt-2 text-sm text-acses-yellow-100">
+          Student form submissions appear as <span className="font-semibold text-white">draft</span> at the bottom of the list until you approve them
+          for the public page.
+        </p>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 shadow-xl shadow-acses-green-900/20">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-white/70">
-              Approved projects: <span className="font-semibold text-white">{approvedCount}</span>
+              Approved (live on site): <span className="font-semibold text-white">{approvedCount}</span>
             </p>
-            <button onClick={() => exportToCsv("acses-student-projects.csv", projects)} className="rounded-2xl bg-acses-yellow-400 px-4 py-2 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
+            <button
+              onClick={() => exportToCsv("acses-student-projects.csv", projects)}
+              className="rounded-2xl bg-acses-yellow-400 px-4 py-2 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300"
+            >
               Export CSV
             </button>
           </div>
@@ -182,7 +214,7 @@ const AdminStudentProjects = () => {
                   <th className="px-4 py-3">Title</th>
                   <th className="px-4 py-3">Submitter</th>
                   <th className="px-4 py-3">Technologies</th>
-                  <th className="px-4 py-3">Approved</th>
+                  <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
               </thead>
@@ -192,12 +224,18 @@ const AdminStudentProjects = () => {
                     <td className="px-4 py-3 text-white">{project.title}</td>
                     <td className="px-4 py-3">{project.student}</td>
                     <td className="px-4 py-3">{project.technologies.join(", ")}</td>
-                    <td className="px-4 py-3">{project.approved ? "Yes" : "No"}</td>
+                    <td className="px-4 py-3 capitalize">{project.status}</td>
                     <td className="px-4 py-3 space-x-2">
-                      <button onClick={() => handleEdit(project)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">
+                      <button
+                        onClick={() => handleEdit(project)}
+                        className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700"
+                      >
                         Edit
                       </button>
-                      <button onClick={() => handleDelete(project.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">
+                      <button
+                        onClick={() => handleDelete(project.id)}
+                        className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500"
+                      >
                         Delete
                       </button>
                     </td>
@@ -216,8 +254,8 @@ const AdminStudentProjects = () => {
         </div>
 
         <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 shadow-xl shadow-acses-green-900/20">
-          <h2 className="text-lg font-semibold text-white">{editingId ? "Edit project" : "Add new project (public submit)"}</h2>
-          <p className="mt-1 text-xs text-white/50">New entries use the public submit endpoint (pending until approved).</p>
+          <h2 className="text-lg font-semibold text-white">{editingId ? "Edit project" : "Add project (admin)"}</h2>
+          <p className="mt-1 text-xs text-white/50">Check “Approved” to publish on the public student projects page.</p>
           <div className="mt-5 space-y-4">
             <Field label="Project title" value={form.title} onChange={(value) => setForm({ ...form, title: value })} />
             <Field label="Submitted by" value={form.student} onChange={(value) => setForm({ ...form, student: value })} />
@@ -228,9 +266,15 @@ const AdminStudentProjects = () => {
             <Field label="Demo URL" value={form.demo} onChange={(value) => setForm({ ...form, demo: value })} />
             <Field label="Video URL" value={form.video} onChange={(value) => setForm({ ...form, video: value })} />
             <div className="flex items-center gap-3">
-              <input id="approved" type="checkbox" checked={form.approved} onChange={(e) => setForm({ ...form, approved: e.target.checked })} className="h-4 w-4 rounded border-acses-green-800 bg-acses-green-900 text-amber-400 focus:ring-amber-400" />
+              <input
+                id="approved"
+                type="checkbox"
+                checked={form.approved}
+                onChange={(e) => setForm({ ...form, approved: e.target.checked })}
+                className="h-4 w-4 rounded border-acses-green-800 bg-acses-green-900 text-amber-400 focus:ring-amber-400"
+              />
               <label htmlFor="approved" className="text-sm text-white/70">
-                Approved (saved on update only)
+                Approved (visible on public projects page)
               </label>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
@@ -245,8 +289,11 @@ const AdminStudentProjects = () => {
                   Cancel
                 </button>
               )}
-              <button onClick={handleSave} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
-                {editingId ? "Save project" : "Submit project"}
+              <button
+                onClick={handleSave}
+                className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300"
+              >
+                {editingId ? "Save project" : "Add project"}
               </button>
             </div>
           </div>

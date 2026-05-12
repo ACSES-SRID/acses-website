@@ -7,42 +7,50 @@ All notable changes to the ACSES website frontend (Vite app in this directory) a
 
 ## [Unreleased]
 
-### Changed
-
-- **Student project submissions:** Public submit form and admin copy now treat new submissions as **`pending`** (not `draft`), aligned with the API. Pending rows stay sorted to the **end** of the admin list.
-- **Admin student projects form:** Replaced the approval-only checkbox with an explicit **Publication status** control (`pending` / `approved`) on both **add** and **edit**, so admins can assign visibility on the public `/student-projects` page for every project.
+_(Nothing pending.)_
 
 ---
 
-## 2026-05-12 — Backend wiring, news, student projects
+## 2026-05-12 — Backend integration, admin, public content, and component modules
+
+This section records the full set of changes from the integration and UX work through the **component folder restructure** (KISS, clearer ownership per page, easier debugging).
 
 ### Added
 
 - **`CHANGELOG.md`** (this file) for tracking product and integration changes over time.
-- **`ADMIN_BACKEND_INTEGRATION.md`** — integration plan for the OpenAPI v2 backend (reference doc from earlier work).
-- **JWT session handling** in `src/utils/api.js`: `getAdminToken`, `setAdminToken`, `clearAdminToken` (session storage), optional `auth: true` on `fetchApi`, `unwrapList()` for paginated `{ items, total, page, limit }` responses, clearer errors and 401 / 429 handling, `acses-admin-session-expired` event on auth failure.
-- **Admin navigation:** Store link in `AdminShell.jsx` with `hasAccess("store")`.
-- **Submit project page:** Full form wired to `POST /api/student-projects` with redirect after success.
+- **`ADMIN_BACKEND_INTEGRATION.md`** — integration plan for the OpenAPI v2 backend.
+- **`src/utils/api.js`:** `VITE_API_BASE_URL`, `unwrapList()` for paginated `{ items, total, page, limit }` responses, `fetchApi` with optional `auth: true` (Bearer JWT from session storage), clearer errors, 401 / 429 handling, `acses-admin-session-expired` event on auth failure, token helpers (`getAdminToken`, `setAdminToken`, `clearAdminToken`).
+- **Admin navigation:** Store link in `AdminShell.jsx` gated with `hasAccess("store")`.
+- **Submit project page:** Form wired to `POST /api/student-projects` with success redirect.
 
 ### Changed
 
-- **Admin login (`AdminContext.jsx`):** Uses `POST /api/auth/login`; stores JWT + user; logout clears token and user; session restored only when token and stored user match; listens for session-expired event.
+- **Admin login (`AdminContext.jsx`):** `POST /api/auth/login`; stores JWT + user; logout clears token and user; session restored only when token and stored user match; listens for session-expired event.
 - **Editor permissions:** Include `resources` and `store` for non–super-admin roles where applicable.
-- **Admin CRUD:** Events, announcements, gallery, users, student projects, home editor — correct REST paths (`/api/.../:id`), Bearer auth on mutating requests, paginated list handling where needed.
-- **Admin leadership / resources / store:** Reimplemented on `fetchApi` with auth and API-aligned payloads (leadership `order`/`icon`; resources `ResourceInput`; store numeric prices and paginated `GET`).
+- **Admin CRUD:** Events, announcements, gallery, users, student projects, home editor — REST paths with `:id`, Bearer on mutating requests, paginated list handling where needed.
+- **Admin leadership / resources / store:** Implemented on `fetchApi` with auth and API-aligned payloads (leadership `order` / `icon`; resources `ResourceInput`; store numeric prices and paginated `GET`).
 - **Admin overview:** Loads protected endpoints only when `hasAccess` allows; uses `unwrapList` for paginated routes.
-- **Admin student projects:** Loads `GET /api/student-projects/all` with auth; table **Status** column; sorts **pending** rows last (by `createdAt`); **publication status** (`pending` / `approved`) set via form select on create and edit; admin “add” uses public `POST` with full payload including `status`.
-- **`App.jsx`:** API warm-up uses `GET /health` instead of hitting leadership data.
+- **Admin student projects:** `GET /api/student-projects/all` with auth; table **Status** column; **pending** rows sorted last (by `createdAt`); **Publication status** (`pending` / `approved`) via `<select>` on **add** and **edit** (replaces approval-only checkbox); admin create uses public `POST` with full payload including `status`; `normalizeProject` clamps unknown statuses for the form.
+- **`App.jsx`:** API warm-up uses `GET /health`.
 - **`Admin.jsx`:** Demo credentials hint only in development (`import.meta.env.DEV`).
-- **Public `Events.jsx`, `StorePage.jsx`, `Gallery.jsx`, `StudentProjectsPage.jsx`:** Use `unwrapList` and query limits where helpful.
-- **`Leadership.jsx`:** Uses `fetchApi("/api/leadership")`; safe icon (`User` fallback) and image placeholder for API-shaped records.
+- **Public pages:** `Events.jsx`, `StorePage.jsx`, `Gallery.jsx`, `StudentProjectsPage.jsx` use `unwrapList` and sensible query limits where helpful.
+- **`Leadership.jsx`:** `fetchApi("/api/leadership")`; safe icon (`User` fallback) and image placeholder for API-shaped records.
 - **`ResourcesPage.jsx`:** Safer handling of grouped API resources and stable `id` for list keys.
-- **`News.jsx` (home):** Replaced mock list with `GET /api/announcements` — shows **published** + **public** items, sorted newest first; loading / error / empty states.
-- **`StudentProjectsPage.jsx`:** Removed mock fallback grid; loads **approved** projects from `GET /api/student-projects` only; loading / error / empty UI; optional links only when URLs exist; `submittedBy` line when present.
+- **`News.jsx` (home):** Loads **published** + **public** announcements from `GET /api/announcements`, sorted newest first; loading / error / empty states (no mock list).
+- **`StudentProjectsPage.jsx`:** API-only list from `GET /api/student-projects` (no mock fallback); loading / error / empty UI; optional links only when URLs exist; `submittedBy` when present.
+- **Student project submissions:** New submissions use **`pending`** (not `draft`), aligned with the API and admin list ordering.
 
-### Fixed / corrected (same day)
+### Component layout (maintainability)
 
-- Student submit status corrected from **`draft` to `pending`** to match API vocabulary and product wording.
+- **`src/components/home/`** — Everything used primarily by the public home page: `about`, `welcome`, `patrons`, `programs`, `statistics`, `contact`, `events`, `news`, `hero-section`. Keeps home concerns in one module.
+- **`src/components/shared/`** — Site-wide chrome: `navbar`, `footer`, `xlogo`. `RouteLayout.jsx`, `Executives.jsx`, and home hero/social blocks import from here; relative imports inside moved files were updated (e.g. hero → `shared/xlogo`, home `events` / `news` → `../../../utils/api`).
+- **`src/components/store/`** — Unchanged pattern: store-specific UI stays under the store module (e.g. store navbar separate from global `shared/navbar`).
+- **Consumers:** `Home.jsx` imports from `components/home/...`; `RouteLayout.jsx` and `Executives.jsx` import layout from `components/shared/...`.
+- **`ADMIN_BACKEND_INTEGRATION.md`:** Example path for public events updated to `src/components/home/events/Events.jsx`.
+
+### Fixed / corrected
+
+- Student submit payload status corrected from **`draft`** to **`pending`** to match API vocabulary.
 
 ---
 

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "../lib/adminData";
-import { fetchApi, setAdminToken, clearAdminToken, getAdminToken } from "../../utils/api";
+import { fetchApi, setAdminToken, clearAdminToken, getAdminToken } from "../../../utils/api";
 
 const AdminContext = createContext(null);
 

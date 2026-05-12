@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useAdmin } from "./AdminContext";
-import { exportToCsv, formatDate } from "./adminUtils";
-import { fetchApi } from "../../utils/api";
+import { useAdmin } from "../context/AdminContext";
+import { exportToCsv, formatDate } from "../lib/adminUtils";
+import { fetchApi } from "../../../utils/api";
 
 const AdminAnnouncements = () => {
   const { searchQuery, showToast, openConfirm, currentUser, hasAccess } = useAdmin();

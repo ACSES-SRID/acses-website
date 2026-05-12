@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { useAdmin } from "./AdminContext";
-import { exportToCsv } from "./adminUtils";
-import { fetchApi, unwrapList } from "../../utils/api";
+import { useAdmin } from "../context/AdminContext";
+import { exportToCsv } from "../lib/adminUtils";
+import { fetchApi, unwrapList } from "../../../utils/api";
 
 /** Pending submissions (e.g. from the public form) are listed last, oldest → newest within each group. */
 const sortProjectsForAdmin = (normalized) => {

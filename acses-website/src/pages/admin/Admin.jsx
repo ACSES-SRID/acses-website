@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { AdminProvider, useAdmin } from "./AdminContext";
-import AdminShell from "./AdminShell";
+import { AdminProvider, useAdmin } from "./context/AdminContext";
+import AdminShell from "./layout/AdminShell";
 
 const AdminContent = () => {
   const { currentUser, login } = useAdmin();

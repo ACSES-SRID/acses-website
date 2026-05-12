@@ -1,19 +1,8 @@
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import { useAdmin } from "./AdminContext";
-
-const navItems = [
-  { label: "Overview", to: "/admin", icon: "🏠", key: "overview" },
-  { label: "Events", to: "/admin/events", icon: "📅", key: "events" },
-  { label: "Leadership", to: "/admin/leadership", icon: "👥", key: "executives" },
-  { label: "Resources", to: "/admin/resources", icon: "📚", key: "resources" },
-  { label: "Announcements", to: "/admin/announcements", icon: "📢", key: "announcements" },
-  { label: "Projects", to: "/admin/student-projects", icon: "🚀", key: "student-projects" },
-  { label: "Gallery", to: "/admin/gallery", icon: "🖼️", key: "gallery" },
-  { label: "Store", to: "/admin/store", icon: "🛒", key: "store" },
-  { label: "Users", to: "/admin/users", icon: "🔐", key: "users" },
-  { label: "Home Editor", to: "/admin/home-editor", icon: "✍️", key: "home-editor" },
-];
+import { Outlet } from "react-router-dom";
+import { useAdmin } from "../context/AdminContext";
+import AdminSidebar from "./AdminSidebar";
+import AdminNavLinks from "./AdminNavLinks";
 
 const AdminShell = () => {
   const { currentUser, logout, searchQuery, setSearchQuery, notifications, toast, confirm, confirmAction, denyConfirm, hasAccess } = useAdmin();
@@ -21,52 +10,7 @@ const AdminShell = () => {
 
   return (
     <div className="admin-shell flex flex-col lg:flex-row min-h-screen bg-acses-green-900 text-white">
-      <aside className="hidden lg:flex lg:w-72 xl:w-80 flex-col border-r border-acses-green-800 bg-acses-green-900 p-6">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-12 w-12 rounded-2xl bg-acses-yellow-400 flex items-center justify-center text-acses-green-900 font-bold">A</div>
-            <div>
-              <p className="text-sm text-acses-yellow-100">ACSES Admin</p>
-              <p className="text-lg font-semibold text-white">{currentUser?.name || "Administrator"}</p>
-            </div>
-          </div>
-          <p className="text-xs uppercase tracking-[.2em] text-acses-yellow-200">Role</p>
-          <p className="text-sm font-medium text-acses-yellow-300 capitalize">{currentUser?.role}</p>
-        </div>
-
-        <nav className="flex-1 space-y-2">
-          {navItems.map((item) => {
-            if (item.key === "store" && !hasAccess("store")) return null;
-            if (item.key === "users" && !hasAccess("users")) return null;
-            if (item.key === "home-editor" && !hasAccess("home-editor")) return null;
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/admin"}
-                className={({ isActive }) =>
-                  `group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
-                    isActive ? "bg-acses-green-800 text-acses-yellow-300" : "text-white/70 hover:bg-acses-green-800 hover:text-white"
-                  }`
-                }
-              >
-                <span className="text-base">{item.icon}</span>
-                <span>{item.label}</span>
-              </NavLink>
-            );
-          })}
-        </nav>
-
-        <div className="mt-auto pt-6 border-t border-acses-green-800">
-          <button
-            type="button"
-            onClick={logout}
-            className="w-full rounded-xl bg-acses-green-800 px-4 py-3 text-left text-sm font-medium text-white/80 transition hover:bg-acses-green-700"
-          >
-            Logout
-          </button>
-        </div>
-      </aside>
+      <AdminSidebar currentUser={currentUser} hasAccess={hasAccess} onLogout={logout} />
 
       <div className="flex-1 ">
         <header className="sticky top-0 z-30 border-b border-acses-green-800 bg-acses-green-900/95 backdrop-blur px-4 py-4 shadow-sm shadow-acses-green-900/20 sm:px-6 lg:px-8">
@@ -118,26 +62,7 @@ const AdminShell = () => {
           {mobileMenu && (
             <div className="mt-4 rounded-2xl border border-acses-green-800 bg-acses-green-900 p-4 lg:hidden">
               <nav className="space-y-2">
-                {navItems.map((item) => {
-                  if (item.key === "store" && !hasAccess("store")) return null;
-                  if (item.key === "users" && !hasAccess("users")) return null;
-                  if (item.key === "home-editor" && !hasAccess("home-editor")) return null;
-                  return (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      end={item.to === "/admin"}
-                      onClick={() => setMobileMenu(false)}
-                      className={({ isActive }) =>
-                        `block rounded-xl px-4 py-3 text-sm font-medium transition ${
-                          isActive ? "bg-acses-green-800 text-acses-yellow-300" : "text-white/70 hover:bg-acses-green-800 hover:text-white"
-                        }`
-                      }
-                    >
-                      {item.icon} {item.label}
-                    </NavLink>
-                  );
-                })}
+                <AdminNavLinks hasAccess={hasAccess} variant="mobile" onItemClick={() => setMobileMenu(false)} />
               </nav>
             </div>
           )}
@@ -175,5 +100,3 @@ const AdminShell = () => {
 };
 
 export default AdminShell;
-
-

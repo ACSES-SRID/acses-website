@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useAdmin } from "./AdminContext";
-import { fetchApi, unwrapList } from "../../utils/api";
-import { formatDate } from "./adminUtils";
+import { useAdmin } from "../context/AdminContext";
+import { fetchApi, unwrapList } from "../../../utils/api";
+import { formatDate } from "../lib/adminUtils";
 
 const AdminOverview = () => {
   const { searchQuery, hasAccess, currentUser } = useAdmin();

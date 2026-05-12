@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { useAdmin } from "./AdminContext";
-import { exportToCsv, formatDate } from "./adminUtils";
-import { fetchApi, unwrapList } from "../../utils/api";
+import { useAdmin } from "../context/AdminContext";
+import { exportToCsv, formatDate } from "../lib/adminUtils";
+import { fetchApi, unwrapList } from "../../../utils/api";
 
 const AdminGallery = () => {
   const { searchQuery, showToast, openConfirm, hasAccess } = useAdmin();

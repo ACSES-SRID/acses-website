@@ -18,16 +18,16 @@ import StorePage from "./pages/store/StorePage";
 import StudentProjectsPage from "./pages/student-projects/StudentProjectsPage";
 import SubmitProjectPage from "./pages/student-projects/SubmitProjectPage";
 import Admin from "./pages/admin/Admin";
-import AdminOverview from "./pages/admin/AdminOverview";
-import AdminEvents from "./pages/admin/AdminEvents";
-import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
-import AdminLeadership from "./pages/admin/AdminLeadership";
-import AdminResources from "./pages/admin/AdminResources";
-import AdminStore from "./pages/admin/AdminStore";
-import AdminGallery from "./pages/admin/AdminGallery";
-import AdminStudentProjects from "./pages/admin/AdminStudentProjects";
-import AdminUsers from "./pages/admin/AdminUsers";
-import AdminHomeEditor from "./pages/admin/AdminHomeEditor";
+import AdminOverview from "./pages/admin/views/AdminOverview";
+import AdminEvents from "./pages/admin/views/AdminEvents";
+import AdminAnnouncements from "./pages/admin/views/AdminAnnouncements";
+import AdminLeadership from "./pages/admin/views/AdminLeadership";
+import AdminResources from "./pages/admin/views/AdminResources";
+import AdminStore from "./pages/admin/views/AdminStore";
+import AdminGallery from "./pages/admin/views/AdminGallery";
+import AdminStudentProjects from "./pages/admin/views/AdminStudentProjects";
+import AdminUsers from "./pages/admin/views/AdminUsers";
+import AdminHomeEditor from "./pages/admin/views/AdminHomeEditor";
 
 // Layout
 import RouteLayout from "./layouts/RouteLayout.jsx";

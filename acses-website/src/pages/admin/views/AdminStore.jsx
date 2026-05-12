@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useAdmin } from "./AdminContext";
-import { fetchApi, unwrapList } from "../../utils/api";
+import { useAdmin } from "../context/AdminContext";
+import { fetchApi, unwrapList } from "../../../utils/api";
 
 const BlockedAccess = () => (
   <div className="rounded-3xl border border-red-700 bg-acses-green-900 p-6 text-white/80">

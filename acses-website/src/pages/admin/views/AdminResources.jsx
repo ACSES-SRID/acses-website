@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useAdmin } from "./AdminContext";
-import { fetchApi } from "../../utils/api";
+import { useAdmin } from "../context/AdminContext";
+import { fetchApi } from "../../../utils/api";
 
 const emptyGrouped = { academic: [], tools: [], career: [] };
 

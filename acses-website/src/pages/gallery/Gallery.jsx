@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import { fetchApi } from "../../utils/api";
+import { fetchApi, unwrapList } from "../../utils/api";
 import fallbackGalleryItems from "./galleryItems";
 
 const itemsPerPage = 9; // Number of items per page
@@ -16,9 +16,14 @@ const Gallery = () => {
     const loadGallery = async () => {
       try {
         // The admin-managed gallery can replace or extend the bundled gallery list.
-        const data = await fetchApi("/api/gallery");
-        const normalized = data.map((item) => ({
+        const data = await fetchApi("/api/gallery?limit=200");
+        const list = unwrapList(data);
+        const normalized = list.map((item) => ({
           id: item._id || item.id,
+          src: item.src,
+          alt: item.alt || "",
+          description: item.description || "",
+          category: item.category || "",
           ...item,
         }));
         setGalleryItems(normalized);

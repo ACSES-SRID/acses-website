@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
-import { fetchApi } from "../../utils/api";
+import { fetchApi, unwrapList } from "../../utils/api";
 
 // Mock data for student projects
 const fallbackProjects = [
@@ -74,10 +74,16 @@ const StudentProjectsPage = () => {
     const loadProjects = async () => {
       try {
         // Load admin-managed projects when the API is available.
-        const data = await fetchApi("/api/student-projects");
-        const normalized = data.map((project) => ({
+        const data = await fetchApi("/api/student-projects?limit=100");
+        const list = unwrapList(data);
+        const normalized = list.map((project) => ({
           id: project._id || project.id,
           ...project,
+          technologies: Array.isArray(project.technologies) ? project.technologies : [],
+          github: project.github || "#",
+          demo: project.demo || "#",
+          video: project.video || "#",
+          image: project.image || "https://via.placeholder.com/640x360.png?text=Project",
         }));
         setProjects(normalized);
       } catch (error) {

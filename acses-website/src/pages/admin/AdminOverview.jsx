@@ -4,7 +4,7 @@ import { fetchApi, unwrapList } from "../../utils/api";
 import { formatDate } from "./adminUtils";
 
 const AdminOverview = () => {
-  const { searchQuery, hasAccess } = useAdmin();
+  const { searchQuery, hasAccess, currentUser } = useAdmin();
   const [events, setEvents] = useState([]);
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
@@ -69,7 +69,7 @@ const AdminOverview = () => {
       }
     };
     loadOverview();
-  }, [hasAccess]);
+  }, [currentUser]);
 
   const filteredEvents = useMemo(
     () => events.filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item.venue.toLowerCase().includes(searchQuery.toLowerCase())),

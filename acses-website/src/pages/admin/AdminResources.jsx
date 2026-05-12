@@ -1,168 +1,193 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+import { useAdmin } from "./AdminContext";
+import { fetchApi } from "../../utils/api";
+
+const emptyGrouped = { academic: [], tools: [], career: [] };
+
+const BlockedAccess = () => (
+  <div className="rounded-3xl border border-red-700 bg-acses-green-900 p-6 text-white/80">
+    <p className="text-lg font-semibold">Access denied</p>
+    <p className="mt-2 text-sm text-acses-yellow-100">Your role does not have permission to manage resources.</p>
+  </div>
+);
 
 const AdminResources = () => {
-  const [resources, setResources] = useState({ academic: [], tools: [], career: [] });
+  const { hasAccess, showToast } = useAdmin();
+  const [resources, setResources] = useState(emptyGrouped);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ type: 'academic', title: '', description: '', tags: '', name: '', Icon: '' });
+  const [form, setForm] = useState({ type: "academic", title: "", description: "", url: "", icon: "" });
 
-  useEffect(() => {
-    fetchResources();
-  }, []);
-
-  const fetchResources = async () => {
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/resources`);
-    const data = await res.json();
-    setResources(data);
-  };
-
-  const handleEdit = (res, type) => {
-    setEditing({ ...res, type });
-    if (type === 'academic' || type === 'career') {
-      setForm({ type, title: res.title, description: res.description, tags: res.tags ? res.tags.join(', ') : '', name: '', Icon: '' });
-    } else {
-      setForm({ type, title: '', description: '', tags: '', name: res.name, Icon: res.Icon });
+  const load = async () => {
+    try {
+      const data = await fetchApi("/api/resources");
+      setResources({
+        academic: Array.isArray(data?.academic) ? data.academic : [],
+        tools: Array.isArray(data?.tools) ? data.tools : [],
+        career: Array.isArray(data?.career) ? data.career : [],
+      });
+    } catch (e) {
+      console.error(e);
+      setResources(emptyGrouped);
     }
   };
 
-  const handleSave = async () => {
-    const data = editing.type === 'tools' ? { name: form.name, Icon: form.Icon } : { title: form.title, description: form.description, tags: form.tags.split(',').map(t => t.trim()) };
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/resources`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: editing._id, type: editing.type, ...data })
+  useEffect(() => {
+    load();
+  }, []);
+
+  const payloadFromForm = () => ({
+    type: form.type,
+    title: form.title,
+    description: form.description || undefined,
+    url: form.url || undefined,
+    icon: form.icon || undefined,
+  });
+
+  const handleEdit = (res, type) => {
+    setEditing({ _id: res._id, type });
+    setForm({
+      type,
+      title: res.title || res.name || "",
+      description: res.description || "",
+      url: res.url || "",
+      icon: res.icon || res.Icon || "",
     });
-    setEditing(null);
-    fetchResources();
   };
 
-  const handleDelete = async (id, type) => {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/resources`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id })
-    });
-    fetchResources();
+  const handleSave = async () => {
+    if (!form.title) {
+      showToast("Title is required.", "error");
+      return;
+    }
+    const body = payloadFromForm();
+    try {
+      await fetchApi(`/api/resources/${editing._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ ...body, type: editing.type }),
+        auth: true,
+      });
+      setEditing(null);
+      setForm({ type: "academic", title: "", description: "", url: "", icon: "" });
+      showToast("Resource updated.");
+      load();
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Save failed.", "error");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await fetchApi(`/api/resources/${id}`, { method: "DELETE", auth: true });
+      showToast("Deleted.");
+      load();
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Delete failed.", "error");
+    }
   };
 
   const handleAdd = async () => {
-    const data = form.type === 'tools' ? { name: form.name, Icon: form.Icon } : { title: form.title, description: form.description, tags: form.tags.split(',').map(t => t.trim()) };
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/resources`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: form.type, ...data })
-    });
-    setForm({ type: 'academic', title: '', description: '', tags: '', name: '', Icon: '' });
-    fetchResources();
+    if (!form.title) {
+      showToast("Title is required.", "error");
+      return;
+    }
+    try {
+      await fetchApi("/api/resources", {
+        method: "POST",
+        body: JSON.stringify(payloadFromForm()),
+        auth: true,
+      });
+      setForm({ type: form.type, title: "", description: "", url: "", icon: "" });
+      showToast("Resource added.");
+      load();
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Add failed.", "error");
+    }
   };
 
-  return (
-    <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">Manage Resources</h2>
+  if (!hasAccess("resources")) {
+    return <BlockedAccess />;
+  }
 
-      {/* Add New */}
-      <div className="bg-white p-4 rounded shadow mb-4">
-        <h3 className="text-lg font-semibold mb-2">Add New Resource</h3>
-        <select className="border p-2 mr-2" value={form.type} onChange={(e) => setForm({...form, type: e.target.value})}>
-          <option value="academic">Academic</option>
-          <option value="tools">Tools</option>
-          <option value="career">Career</option>
-        </select>
-        {form.type === 'tools' ? (
-          <>
-            <input className="border p-2 mr-2" placeholder="Name" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} />
-            <input className="border p-2 mr-2" placeholder="Icon" value={form.Icon} onChange={(e) => setForm({...form, Icon: e.target.value})} />
-          </>
+  const renderList = (list, type) =>
+    list.map((res) => (
+      <div key={res._id} className="rounded-2xl border border-acses-green-800 bg-acses-green-900 p-4 text-white mb-2">
+        {editing && editing._id === res._id ? (
+          <div className="grid gap-2">
+            <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Title" />
+            <textarea className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Description" rows={2} />
+            <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="URL" />
+            <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} placeholder="Icon (optional)" />
+            <div className="flex gap-2">
+              <button type="button" onClick={handleSave} className="rounded-xl bg-acses-yellow-400 px-3 py-2 text-sm font-semibold text-acses-green-900">
+                Save
+              </button>
+              <button type="button" onClick={() => setEditing(null)} className="rounded-xl border border-acses-green-700 px-3 py-2 text-sm">
+                Cancel
+              </button>
+            </div>
+          </div>
         ) : (
-          <>
-            <input className="border p-2 mr-2" placeholder="Title" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} />
-            <input className="border p-2 mr-2" placeholder="Description" value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} />
-            <input className="border p-2 mr-2" placeholder="Tags (comma separated)" value={form.tags} onChange={(e) => setForm({...form, tags: e.target.value})} />
-          </>
+          <div className="flex justify-between gap-3 flex-wrap">
+            <div>
+              <strong>{res.title || res.name}</strong>
+              {res.description && <p className="text-sm text-white/70 mt-1">{res.description}</p>}
+              {res.url && (
+                <a href={res.url} className="text-xs text-acses-yellow-200 underline" target="_blank" rel="noreferrer">
+                  Link
+                </a>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => handleEdit(res, type)} className="rounded-xl bg-acses-green-800 px-3 py-2 text-sm text-acses-yellow-200">
+                Edit
+              </button>
+              <button type="button" onClick={() => handleDelete(res._id)} className="rounded-xl bg-red-600 px-3 py-2 text-sm text-white">
+                Delete
+              </button>
+            </div>
+          </div>
         )}
-        <button onClick={handleAdd} className="bg-green-600 text-white px-4 py-2 rounded">Add</button>
+      </div>
+    ));
+
+  return (
+    <div className="mt-8 space-y-8">
+      <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 px-6 py-5 text-white shadow-xl">
+        <h2 className="text-2xl font-bold">Manage Resources</h2>
+        <p className="mt-1 text-sm text-acses-yellow-100">API shape: title, description, url, icon, type (academic | tools | career).</p>
       </div>
 
-      {/* Academic */}
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-2">Academic Resources</h3>
-        {resources.academic.map((res) => (
-          <div key={res._id} className="bg-white p-4 rounded shadow mb-2">
-            {editing && editing._id === res._id ? (
-              <div>
-                <input className="border p-2 mr-2 w-full mb-2" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} />
-                <textarea className="border p-2 mr-2 w-full mb-2" value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} />
-                <input className="border p-2 mr-2 w-full mb-2" value={form.tags} onChange={(e) => setForm({...form, tags: e.target.value})} />
-                <button onClick={handleSave} className="bg-blue-600 text-white px-4 py-2 rounded mr-2">Save</button>
-                <button onClick={() => setEditing(null)} className="bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
-              </div>
-            ) : (
-              <div className="flex justify-between">
-                <div>
-                  <strong>{res.title}</strong> - {res.tags?.join(', ')}
-                </div>
-                <div>
-                  <button onClick={() => handleEdit(res, 'academic')} className="bg-yellow-600 text-white px-4 py-2 rounded mr-2">Edit</button>
-                  <button onClick={() => handleDelete(res._id, 'academic')} className="bg-red-600 text-white px-4 py-2 rounded">Delete</button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+      <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 text-white">
+        <h3 className="text-lg font-semibold mb-3">Add resource</h3>
+        <div className="flex flex-wrap gap-2 mb-3">
+          <select className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
+            <option value="academic">Academic</option>
+            <option value="tools">Tools</option>
+            <option value="career">Career</option>
+          </select>
+        </div>
+        <div className="grid gap-2 md:grid-cols-2">
+          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="URL" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} />
+          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Icon (optional)" value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} />
+          <textarea className="md:col-span-2 rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Description" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+        </div>
+        <button type="button" onClick={handleAdd} className="mt-3 rounded-xl bg-acses-yellow-400 px-4 py-2 text-sm font-semibold text-acses-green-900">
+          Add
+        </button>
       </div>
 
-      {/* Tools */}
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-2">Tools & Platforms</h3>
-        {resources.tools.map((res) => (
-          <div key={res._id} className="bg-white p-4 rounded shadow mb-2">
-            {editing && editing._id === res._id ? (
-              <div>
-                <input className="border p-2 mr-2 w-full mb-2" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} />
-                <input className="border p-2 mr-2 w-full mb-2" value={form.Icon} onChange={(e) => setForm({...form, Icon: e.target.value})} />
-                <button onClick={handleSave} className="bg-blue-600 text-white px-4 py-2 rounded mr-2">Save</button>
-                <button onClick={() => setEditing(null)} className="bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
-              </div>
-            ) : (
-              <div className="flex justify-between">
-                <div>
-                  <strong>{res.name}</strong>
-                </div>
-                <div>
-                  <button onClick={() => handleEdit(res, 'tools')} className="bg-yellow-600 text-white px-4 py-2 rounded mr-2">Edit</button>
-                  <button onClick={() => handleDelete(res._id, 'tools')} className="bg-red-600 text-white px-4 py-2 rounded">Delete</button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+      <div>
+        <h3 className="text-xl font-semibold mb-2 text-white">Academic</h3>
+        {renderList(resources.academic, "academic")}
       </div>
-
-      {/* Career */}
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-2">Career Resources</h3>
-        {resources.career.map((res) => (
-          <div key={res._id} className="bg-white p-4 rounded shadow mb-2">
-            {editing && editing._id === res._id ? (
-              <div>
-                <input className="border p-2 mr-2 w-full mb-2" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} />
-                <textarea className="border p-2 mr-2 w-full mb-2" value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} />
-                <input className="border p-2 mr-2 w-full mb-2" value={form.tags} onChange={(e) => setForm({...form, tags: e.target.value})} />
-                <button onClick={handleSave} className="bg-blue-600 text-white px-4 py-2 rounded mr-2">Save</button>
-                <button onClick={() => setEditing(null)} className="bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
-              </div>
-            ) : (
-              <div className="flex justify-between">
-                <div>
-                  <strong>{res.title}</strong> - {res.tags?.join(', ')}
-                </div>
-                <div>
-                  <button onClick={() => handleEdit(res, 'career')} className="bg-yellow-600 text-white px-4 py-2 rounded mr-2">Edit</button>
-                  <button onClick={() => handleDelete(res._id, 'career')} className="bg-red-600 text-white px-4 py-2 rounded">Delete</button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+      <div>
+        <h3 className="text-xl font-semibold mb-2 text-white">Tools</h3>
+        {renderList(resources.tools, "tools")}
+      </div>
+      <div>
+        <h3 className="text-xl font-semibold mb-2 text-white">Career</h3>
+        {renderList(resources.career, "career")}
       </div>
     </div>
   );

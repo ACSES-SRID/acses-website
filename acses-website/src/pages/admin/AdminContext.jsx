@@ -1,18 +1,39 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { STORAGE_KEYS, DEFAULT_USERS } from "./adminData";
-import { fetchApi } from "../../utils/api";
+import { STORAGE_KEYS } from "./adminData";
+import { fetchApi, setAdminToken, clearAdminToken, getAdminToken } from "../../utils/api";
 
 const AdminContext = createContext(null);
 
-const editorPermissions = ["overview", "events", "executives", "announcements", "student-projects", "gallery"];
+const editorPermissions = [
+  "overview",
+  "events",
+  "executives",
+  "announcements",
+  "student-projects",
+  "gallery",
+  "resources",
+  "store",
+];
+
+const mapApiUser = (u) => ({
+  id: u._id || u.id,
+  username: u.username,
+  name: u.name,
+  email: u.email,
+  role: u.role,
+  status: u.status,
+});
 
 export const AdminProvider = ({ children }) => {
-  // Store the selected admin user locally so refreshing the dashboard keeps the session.
-  // This is client-side only; backend route protection still needs to be added.
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.adminUser);
-      return stored ? JSON.parse(stored) : null;
+      if (!stored) return null;
+      if (!getAdminToken()) {
+        localStorage.removeItem(STORAGE_KEYS.adminUser);
+        return null;
+      }
+      return JSON.parse(stored);
     } catch {
       return null;
     }
@@ -23,11 +44,11 @@ export const AdminProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    // Load public announcements as lightweight admin notifications.
     const loadNotifications = async () => {
       try {
         const data = await fetchApi("/api/announcements");
-        const alerts = data.filter((item) => item.status === "published" && item.visibility === "public");
+        const list = Array.isArray(data) ? data : [];
+        const alerts = list.filter((item) => item.status === "published" && item.visibility === "public");
         setNotifications(alerts.slice(0, 3));
       } catch (error) {
         console.error("Failed to load notifications from API:", error);
@@ -38,52 +59,45 @@ export const AdminProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    const onSessionExpired = () => {
+      localStorage.removeItem(STORAGE_KEYS.adminUser);
+      setCurrentUser(null);
+    };
+    window.addEventListener("acses-admin-session-expired", onSessionExpired);
+    return () => window.removeEventListener("acses-admin-session-expired", onSessionExpired);
+  }, []);
+
+  useEffect(() => {
     if (currentUser) {
       localStorage.setItem(STORAGE_KEYS.adminUser, JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.adminUser);
     }
   }, [currentUser]);
 
   const login = async (username, password) => {
-    let users = [];
     try {
-      // Current login flow checks active users from the API. Password hashing and
-      // token/session auth should replace this before production.
-      const data = await fetchApi("/api/users");
-      users = data.map((item) => ({ id: item._id || item.id, ...item }));
-    } catch (error) {
-      console.error("Failed to fetch users for login:", error);
-      users = DEFAULT_USERS;
-    }
-
-    const matched = users.find((user) => user.username === username && user.password === password && user.status === "active");
-    if (!matched) {
-      return { success: false, message: "Invalid username or password." };
-    }
-
-    // Save last-login metadata without blocking successful login if the update fails.
-    try {
-      if (matched.id) {
-        await fetchApi("/api/users", {
-          method: "PUT",
-          body: JSON.stringify({ id: matched.id, lastLogin: new Date().toISOString() }),
-        });
+      const data = await fetchApi("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+      });
+      if (!data?.token || !data?.user) {
+        return { success: false, message: "Unexpected response from server." };
       }
+      setAdminToken(data.token);
+      setCurrentUser(mapApiUser(data.user));
+      return { success: true };
     } catch (error) {
-      console.error("Failed to update last login:", error);
+      const message = error instanceof Error ? error.message : "Login failed.";
+      if (message.includes("401") || /invalid|unauthorized|credentials/i.test(message)) {
+        return { success: false, message: "Invalid username or password." };
+      }
+      return { success: false, message };
     }
-
-    setCurrentUser({
-      id: matched.id,
-      username: matched.username,
-      name: matched.name,
-      email: matched.email,
-      role: matched.role,
-      status: matched.status,
-    });
-    return { success: true };
   };
 
   const logout = () => {
+    clearAdminToken();
     localStorage.removeItem(STORAGE_KEYS.adminUser);
     setCurrentUser(null);
   };
@@ -105,7 +119,6 @@ export const AdminProvider = ({ children }) => {
   const denyConfirm = () => setConfirm(null);
 
   const hasAccess = (moduleKey) => {
-    // UI-level permission check. The API must also enforce these permissions.
     if (!currentUser) return false;
     if (currentUser.role === "super admin") return true;
     return editorPermissions.includes(moduleKey);

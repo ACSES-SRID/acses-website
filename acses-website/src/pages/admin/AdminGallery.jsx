@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAdmin } from "./AdminContext";
 import { exportToCsv, formatDate } from "./adminUtils";
-import { fetchApi } from "../../utils/api";
+import { fetchApi, unwrapList } from "../../utils/api";
 
 const AdminGallery = () => {
   const { searchQuery, showToast, openConfirm, hasAccess } = useAdmin();
@@ -9,25 +9,27 @@ const AdminGallery = () => {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ image: "", caption: "", eventTag: "", uploadedAt: "", dateUploaded: "" });
 
+  const loadGallery = async () => {
+    try {
+      const data = await fetchApi("/api/gallery?limit=100");
+      const list = unwrapList(data);
+      const normalized = list.map((item) => ({
+        id: item._id || item.id,
+        image: item.src || item.image || "",
+        caption: item.alt || item.caption || "",
+        eventTag: item.category || item.description || "",
+        uploadedAt: item.createdAt || item.uploadedAt || "",
+        dateUploaded: item.dateUploaded || item.createdAt || "",
+        ...item,
+      }));
+      setGallery(normalized);
+    } catch (error) {
+      console.error("Failed to load gallery from API:", error);
+      setGallery([]);
+    }
+  };
+
   useEffect(() => {
-    const loadGallery = async () => {
-      try {
-        const data = await fetchApi("/api/gallery");
-        const normalized = data.map((item) => ({
-          id: item._id || item.id,
-          image: item.src || item.image || "",
-          caption: item.alt || item.caption || "",
-          eventTag: item.description || item.category || "",
-          uploadedAt: item.uploadedAt || item.dateUploaded || "",
-          dateUploaded: item.dateUploaded || item.uploadedAt || "",
-          ...item,
-        }));
-        setGallery(normalized);
-      } catch (error) {
-        console.error("Failed to load gallery from API:", error);
-        setGallery([]);
-      }
-    };
     loadGallery();
   }, []);
 
@@ -36,14 +38,15 @@ const AdminGallery = () => {
   };
 
   const filteredGallery = useMemo(
-    () => gallery.filter((item) => {
-      const query = searchQuery.toLowerCase();
-      return (
-        item.caption.toLowerCase().includes(query) ||
-        item.eventTag.toLowerCase().includes(query) ||
-        item.uploadedAt.toLowerCase().includes(query)
-      );
-    }),
+    () =>
+      gallery.filter((item) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          (item.caption || "").toLowerCase().includes(query) ||
+          (item.eventTag || "").toLowerCase().includes(query) ||
+          String(item.uploadedAt || "").toLowerCase().includes(query)
+        );
+      }),
     [gallery, searchQuery]
   );
 
@@ -58,7 +61,7 @@ const AdminGallery = () => {
 
   const handleSave = async () => {
     if (!form.image || !form.caption || !form.eventTag) {
-      showToast("Image URL, caption, and event tag are required.", "error");
+      showToast("Image URL, caption, and category/tag are required.", "error");
       return;
     }
 
@@ -71,24 +74,26 @@ const AdminGallery = () => {
 
     try {
       if (editingId) {
-        await fetchApi("/api/gallery", {
+        await fetchApi(`/api/gallery/${editingId}`, {
           method: "PUT",
-          body: JSON.stringify({ id: editingId, ...payload }),
+          body: JSON.stringify(payload),
+          auth: true,
         });
-        setGallery(gallery.map((item) => (item.id === editingId ? { id: editingId, ...payload } : item)));
+        setGallery(gallery.map((item) => (item.id === editingId ? { ...item, ...payload, id: editingId, image: payload.src, caption: payload.alt, eventTag: payload.category } : item)));
         showToast("Gallery photo updated.");
       } else {
         const result = await fetchApi("/api/gallery", {
           method: "POST",
           body: JSON.stringify(payload),
+          auth: true,
         });
-        const newId = result.id || `photo-${Date.now()}`;
-        setGallery([...gallery, { id: newId, ...payload }]);
+        const newId = result?.id || result?._id;
+        setGallery([...gallery, { id: newId || `photo-${Date.now()}`, ...payload, image: payload.src, caption: payload.alt, eventTag: payload.category }]);
         showToast("Photo added to gallery.");
       }
     } catch (error) {
       console.error("API save failed:", error);
-      showToast("Failed to save gallery item.", "error");
+      showToast(error instanceof Error ? error.message : "Failed to save gallery item.", "error");
     }
 
     setEditingId(null);
@@ -97,7 +102,13 @@ const AdminGallery = () => {
 
   const handleEdit = (item) => {
     setEditingId(item.id);
-    setForm({ image: item.image, caption: item.caption, eventTag: item.eventTag, uploadedAt: item.uploadedAt, dateUploaded: item.dateUploaded });
+    setForm({
+      image: item.image || item.src || "",
+      caption: item.caption || item.alt || "",
+      eventTag: item.eventTag || item.category || "",
+      uploadedAt: item.uploadedAt || "",
+      dateUploaded: item.dateUploaded || "",
+    });
   };
 
   const handleDelete = (id) => {
@@ -105,15 +116,13 @@ const AdminGallery = () => {
       message: "Delete this gallery item?",
       onConfirm: async () => {
         try {
-          await fetchApi("/api/gallery", {
-            method: "DELETE",
-            body: JSON.stringify({ id }),
-          });
+          await fetchApi(`/api/gallery/${id}`, { method: "DELETE", auth: true });
+          saveGallery(gallery.filter((item) => item.id !== id));
+          showToast("Gallery item deleted.");
         } catch (error) {
           console.error("API delete failed:", error);
+          showToast(error instanceof Error ? error.message : "Delete failed.", "error");
         }
-        saveGallery(gallery.filter((item) => item.id !== id));
-        showToast("Gallery item deleted.");
       },
     });
   };
@@ -149,14 +158,20 @@ const AdminGallery = () => {
                     <td className="px-4 py-3">{item.eventTag}</td>
                     <td className="px-4 py-3">{formatDate(item.uploadedAt)}</td>
                     <td className="px-4 py-3 space-x-2">
-                      <button onClick={() => handleEdit(item)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">Edit</button>
-                      <button onClick={() => handleDelete(item.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">Delete</button>
+                      <button onClick={() => handleEdit(item)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">
+                        Edit
+                      </button>
+                      <button onClick={() => handleDelete(item.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
                 {filteredGallery.length === 0 && (
                   <tr>
-                    <td colSpan="4" className="px-4 py-8 text-center text-acses-yellow-200">No gallery items found.</td>
+                    <td colSpan="4" className="px-4 py-8 text-center text-acses-yellow-200">
+                      No gallery items found.
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -169,12 +184,24 @@ const AdminGallery = () => {
           <div className="mt-5 space-y-4">
             <Field label="Image URL" value={form.image} onChange={(value) => setForm({ ...form, image: value })} />
             <Field label="Caption" value={form.caption} onChange={(value) => setForm({ ...form, caption: value })} />
-            <Field label="Event tag" value={form.eventTag} onChange={(value) => setForm({ ...form, eventTag: value })} />
+            <Field label="Category / tag" value={form.eventTag} onChange={(value) => setForm({ ...form, eventTag: value })} />
             <Field label="Upload date" type="date" value={form.uploadedAt} onChange={(value) => setForm({ ...form, uploadedAt: value })} />
             <Field label="Display date" type="date" value={form.dateUploaded} onChange={(value) => setForm({ ...form, dateUploaded: value })} />
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-              {editingId && <button onClick={() => { setEditingId(null); setForm({ image: "", caption: "", eventTag: "", uploadedAt: "", dateUploaded: "" }); }} className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800">Cancel</button>}
-              <button onClick={handleSave} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">{editingId ? "Save photo" : "Add photo"}</button>
+              {editingId && (
+                <button
+                  onClick={() => {
+                    setEditingId(null);
+                    setForm({ image: "", caption: "", eventTag: "", uploadedAt: "", dateUploaded: "" });
+                  }}
+                  className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800"
+                >
+                  Cancel
+                </button>
+              )}
+              <button onClick={handleSave} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
+                {editingId ? "Save photo" : "Add photo"}
+              </button>
             </div>
           </div>
         </div>
@@ -191,5 +218,3 @@ const Field = ({ label, value, onChange, type = "text" }) => (
 );
 
 export default AdminGallery;
-
-

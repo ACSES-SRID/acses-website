@@ -12,20 +12,22 @@ const AdminUsers = () => {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ username: "", name: "", email: "", role: "editor", status: "active", password: "" });
 
+  const loadUsers = async () => {
+    try {
+      const data = await fetchApi("/api/users", { auth: true });
+      const list = Array.isArray(data) ? data : [];
+      const normalized = list.map((item) => ({
+        id: item._id || item.id,
+        ...item,
+      }));
+      setUsers(normalized);
+    } catch (error) {
+      console.error("Failed to load users from API:", error);
+      setUsers([]);
+    }
+  };
+
   useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const data = await fetchApi("/api/users");
-        const normalized = data.map((item) => ({
-          id: item._id || item.id,
-          ...item,
-        }));
-        setUsers(normalized);
-      } catch (error) {
-        console.error("Failed to load users from API:", error);
-        setUsers([]);
-      }
-    };
     loadUsers();
   }, []);
 
@@ -46,48 +48,57 @@ const AdminUsers = () => {
   }
 
   const handleSubmit = async () => {
-    if (!form.username || !form.email || !form.name || !form.password) {
-      showToast("All fields are required.", "error");
+    if (!form.username || !form.email || !form.name) {
+      showToast("Username, name and email are required.", "error");
       return;
     }
+    if (!editingId && !form.password) {
+      showToast("Password is required for new users.", "error");
+      return;
+    }
+
     const payload = {
       username: form.username,
       name: form.name,
       email: form.email,
       role: form.role,
       status: form.status,
-      password: form.password,
-      lastLogin: new Date().toISOString(),
     };
-    
+    if (form.password) {
+      payload.password = form.password;
+    }
+
     try {
       if (editingId) {
-        await fetchApi("/api/users", {
+        await fetchApi(`/api/users/${editingId}`, {
           method: "PUT",
-          body: JSON.stringify({ id: editingId, ...payload }),
+          body: JSON.stringify(payload),
+          auth: true,
         });
-        saveUsers(users.map((item) => (item.id === editingId ? { ...item, ...payload, id: editingId } : item)));
+        saveUsers(users.map((item) => (item.id === editingId ? { ...item, ...payload, id: editingId, password: undefined } : item)));
         showToast("User updated.");
       } else {
         const result = await fetchApi("/api/users", {
           method: "POST",
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ ...payload, password: form.password }),
+          auth: true,
         });
-        saveUsers([...users, { ...payload, id: result.id || `user-${Date.now()}` }]);
+        const newId = result?.id || result?._id;
+        saveUsers([...users, { ...payload, id: newId || `user-${Date.now()}`, password: undefined }]);
         showToast("User added.");
       }
     } catch (error) {
       console.error("API save failed:", error);
-      showToast("Failed to save user.", "error");
+      showToast(error instanceof Error ? error.message : "Failed to save user.", "error");
     }
-    
+
     setEditingId(null);
     setForm({ username: "", name: "", email: "", role: "editor", status: "active", password: "" });
   };
 
   const handleEdit = (item) => {
     setEditingId(item.id);
-    setForm({ username: item.username, name: item.name, email: item.email, role: item.role, status: item.status, password: item.password });
+    setForm({ username: item.username, name: item.name, email: item.email, role: item.role, status: item.status, password: "" });
   };
 
   const handleDelete = (id) => {
@@ -95,15 +106,13 @@ const AdminUsers = () => {
       message: "Remove this admin user?",
       onConfirm: async () => {
         try {
-          await fetchApi("/api/users", {
-            method: "DELETE",
-            body: JSON.stringify({ id }),
-          });
+          await fetchApi(`/api/users/${id}`, { method: "DELETE", auth: true });
+          saveUsers(users.filter((item) => item.id !== id));
+          showToast("User deleted.");
         } catch (error) {
           console.error("API delete failed:", error);
+          showToast(error instanceof Error ? error.message : "Delete failed.", "error");
         }
-        saveUsers(users.filter((item) => item.id !== id));
-        showToast("User deleted.");
       },
     });
   };
@@ -139,14 +148,20 @@ const AdminUsers = () => {
                   <td className="px-4 py-3 capitalize">{user.role}</td>
                   <td className="px-4 py-3 capitalize">{user.status}</td>
                   <td className="px-4 py-3 space-x-2">
-                    <button onClick={() => handleEdit(user)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">Edit</button>
-                    <button onClick={() => handleDelete(user.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">Delete</button>
+                    <button onClick={() => handleEdit(user)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">
+                      Edit
+                    </button>
+                    <button onClick={() => handleDelete(user.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="px-4 py-8 text-center text-acses-yellow-200">No users found.</td>
+                  <td colSpan="6" className="px-4 py-8 text-center text-acses-yellow-200">
+                    No users found.
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -156,6 +171,7 @@ const AdminUsers = () => {
 
       <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 shadow-xl shadow-acses-green-900/20">
         <h2 className="text-lg font-semibold text-white">{editingId ? "Edit admin user" : "Add admin user"}</h2>
+        {editingId && <p className="mt-2 text-xs text-white/50">Leave password blank to keep the current password.</p>}
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           <Field label="Username" value={form.username} onChange={(value) => setForm({ ...form, username: value })} />
           <Field label="Name" value={form.name} onChange={(value) => setForm({ ...form, name: value })} />
@@ -165,8 +181,20 @@ const AdminUsers = () => {
           <Select label="Status" value={form.status} options={statuses} onChange={(value) => setForm({ ...form, status: value })} />
         </div>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-          {editingId && <button onClick={() => { setEditingId(null); setForm({ username: "", name: "", email: "", role: "editor", status: "active", password: "" }); }} className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800">Cancel</button>}
-          <button onClick={handleSubmit} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">{editingId ? "Save user" : "Add user"}</button>
+          {editingId && (
+            <button
+              onClick={() => {
+                setEditingId(null);
+                setForm({ username: "", name: "", email: "", role: "editor", status: "active", password: "" });
+              }}
+              className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800"
+            >
+              Cancel
+            </button>
+          )}
+          <button onClick={handleSubmit} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
+            {editingId ? "Save user" : "Add user"}
+          </button>
         </div>
       </div>
     </div>
@@ -199,12 +227,12 @@ const Select = ({ label, value, options, onChange }) => (
     <label className="block text-sm font-medium text-white/70">{label}</label>
     <select value={value} onChange={(e) => onChange(e.target.value)} className="mt-2 w-full rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-3 text-white outline-none">
       {options.map((option) => (
-        <option key={option} value={option}>{option}</option>
+        <option key={option} value={option}>
+          {option}
+        </option>
       ))}
     </select>
   </div>
 );
 
 export default AdminUsers;
-
-

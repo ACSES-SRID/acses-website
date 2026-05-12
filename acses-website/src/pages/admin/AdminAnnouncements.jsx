@@ -9,20 +9,22 @@ const AdminAnnouncements = () => {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ title: "", body: "", date: "", visibility: "public", status: "draft" });
 
+  const loadAnnouncements = async () => {
+    try {
+      const data = await fetchApi("/api/announcements");
+      const list = Array.isArray(data) ? data : [];
+      const normalized = list.map((item) => ({
+        id: item._id || item.id,
+        ...item,
+      }));
+      setAnnouncements(normalized);
+    } catch (error) {
+      console.error("Failed to load announcements from API:", error);
+      setAnnouncements([]);
+    }
+  };
+
   useEffect(() => {
-    const loadAnnouncements = async () => {
-      try {
-        const data = await fetchApi("/api/announcements");
-        const normalized = data.map((item) => ({
-          id: item._id || item.id,
-          ...item,
-        }));
-        setAnnouncements(normalized);
-      } catch (error) {
-        console.error("Failed to load announcements from API:", error);
-        setAnnouncements([]);
-      }
-    };
     loadAnnouncements();
   }, []);
 
@@ -34,7 +36,7 @@ const AdminAnnouncements = () => {
     return (
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.body.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.author.toLowerCase().includes(searchQuery.toLowerCase())
+      (item.author || "").toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -55,12 +57,13 @@ const AdminAnnouncements = () => {
       visibility: form.visibility,
       status: form.status,
     };
-    
+
     try {
       if (editingId) {
-        await fetchApi("/api/announcements", {
+        await fetchApi(`/api/announcements/${editingId}`, {
           method: "PUT",
-          body: JSON.stringify({ id: editingId, ...payload }),
+          body: JSON.stringify(payload),
+          auth: true,
         });
         saveAnnouncements(announcements.map((item) => (item.id === editingId ? { ...item, ...payload, id: editingId } : item)));
         showToast("Announcement updated.");
@@ -68,20 +71,17 @@ const AdminAnnouncements = () => {
         const result = await fetchApi("/api/announcements", {
           method: "POST",
           body: JSON.stringify(payload),
+          auth: true,
         });
-        saveAnnouncements([...announcements, { ...payload, id: result.id || `news-${Date.now()}` }]);
+        const newId = result?.id || result?._id;
+        saveAnnouncements([...announcements, { ...payload, id: newId || `news-${Date.now()}` }]);
         showToast("Announcement posted.");
       }
     } catch (error) {
       console.error("API save failed:", error);
-      showToast("Saved locally (offline mode).", "warning");
-      if (editingId) {
-        saveAnnouncements(announcements.map((item) => (item.id === editingId ? payload : item)));
-      } else {
-        saveAnnouncements([...announcements, { ...payload, id: `news-${Date.now()}` }]);
-      }
+      showToast(error instanceof Error ? error.message : "Failed to save announcement.", "error");
     }
-    
+
     setEditingId(null);
     setForm({ title: "", body: "", date: "", visibility: "public", status: "draft" });
   };
@@ -96,15 +96,13 @@ const AdminAnnouncements = () => {
       message: "Remove this announcement?",
       onConfirm: async () => {
         try {
-          await fetchApi("/api/announcements", {
-            method: "DELETE",
-            body: JSON.stringify({ id }),
-          });
+          await fetchApi(`/api/announcements/${id}`, { method: "DELETE", auth: true });
+          saveAnnouncements(announcements.filter((item) => item.id !== id));
+          showToast("Announcement deleted.");
         } catch (error) {
           console.error("API delete failed:", error);
+          showToast(error instanceof Error ? error.message : "Delete failed.", "error");
         }
-        saveAnnouncements(announcements.filter((item) => item.id !== id));
-        showToast("Announcement deleted.");
       },
     });
   };
@@ -139,14 +137,20 @@ const AdminAnnouncements = () => {
                     <td className="px-4 py-3 capitalize">{item.visibility}</td>
                     <td className="px-4 py-3 capitalize">{item.status}</td>
                     <td className="px-4 py-3 space-x-2">
-                      <button onClick={() => handleEdit(item)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">Edit</button>
-                      <button onClick={() => handleDelete(item.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">Delete</button>
+                      <button onClick={() => handleEdit(item)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">
+                        Edit
+                      </button>
+                      <button onClick={() => handleDelete(item.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan="5" className="px-4 py-8 text-center text-acses-yellow-200">No announcements found.</td>
+                    <td colSpan="5" className="px-4 py-8 text-center text-acses-yellow-200">
+                      No announcements found.
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -163,8 +167,20 @@ const AdminAnnouncements = () => {
             <Select label="Visibility" value={form.visibility} options={["public", "members-only"]} onChange={(value) => setForm({ ...form, visibility: value })} />
             <Select label="Status" value={form.status} options={["draft", "published"]} onChange={(value) => setForm({ ...form, status: value })} />
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-              {editingId && <button onClick={() => { setEditingId(null); setForm({ title: "", body: "", date: "", visibility: "public", status: "draft" }); }} className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800">Cancel</button>}
-              <button onClick={handleSubmit} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">{editingId ? "Save" : "Publish"}</button>
+              {editingId && (
+                <button
+                  onClick={() => {
+                    setEditingId(null);
+                    setForm({ title: "", body: "", date: "", visibility: "public", status: "draft" });
+                  }}
+                  className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800"
+                >
+                  Cancel
+                </button>
+              )}
+              <button onClick={handleSubmit} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
+                {editingId ? "Save" : "Publish"}
+              </button>
             </div>
           </div>
         </div>
@@ -206,12 +222,12 @@ const Select = ({ label, value, options, onChange }) => (
     <label className="block text-sm font-medium text-white/70">{label}</label>
     <select value={value} onChange={(e) => onChange(e.target.value)} className="mt-2 w-full rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-3 text-white outline-none">
       {options.map((option) => (
-        <option key={option} value={option}>{option}</option>
+        <option key={option} value={option}>
+          {option}
+        </option>
       ))}
     </select>
   </div>
 );
 
 export default AdminAnnouncements;
-
-

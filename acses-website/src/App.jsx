@@ -83,7 +83,7 @@ function AppInitializer() {
     // Wake the CDN/API server using an actual endpoint. This helps when the API
     // is hosted on a free/sleeping service that needs a first request.
     const timer = setTimeout(() => {
-      fetch(`${API_BASE_URL}/api/leadership`)
+      fetch(`${API_BASE_URL}/health`)
         .then((res) => {
           if (!res.ok) throw new Error("API endpoint not reachable");
           return res.json();

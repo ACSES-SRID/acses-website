@@ -1,29 +1,50 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useAdmin } from "./AdminContext";
 import { exportToCsv } from "./adminUtils";
-import { fetchApi } from "../../utils/api";
+import { fetchApi, unwrapList } from "../../utils/api";
+
+const normalizeProject = (item) => {
+  const id = item._id || item.id;
+  const technologies = Array.isArray(item.technologies) ? item.technologies : [];
+  const approved = item.status === "approved";
+  const student = item.submittedBy || item.student || "";
+  return {
+    id,
+    ...item,
+    technologies,
+    approved,
+    student,
+  };
+};
 
 const AdminStudentProjects = () => {
   const { searchQuery, showToast, openConfirm, hasAccess } = useAdmin();
   const [projects, setProjects] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", approved: false });
+  const [form, setForm] = useState({
+    title: "",
+    student: "",
+    description: "",
+    technologies: "",
+    image: "",
+    github: "",
+    demo: "",
+    video: "",
+    approved: false,
+  });
+
+  const loadProjects = async () => {
+    try {
+      const data = await fetchApi("/api/student-projects/all?limit=100", { auth: true });
+      const list = unwrapList(data);
+      setProjects(list.map(normalizeProject));
+    } catch (error) {
+      console.error("Failed to load projects from API:", error);
+      setProjects([]);
+    }
+  };
 
   useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        const data = await fetchApi("/api/student-projects");
-        const normalized = data.map((item) => ({
-          id: item._id || item.id,
-          ...item,
-          technologies: Array.isArray(item.technologies) ? item.technologies : [],
-        }));
-        setProjects(normalized);
-      } catch (error) {
-        console.error("Failed to load projects from API:", error);
-        setProjects([]);
-      }
-    };
     loadProjects();
   }, []);
 
@@ -32,15 +53,16 @@ const AdminStudentProjects = () => {
   };
 
   const filteredProjects = useMemo(
-    () => projects.filter((project) => {
-      const query = searchQuery.toLowerCase();
-      return (
-        project.title.toLowerCase().includes(query) ||
-        project.student.toLowerCase().includes(query) ||
-        project.description.toLowerCase().includes(query) ||
-        project.technologies.join(", ").toLowerCase().includes(query)
-      );
-    }),
+    () =>
+      projects.filter((project) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          project.title.toLowerCase().includes(query) ||
+          (project.student || "").toLowerCase().includes(query) ||
+          project.description.toLowerCase().includes(query) ||
+          project.technologies.join(", ").toLowerCase().includes(query)
+        );
+      }),
     [projects, searchQuery]
   );
 
@@ -53,60 +75,68 @@ const AdminStudentProjects = () => {
     );
   }
 
-  const handleSave = async () => {
-    if (!form.title || !form.student || !form.description) {
-      showToast("Title, student and description are required.", "error");
-      return;
-    }
-
+  const buildPayload = () => {
     const technologies = form.technologies.split(",").map((item) => item.trim()).filter(Boolean);
-    const payload = {
+    return {
       title: form.title,
       description: form.description,
       technologies,
       image: form.image,
       github: form.github,
       demo: form.demo,
-      video: form.demo,
+      video: form.video || undefined,
+      submittedBy: form.student,
+      status: form.approved ? "approved" : "pending",
     };
+  };
+
+  const handleSave = async () => {
+    if (!form.title || !form.student || !form.description) {
+      showToast("Title, submitter name and description are required.", "error");
+      return;
+    }
+
+    const payload = buildPayload();
 
     try {
       if (editingId) {
-        await fetchApi("/api/student-projects", {
+        await fetchApi(`/api/student-projects/${editingId}`, {
           method: "PUT",
-          body: JSON.stringify({ id: editingId, ...payload }),
+          body: JSON.stringify(payload),
+          auth: true,
         });
-        setProjects(projects.map((project) => (project.id === editingId ? { id: editingId, ...payload, technologies } : project)));
+        setProjects(projects.map((project) => (project.id === editingId ? normalizeProject({ ...project, ...payload, _id: editingId }) : project)));
         showToast("Project updated successfully.");
       } else {
-        const result = await fetchApi("/api/student-projects", {
+        const { status: _s, ...createBody } = payload;
+        await fetchApi("/api/student-projects", {
           method: "POST",
-          body: JSON.stringify(payload),
+          body: JSON.stringify(createBody),
         });
-        const newId = result.id || `project-${Date.now()}`;
-        setProjects([...projects, { id: newId, ...payload, technologies }]);
-        showToast("Project added successfully.");
+        await loadProjects();
+        showToast("Project submitted.");
       }
     } catch (error) {
       console.error("API save failed:", error);
-      showToast("Failed to save project.", "error");
+      showToast(error instanceof Error ? error.message : "Failed to save project.", "error");
     }
 
     setEditingId(null);
-    setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", approved: false });
+    setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", approved: false });
   };
 
   const handleEdit = (project) => {
     setEditingId(project.id);
     setForm({
       title: project.title,
-      student: project.student,
+      student: project.student || project.submittedBy || "",
       description: project.description,
       technologies: project.technologies.join(", "),
-      image: project.image,
-      github: project.github,
-      demo: project.demo,
-      approved: project.approved,
+      image: project.image || "",
+      github: project.github || "",
+      demo: project.demo || "",
+      video: project.video || "",
+      approved: project.approved || project.status === "approved",
     });
   };
 
@@ -115,20 +145,18 @@ const AdminStudentProjects = () => {
       message: "Delete this student project permanently?",
       onConfirm: async () => {
         try {
-          await fetchApi("/api/student-projects", {
-            method: "DELETE",
-            body: JSON.stringify({ id }),
-          });
+          await fetchApi(`/api/student-projects/${id}`, { method: "DELETE", auth: true });
+          saveProjects(projects.filter((project) => project.id !== id));
+          showToast("Project deleted.");
         } catch (error) {
           console.error("API delete failed:", error);
+          showToast(error instanceof Error ? error.message : "Delete failed.", "error");
         }
-        saveProjects(projects.filter((project) => project.id !== id));
-        showToast("Project deleted.");
       },
     });
   };
 
-  const approvedCount = projects.filter((project) => project.approved).length;
+  const approvedCount = projects.filter((project) => project.approved || project.status === "approved").length;
 
   return (
     <div className="space-y-6">
@@ -140,7 +168,9 @@ const AdminStudentProjects = () => {
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 shadow-xl shadow-acses-green-900/20">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-white/70">Approved projects: <span className="font-semibold text-white">{approvedCount}</span></p>
+            <p className="text-white/70">
+              Approved projects: <span className="font-semibold text-white">{approvedCount}</span>
+            </p>
             <button onClick={() => exportToCsv("acses-student-projects.csv", projects)} className="rounded-2xl bg-acses-yellow-400 px-4 py-2 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
               Export CSV
             </button>
@@ -150,7 +180,7 @@ const AdminStudentProjects = () => {
               <thead className="bg-acses-green-900 text-acses-yellow-100">
                 <tr>
                   <th className="px-4 py-3">Title</th>
-                  <th className="px-4 py-3">Student</th>
+                  <th className="px-4 py-3">Submitter</th>
                   <th className="px-4 py-3">Technologies</th>
                   <th className="px-4 py-3">Approved</th>
                   <th className="px-4 py-3">Actions</th>
@@ -164,14 +194,20 @@ const AdminStudentProjects = () => {
                     <td className="px-4 py-3">{project.technologies.join(", ")}</td>
                     <td className="px-4 py-3">{project.approved ? "Yes" : "No"}</td>
                     <td className="px-4 py-3 space-x-2">
-                      <button onClick={() => handleEdit(project)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">Edit</button>
-                      <button onClick={() => handleDelete(project.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">Delete</button>
+                      <button onClick={() => handleEdit(project)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">
+                        Edit
+                      </button>
+                      <button onClick={() => handleDelete(project.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
                 {filteredProjects.length === 0 && (
                   <tr>
-                    <td colSpan="5" className="px-4 py-8 text-center text-acses-yellow-200">No projects found.</td>
+                    <td colSpan="5" className="px-4 py-8 text-center text-acses-yellow-200">
+                      No projects found.
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -180,22 +216,38 @@ const AdminStudentProjects = () => {
         </div>
 
         <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 shadow-xl shadow-acses-green-900/20">
-          <h2 className="text-lg font-semibold text-white">{editingId ? "Edit project" : "Add new project"}</h2>
+          <h2 className="text-lg font-semibold text-white">{editingId ? "Edit project" : "Add new project (public submit)"}</h2>
+          <p className="mt-1 text-xs text-white/50">New entries use the public submit endpoint (pending until approved).</p>
           <div className="mt-5 space-y-4">
             <Field label="Project title" value={form.title} onChange={(value) => setForm({ ...form, title: value })} />
-            <Field label="Student name" value={form.student} onChange={(value) => setForm({ ...form, student: value })} />
+            <Field label="Submitted by" value={form.student} onChange={(value) => setForm({ ...form, student: value })} />
             <TextArea label="Description" value={form.description} onChange={(value) => setForm({ ...form, description: value })} />
-            <Field label="Technologies" value={form.technologies} onChange={(value) => setForm({ ...form, technologies: value })} />
+            <Field label="Technologies (comma-separated)" value={form.technologies} onChange={(value) => setForm({ ...form, technologies: value })} />
             <Field label="Image URL" value={form.image} onChange={(value) => setForm({ ...form, image: value })} />
             <Field label="GitHub URL" value={form.github} onChange={(value) => setForm({ ...form, github: value })} />
             <Field label="Demo URL" value={form.demo} onChange={(value) => setForm({ ...form, demo: value })} />
+            <Field label="Video URL" value={form.video} onChange={(value) => setForm({ ...form, video: value })} />
             <div className="flex items-center gap-3">
               <input id="approved" type="checkbox" checked={form.approved} onChange={(e) => setForm({ ...form, approved: e.target.checked })} className="h-4 w-4 rounded border-acses-green-800 bg-acses-green-900 text-amber-400 focus:ring-amber-400" />
-              <label htmlFor="approved" className="text-sm text-white/70">Approved for display</label>
+              <label htmlFor="approved" className="text-sm text-white/70">
+                Approved (saved on update only)
+              </label>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-              {editingId && <button onClick={() => { setEditingId(null); setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", approved: false }); }} className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800">Cancel</button>}
-              <button onClick={handleSave} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">{editingId ? "Save project" : "Add project"}</button>
+              {editingId && (
+                <button
+                  onClick={() => {
+                    setEditingId(null);
+                    setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", approved: false });
+                  }}
+                  className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800"
+                >
+                  Cancel
+                </button>
+              )}
+              <button onClick={handleSave} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
+                {editingId ? "Save project" : "Submit project"}
+              </button>
             </div>
           </div>
         </div>
@@ -219,5 +271,3 @@ const TextArea = ({ label, value, onChange }) => (
 );
 
 export default AdminStudentProjects;
-
-

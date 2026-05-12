@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useAdmin } from "./AdminContext";
 import { exportToCsv, formatDate } from "./adminUtils";
-import { fetchApi } from "../../utils/api";
+import { fetchApi, unwrapList } from "../../utils/api";
 
 const categories = ["seminar", "workshop", "social"];
 const statuses = ["upcoming", "ongoing", "past"];
@@ -14,20 +14,22 @@ const AdminEvents = () => {
   const [filter, setFilter] = useState({ category: "all", status: "all" });
   const [pageIndex, setPageIndex] = useState(0);
 
+  const loadEvents = async () => {
+    try {
+      const data = await fetchApi("/api/events?limit=100");
+      const list = unwrapList(data);
+      const normalized = list.map((item) => ({
+        id: item._id || item.id,
+        ...item,
+      }));
+      setEvents(normalized);
+    } catch (error) {
+      console.error("Failed to load events from API:", error);
+      setEvents([]);
+    }
+  };
+
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const data = await fetchApi("/api/events");
-        const normalized = data.map((item) => ({
-          id: item._id || item.id,
-          ...item,
-        }));
-        setEvents(normalized);
-      } catch (error) {
-        console.error("Failed to load events from API:", error);
-        setEvents([]);
-      }
-    };
     loadEvents();
   }, []);
 
@@ -43,7 +45,7 @@ const AdminEvents = () => {
         return (
           event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           event.venue.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          event.description.toLowerCase().includes(searchQuery.toLowerCase())
+          (event.description || "").toLowerCase().includes(searchQuery.toLowerCase())
         );
       })
       .slice(pageIndex * 6, pageIndex * 6 + 6);
@@ -54,14 +56,23 @@ const AdminEvents = () => {
       showToast("Title, date and venue are required.", "error");
       return;
     }
-    
-    const payload = { title: form.title, date: form.date, venue: form.venue, description: form.description, category: form.category, status: form.status, flyer: form.flyer };
-    
+
+    const payload = {
+      title: form.title,
+      date: form.date,
+      venue: form.venue,
+      description: form.description,
+      category: form.category,
+      status: form.status,
+      flyer: form.flyer,
+    };
+
     try {
       if (editingId) {
-        await fetchApi("/api/events", {
+        await fetchApi(`/api/events/${editingId}`, {
           method: "PUT",
-          body: JSON.stringify({ id: editingId, ...payload }),
+          body: JSON.stringify(payload),
+          auth: true,
         });
         const updated = events.map((item) => (item.id === editingId ? { ...item, ...payload } : item));
         saveEvents(updated);
@@ -70,30 +81,33 @@ const AdminEvents = () => {
         const result = await fetchApi("/api/events", {
           method: "POST",
           body: JSON.stringify(payload),
+          auth: true,
         });
-        const next = [...events, { ...payload, id: result.id || `event-${Date.now()}` }];
+        const newId = result?.id || result?._id;
+        const next = [...events, { ...payload, id: newId || `event-${Date.now()}` }];
         saveEvents(next);
         showToast("Event created successfully.");
       }
     } catch (error) {
       console.error("API save failed:", error);
-      showToast("Saved locally (offline mode).", "warning");
-      if (editingId) {
-        const updated = events.map((item) => (item.id === editingId ? { ...item, ...payload } : item));
-        saveEvents(updated);
-      } else {
-        const next = [...events, { ...payload, id: `event-${Date.now()}` }];
-        saveEvents(next);
-      }
+      showToast(error instanceof Error ? error.message : "Failed to save event.", "error");
     }
-    
+
     setForm({ title: "", date: "", venue: "", description: "", category: "seminar", status: "upcoming", flyer: "" });
     setEditingId(null);
   };
 
   const handleEdit = (item) => {
     setEditingId(item.id);
-    setForm({ title: item.title, date: item.date, venue: item.venue, description: item.description, category: item.category, status: item.status, flyer: item.flyer });
+    setForm({
+      title: item.title,
+      date: item.date,
+      venue: item.venue,
+      description: item.description,
+      category: item.category,
+      status: item.status,
+      flyer: item.flyer,
+    });
   };
 
   const handleDelete = (id) => {
@@ -101,16 +115,13 @@ const AdminEvents = () => {
       message: "Delete this event permanently?",
       onConfirm: async () => {
         try {
-          await fetchApi("/api/events", {
-            method: "DELETE",
-            body: JSON.stringify({ id }),
-          });
+          await fetchApi(`/api/events/${id}`, { method: "DELETE", auth: true });
+          saveEvents(events.filter((item) => item.id !== id));
+          showToast("Event deleted.");
         } catch (error) {
           console.error("API delete failed:", error);
+          showToast(error instanceof Error ? error.message : "Delete failed.", "error");
         }
-        const updated = events.filter((item) => item.id !== id);
-        saveEvents(updated);
-        showToast("Event deleted.");
       },
     });
   };
@@ -118,7 +129,10 @@ const AdminEvents = () => {
   const allEventsCount = events.filter((event) => {
     if (filter.category !== "all" && event.category !== filter.category) return false;
     if (filter.status !== "all" && event.status !== filter.status) return false;
-    return event.title.toLowerCase().includes(searchQuery.toLowerCase()) || event.venue.toLowerCase().includes(searchQuery.toLowerCase());
+    return (
+      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.venue.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   }).length;
 
   if (!hasAccess("events")) {
@@ -135,13 +149,17 @@ const AdminEvents = () => {
             <select value={filter.category} onChange={(e) => setFilter((prev) => ({ ...prev, category: e.target.value }))} className="rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-2 text-white outline-none">
               <option value="all">All categories</option>
               {categories.map((category) => (
-                <option key={category} value={category}>{category}</option>
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
             <select value={filter.status} onChange={(e) => setFilter((prev) => ({ ...prev, status: e.target.value }))} className="rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-2 text-white outline-none">
               <option value="all">All statuses</option>
               {statuses.map((status) => (
-                <option key={status} value={status}>{status}</option>
+                <option key={status} value={status}>
+                  {status}
+                </option>
               ))}
             </select>
             <button onClick={() => exportToCsv("acses-events.csv", events)} className="rounded-2xl bg-acses-yellow-400 px-4 py-2 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
@@ -170,14 +188,20 @@ const AdminEvents = () => {
                     <td className="px-4 py-3 capitalize">{event.category}</td>
                     <td className="px-4 py-3 capitalize">{event.status}</td>
                     <td className="px-4 py-3 space-x-2">
-                      <button onClick={() => handleEdit(event)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">Edit</button>
-                      <button onClick={() => handleDelete(event.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">Delete</button>
+                      <button onClick={() => handleEdit(event)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">
+                        Edit
+                      </button>
+                      <button onClick={() => handleDelete(event.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
                 {filteredEvents.length === 0 && (
                   <tr>
-                    <td colSpan="6" className="px-4 py-8 text-center text-acses-yellow-200">No events found.</td>
+                    <td colSpan="6" className="px-4 py-8 text-center text-acses-yellow-200">
+                      No events found.
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -198,7 +222,9 @@ const AdminEvents = () => {
                 <label className="text-sm font-medium text-white/70">Category</label>
                 <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="mt-2 w-full rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-3 text-white outline-none">
                   {categories.map((category) => (
-                    <option key={category} value={category}>{category}</option>
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -207,15 +233,29 @@ const AdminEvents = () => {
               <label className="text-sm font-medium text-white/70">Status</label>
               <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="mt-2 w-full rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-3 text-white outline-none">
                 {statuses.map((status) => (
-                  <option key={status} value={status}>{status}</option>
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
                 ))}
               </select>
             </div>
             <TextArea label="Description" value={form.description} onChange={(value) => setForm({ ...form, description: value })} />
             <Input label="Flyer image URL" value={form.flyer} onChange={(value) => setForm({ ...form, flyer: value })} />
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-              {editingId && <button onClick={() => { setEditingId(null); setForm({ title: "", date: "", venue: "", description: "", category: "seminar", status: "upcoming", flyer: "" }); }} className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800">Cancel</button>}
-              <button onClick={handleSubmit} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">{editingId ? "Save changes" : "Create event"}</button>
+              {editingId && (
+                <button
+                  onClick={() => {
+                    setEditingId(null);
+                    setForm({ title: "", date: "", venue: "", description: "", category: "seminar", status: "upcoming", flyer: "" });
+                  }}
+                  className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800"
+                >
+                  Cancel
+                </button>
+              )}
+              <button onClick={handleSubmit} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
+                {editingId ? "Save changes" : "Create event"}
+              </button>
             </div>
           </div>
         </div>
@@ -266,5 +306,3 @@ const Pagination = ({ count, pageIndex, setPageIndex }) => {
 };
 
 export default AdminEvents;
-
-

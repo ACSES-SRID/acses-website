@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useAdmin } from "./AdminContext";
-import { fetchApi } from "../../utils/api";
+import { fetchApi, unwrapList } from "../../utils/api";
 import { formatDate } from "./adminUtils";
 
 const AdminOverview = () => {
-  const { searchQuery } = useAdmin();
+  const { searchQuery, hasAccess } = useAdmin();
   const [events, setEvents] = useState([]);
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
@@ -14,19 +14,51 @@ const AdminOverview = () => {
   useEffect(() => {
     const loadOverview = async () => {
       try {
-        // Fetch dashboard data in parallel because none of these requests depend on another.
-        const [eventsData, projectsData, usersData, announcementsData, homeData] = await Promise.all([
-          fetchApi("/api/events"),
-          fetchApi("/api/student-projects"),
-          fetchApi("/api/users"),
+        const [eventsData, announcementsData, homeData] = await Promise.all([
+          fetchApi("/api/events?limit=100"),
           fetchApi("/api/announcements"),
           fetchApi("/api/home"),
         ]);
-        setEvents(eventsData.map((item) => ({ id: item._id || item.id, ...item })));
-        setProjects(projectsData.map((item) => ({ id: item._id || item.id, ...item, technologies: Array.isArray(item.technologies) ? item.technologies : [] })));
-        setUsers(usersData.map((item) => ({ id: item._id || item.id, ...item })));
-        setAnnouncements(announcementsData.map((item) => ({ id: item._id || item.id, ...item })));
+
+        const eventList = unwrapList(eventsData);
+        const annList = Array.isArray(announcementsData) ? announcementsData : [];
+
+        setEvents(eventList.map((item) => ({ id: item._id || item.id, ...item })));
+        setAnnouncements(annList.map((item) => ({ id: item._id || item.id, ...item })));
         setHome(homeData || { statistics: {} });
+
+        if (hasAccess("student-projects")) {
+          try {
+            const projectsData = await fetchApi("/api/student-projects/all?limit=100", { auth: true });
+            const projectList = unwrapList(projectsData);
+            setProjects(
+              projectList.map((item) => ({
+                id: item._id || item.id,
+                ...item,
+                technologies: Array.isArray(item.technologies) ? item.technologies : [],
+                approved: item.status === "approved",
+              }))
+            );
+          } catch (e) {
+            console.error("Overview: projects load failed", e);
+            setProjects([]);
+          }
+        } else {
+          setProjects([]);
+        }
+
+        if (hasAccess("users")) {
+          try {
+            const usersData = await fetchApi("/api/users", { auth: true });
+            const userList = Array.isArray(usersData) ? usersData : [];
+            setUsers(userList.map((item) => ({ id: item._id || item.id, ...item })));
+          } catch (e) {
+            console.error("Overview: users load failed", e);
+            setUsers([]);
+          }
+        } else {
+          setUsers([]);
+        }
       } catch (error) {
         console.error("Failed to load overview data from API:", error);
         setEvents([]);
@@ -37,7 +69,7 @@ const AdminOverview = () => {
       }
     };
     loadOverview();
-  }, []);
+  }, [hasAccess]);
 
   const filteredEvents = useMemo(
     () => events.filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item.venue.toLowerCase().includes(searchQuery.toLowerCase())),
@@ -45,7 +77,6 @@ const AdminOverview = () => {
   );
 
   const eventsByMonth = useMemo(() => {
-    // Convert event dates into monthly counts for the lightweight bar chart.
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const counts = Array(12).fill(0);
     events.forEach((event) => {
@@ -58,7 +89,6 @@ const AdminOverview = () => {
   }, [events]);
 
   const roleDistribution = useMemo(() => {
-    // Calculate role percentages from the current admin user list.
     const roleCounts = users.reduce((acc, user) => {
       acc[user.role] = (acc[user.role] || 0) + 1;
       return acc;
@@ -70,9 +100,9 @@ const AdminOverview = () => {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        <DashboardCard label="Total Members" value={home.statistics.members || 0} />
+        <DashboardCard label="Total Members" value={home.statistics?.members || 0} />
         <DashboardCard label="Upcoming Events" value={events.filter((item) => item.status === "upcoming").length} />
-        <DashboardCard label="Active Projects" value={projects.filter((item) => item.approved).length} />
+        <DashboardCard label="Approved Projects" value={projects.filter((item) => item.approved || item.status === "approved").length} />
         <DashboardCard label="Published News" value={announcements.filter((item) => item.status === "published").length} />
       </div>
 
@@ -108,7 +138,9 @@ const AdminOverview = () => {
               <div key={entry.role} className="space-y-2">
                 <div className="flex items-center justify-between text-sm text-white/80">
                   <span className="capitalize">{entry.role}</span>
-                  <span>{entry.count} ({entry.percent}%)</span>
+                  <span>
+                    {entry.count} ({entry.percent}%)
+                  </span>
                 </div>
                 <div className="h-3 overflow-hidden rounded-full bg-acses-green-800">
                   <div style={{ width: `${entry.percent}%` }} className="h-full rounded-full bg-acses-yellow-400"></div>
@@ -153,5 +185,3 @@ const DashboardCard = ({ label, value }) => (
 );
 
 export default AdminOverview;
-
-

@@ -1,204 +1,125 @@
-import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { fetchApi, unwrapList } from "../../utils/api";
 
-// Mock data for student projects
-const fallbackProjects = [
-  {
-    id: 1,
-    title: "AI-Powered Study Assistant",
-    description:
-      "An intelligent app that helps students organize study materials, create flashcards, and get personalized learning recommendations.",
-    technologies: ["React", "Node.js", "OpenAI API", "MongoDB"],
-    image:
-      "/images/projects/ai.png",
-    github: "https://github.com",
-    demo: "https://demo.com",
-    video: "https://youtube.com",
-  },
-  {
-    id: 2,
-    title: "Campus Connect",
-    description:
-      "A social platform for students to find study groups, share notes, and collaborate on projects across departments.",
-    technologies: ["React Native", "Firebase", "Tailwind CSS", "Express"],
-    image:
-      "/images/projects/campus-connect.jpg",
-    github: "https://github.com",
-    demo: "https://demo.com",
-    video: "https://youtube.com",
-  },
-  {
-    id: 3,
-    title: "Demo Project",
-    description:
-    "An intelligent app that helps students organize study materials, create flashcards, and get personalized learning recommendations.",
-    technologies: ["React", "Node.js", "OpenAI API", "MongoDB"],
-
-    image:
-      "/images/projects/campus-connect.jpg",
-    github: "https://github.com",
-    demo: "https://demo.com",
-    video: "https://youtube.com",
-  },
-  {
-    id: 4,
-    title: "Demo Project",
-    description:
-    "An intelligent app that helps students organize study materials, create flashcards, and get personalized learning recommendations.",
-    technologies: ["React", "Node.js", "OpenAI API", "MongoDB"],
-    image:
-      "/images/projects/campus-connect.jpg",
-    github: "https://github.com/#",
-    demo: "https://demo.com/#",
-    video: "https://youtube.com/#",
-  },
-  {
-    id: 5,
-    title: "Course Scheduler Pro",
-    description:
-      "Intelligent course planning tool that helps students create optimal schedules based on requirements and preferences.",
-    technologies: ["Next.js", "Prisma", "PostgreSQL", "TypeScript"],
-    image:
-      "/images/projects/campus-connect.jpg",
-    github: "https://github.com/#",
-    demo: "https://demo.com/#",
-    video: "https://youtube.com/#",
-  },
-];
+const normalizeProject = (project) => ({
+  id: project._id || project.id,
+  ...project,
+  technologies: Array.isArray(project.technologies) ? project.technologies : [],
+  github: project.github?.trim() || "",
+  demo: project.demo?.trim() || "",
+  video: project.video?.trim() || "",
+  image: project.image || "https://via.placeholder.com/640x360.png?text=Project",
+});
 
 const StudentProjectsPage = () => {
-  const [projects, setProjects] = useState(fallbackProjects);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadProjects = async () => {
+      setLoading(true);
+      setError("");
       try {
-        // Load admin-managed projects when the API is available.
         const data = await fetchApi("/api/student-projects?limit=100");
         const list = unwrapList(data);
-        const normalized = list.map((project) => ({
-          id: project._id || project.id,
-          ...project,
-          technologies: Array.isArray(project.technologies) ? project.technologies : [],
-          github: project.github || "#",
-          demo: project.demo || "#",
-          video: project.video || "#",
-          image: project.image || "https://via.placeholder.com/640x360.png?text=Project",
-        }));
+        const normalized = list.map(normalizeProject);
+        normalized.sort((a, b) => {
+          const ta = new Date(a.createdAt || 0).getTime();
+          const tb = new Date(b.createdAt || 0).getTime();
+          return tb - ta;
+        });
         setProjects(normalized);
-      } catch (error) {
-        // Keep the page usable during local development or API outages.
-        console.error("Failed to load student projects from API:", error);
-        setProjects(fallbackProjects);
+      } catch (err) {
+        console.error("Failed to load student projects from API:", err);
+        setError("We could not load projects. Please try again later.");
+        setProjects([]);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadProjects();
   }, []);
 
+  const linkOrNull = (href, label) => {
+    if (!href || href === "#") return null;
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-acses-green-600 transition-colors duration-200">
+        {label}
+      </a>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-
-        {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
           <div className="mb-4 sm:mb-0">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Student Projects
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Student Projects</h1>
             <p className="text-lg text-gray-600 max-w-2xl">
-              Discover innovative projects built by students from the department of Computing and Data Analytics(ACSES).
-              From AI applications to mobile apps, explore the future of tech.
+              Discover innovative projects built by students from the department of Computing and Data Analytics (ACSES). Projects listed here are
+              published on the site after admin review.
             </p>
           </div>
-          
-          <Link 
-           to="/submit-project"
-           className="px-6 py-3 bg-acses-green-600 text-white font-medium rounded-lg shadow-md hover:bg-acses-green-700 hover:shadow-lg transform transition-all duration-200 ease-in-out hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-acses-green-500 focus:ring-offset-2">
+
+          <Link
+            to="/submit-project"
+            className="px-6 py-3 bg-acses-green-600 text-white font-medium rounded-lg shadow-md hover:bg-acses-green-700 hover:shadow-lg transform transition-all duration-200 ease-in-out hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-acses-green-500 focus:ring-offset-2"
+          >
             Submit Your Project
           </Link>
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {loading && <p className="text-center text-gray-500 py-16">Loading projects…</p>}
+        {!loading && error && <p className="text-center text-red-600 py-16">{error}</p>}
+        {!loading && !error && projects.length === 0 && (
+          <p className="text-center text-gray-500 py-16 max-w-lg mx-auto">
+            No featured projects yet. Approved submissions from the department will appear here.
+          </p>
+        )}
 
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-            >
-              
-              {/* Project Image */}
-              <div className="h-48 overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-              </div>
+        {!loading && projects.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projects.map((project) => {
+              const gh = linkOrNull(project.github, "GitHub");
+              const dm = linkOrNull(project.demo, "Demo");
+              const vid = linkOrNull(project.video, "Video");
+              const links = [gh, dm, vid].filter(Boolean);
+              return (
+                <div
+                  key={project.id}
+                  className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                >
+                  <div className="h-48 overflow-hidden">
+                    <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" />
+                  </div>
 
-              {/* Project Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {project.title}
-                </h3>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{project.title}</h3>
+                    {project.submittedBy && <p className="text-sm text-gray-400 mb-2">By {project.submittedBy}</p>}
+                    <p className="text-gray-600 mb-4 line-clamp-2">{project.description}</p>
 
-                <p className="text-gray-600 mb-4 line-clamp-2">
-                  {project.description}
-                </p>
+                    {project.technologies.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {project.technologies.map((tech, index) => (
+                          <span key={index} className="px-3 py-1 bg-acses-green-50 text-acses-green-700 text-sm font-medium rounded-full">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
-                {/* Technology Tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies.map((tech, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-acses-green-50 text-acses-green-700 text-sm font-medium rounded-full"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+                    {links.length > 0 && (
+                      <div className="flex flex-wrap gap-4 pt-4 border-t border-gray-100">{links}</div>
+                    )}
+                  </div>
                 </div>
-
-                {/* Links */}
-                <div className="flex space-x-4 pt-4 border-t border-gray-100">
-
-                  {/* GitHub */}
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-acses-green-600 transition-colors duration-200"
-                  >
-                    GitHub
-                  </a>
-
-                  {/* Demo */}
-                  <a
-                    href={project.demo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-acses-green-600 transition-colors duration-200"
-                  >
-                    Demo
-                  </a>
-
-                  {/* Video */}
-                  <a
-                    href={project.video}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-acses-green-600 transition-colors duration-200"
-                  >
-                    Video
-                  </a>
-
-                </div>
-
-              </div>
-            </div>
-          ))}
-
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

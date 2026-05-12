@@ -1,28 +1,54 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { fetchApi } from "../../utils/api";
 
-const newsList = [
-  {
-    title: 'ACSES Welcomes a New Program: Data Science & Analytics',
-    date: 'July 30, 2024',
-    description:
-      "We're happy to welcome a new program to our community. The Data Science and Analytics program is designed to provide students with the skills and knowledge needed to analyze and interpret complex data sets.",
-  },
-  {
-    title: 'ACSES Launches a Dues Collection App for Students',
-    date: 'January 2, 2025',
-    description:
-      'We have successfully launched our very own dues collection app, which streamlines dues collection for our members. This innovative platform is not only beneficial to ACSES but also to other associations on campus.',
-  },
-  {
-    title: 'Course Registration Commences',
-    date: 'January 17, 2025',
-    description:
-      'Courses for the 2024/2025 academic year has been released. Make sure to check your student portal for your courses and register them. Continuing students need to pay at least half of their fees to be eligible for registration.',
-  },
-];
+const formatNewsDate = (value) => {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+};
 
 const News = () => {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const data = await fetchApi("/api/announcements");
+        const list = Array.isArray(data) ? data : [];
+        const publicPublished = list.filter(
+          (a) => a.status === "published" && (a.visibility === "public" || a.visibility == null)
+        );
+        const sorted = [...publicPublished].sort((a, b) => {
+          const da = new Date(a.date || a.createdAt || 0).getTime();
+          const db = new Date(b.date || b.createdAt || 0).getTime();
+          return db - da;
+        });
+        setItems(
+          sorted.map((a) => ({
+            id: a._id || a.id,
+            title: a.title,
+            date: formatNewsDate(a.date || a.createdAt),
+            description: a.body || "",
+            author: a.author,
+          }))
+        );
+      } catch (e) {
+        console.error("Failed to load announcements:", e);
+        setError("Could not load announcements right now.");
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
   return (
     <section id="news" className="w-full flex justify-center py-12 md:py-24 lg:py-32">
       <div className="container px-4 md:px-6">
@@ -34,21 +60,29 @@ const News = () => {
             </p>
           </div>
         </div>
-        <div className="mx-auto grid max-w-5xl gap-8 py-12 lg:grid-cols-3">
-          {newsList.map((news, index) => (
-            <motion.div
-              key={index}
-              className="bg-white rounded-lg shadow-md p-6"
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold">{news.title}</h3>
-                <p className="text-gray-500">{news.date}</p>
-              </div>
-              <p className="text-gray-500">{news.description}</p>
-            </motion.div>
-          ))}
-        </div>
+
+        {loading && (
+          <p className="mx-auto max-w-5xl py-12 text-center text-gray-500">Loading news…</p>
+        )}
+        {!loading && error && <p className="mx-auto max-w-5xl py-12 text-center text-red-600">{error}</p>}
+        {!loading && !error && items.length === 0 && (
+          <p className="mx-auto max-w-5xl py-12 text-center text-gray-500">No published announcements yet. Check back soon.</p>
+        )}
+
+        {!loading && items.length > 0 && (
+          <div className="mx-auto grid max-w-5xl gap-8 py-12 lg:grid-cols-3">
+            {items.map((news) => (
+              <motion.div key={news.id} className="bg-white rounded-lg shadow-md p-6" whileHover={{ scale: 1.02 }}>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-bold">{news.title}</h3>
+                  <p className="text-gray-500">{news.date}</p>
+                  {news.author && <p className="text-xs text-gray-400">By {news.author}</p>}
+                </div>
+                <p className="mt-3 text-gray-500 line-clamp-6">{news.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

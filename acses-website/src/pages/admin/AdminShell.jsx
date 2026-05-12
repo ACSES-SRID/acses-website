@@ -10,6 +10,7 @@ const navItems = [
   { label: "Announcements", to: "/admin/announcements", icon: "📢", key: "announcements" },
   { label: "Projects", to: "/admin/student-projects", icon: "🚀", key: "student-projects" },
   { label: "Gallery", to: "/admin/gallery", icon: "🖼️", key: "gallery" },
+  { label: "Store", to: "/admin/store", icon: "🛒", key: "store" },
   { label: "Users", to: "/admin/users", icon: "🔐", key: "users" },
   { label: "Home Editor", to: "/admin/home-editor", icon: "✍️", key: "home-editor" },
 ];
@@ -35,6 +36,7 @@ const AdminShell = () => {
 
         <nav className="flex-1 space-y-2">
           {navItems.map((item) => {
+            if (item.key === "store" && !hasAccess("store")) return null;
             if (item.key === "users" && !hasAccess("users")) return null;
             if (item.key === "home-editor" && !hasAccess("home-editor")) return null;
             return (
@@ -117,6 +119,7 @@ const AdminShell = () => {
             <div className="mt-4 rounded-2xl border border-acses-green-800 bg-acses-green-900 p-4 lg:hidden">
               <nav className="space-y-2">
                 {navItems.map((item) => {
+                  if (item.key === "store" && !hasAccess("store")) return null;
                   if (item.key === "users" && !hasAccess("users")) return null;
                   if (item.key === "home-editor" && !hasAccess("home-editor")) return null;
                   return (

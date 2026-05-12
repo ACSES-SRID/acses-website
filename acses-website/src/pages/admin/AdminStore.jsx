@@ -1,118 +1,176 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+import { useAdmin } from "./AdminContext";
+import { fetchApi, unwrapList } from "../../utils/api";
+
+const BlockedAccess = () => (
+  <div className="rounded-3xl border border-red-700 bg-acses-green-900 p-6 text-white/80">
+    <p className="text-lg font-semibold">Access denied</p>
+    <p className="mt-2 text-sm text-acses-yellow-100">Your role does not have permission to manage the store.</p>
+  </div>
+);
 
 const AdminStore = () => {
+  const { hasAccess, showToast } = useAdmin();
   const [products, setProducts] = useState([]);
-  const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ name: '', description: '', price: '', originalPrice: '', category: 'Apparel', badge: '', badgeColor: '', image: '' });
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    price: "",
+    originalPrice: "",
+    category: "apparel",
+    badge: "",
+    badgeColor: "",
+    image: "",
+  });
+
+  const load = async () => {
+    try {
+      const data = await fetchApi("/api/store?limit=100");
+      const list = unwrapList(data);
+      setProducts(list);
+    } catch (e) {
+      console.error(e);
+      setProducts([]);
+    }
+  };
 
   useEffect(() => {
-    fetchProducts();
+    load();
   }, []);
 
-  const fetchProducts = async () => {
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/store`);
-    const data = await res.json();
-    setProducts(data);
+  const toPayload = () => ({
+    name: form.name,
+    description: form.description || undefined,
+    price: Number(form.price),
+    originalPrice: form.originalPrice === "" ? undefined : Number(form.originalPrice),
+    category: form.category,
+    badge: form.badge || undefined,
+    badgeColor: form.badgeColor || undefined,
+    image: form.image || undefined,
+  });
+
+  const reset = () => {
+    setEditingId(null);
+    setForm({
+      name: "",
+      description: "",
+      price: "",
+      originalPrice: "",
+      category: "apparel",
+      badge: "",
+      badgeColor: "",
+      image: "",
+    });
   };
 
   const handleEdit = (prod) => {
-    setEditing(prod._id);
+    setEditingId(prod._id);
     setForm({
-      name: prod.name,
-      description: prod.description,
-      price: prod.price,
-      originalPrice: prod.originalPrice || '',
-      category: prod.category,
-      badge: prod.badge || '',
-      badgeColor: prod.badgeColor || '',
-      image: prod.image
+      name: prod.name || "",
+      description: prod.description || "",
+      price: prod.price != null ? String(prod.price) : "",
+      originalPrice: prod.originalPrice != null ? String(prod.originalPrice) : "",
+      category: prod.category || "apparel",
+      badge: prod.badge || "",
+      badgeColor: prod.badgeColor || "",
+      image: prod.image || "",
     });
   };
 
   const handleSave = async () => {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/store`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: editing, ...form })
-    });
-    setEditing(null);
-    fetchProducts();
+    if (!form.name || form.price === "") {
+      showToast("Name and price are required.", "error");
+      return;
+    }
+    try {
+      if (editingId) {
+        await fetchApi(`/api/store/${editingId}`, {
+          method: "PUT",
+          body: JSON.stringify(toPayload()),
+          auth: true,
+        });
+        showToast("Product updated.");
+      } else {
+        await fetchApi("/api/store", {
+          method: "POST",
+          body: JSON.stringify(toPayload()),
+          auth: true,
+        });
+        showToast("Product added.");
+      }
+      reset();
+      load();
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Save failed.", "error");
+    }
   };
 
   const handleDelete = async (id) => {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/store`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id })
-    });
-    fetchProducts();
+    try {
+      await fetchApi(`/api/store/${id}`, { method: "DELETE", auth: true });
+      showToast("Deleted.");
+      load();
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Delete failed.", "error");
+    }
   };
 
-  const handleAdd = async () => {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/store`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
-    });
-    setForm({ name: '', description: '', price: '', originalPrice: '', category: 'Apparel', badge: '', badgeColor: '', image: '' });
-    fetchProducts();
-  };
+  if (!hasAccess("store")) {
+    return <BlockedAccess />;
+  }
 
   return (
-    <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">Manage Store Products</h2>
-
-      {/* Add New */}
-      <div className="bg-white p-4 rounded shadow mb-4">
-        <h3 className="text-lg font-semibold mb-2">Add New Product</h3>
-        <input className="border p-2 mr-2 mb-2" placeholder="Name" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} />
-        <input className="border p-2 mr-2 mb-2" placeholder="Description" value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} />
-        <input className="border p-2 mr-2 mb-2" type="number" placeholder="Price" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} />
-        <input className="border p-2 mr-2 mb-2" type="number" placeholder="Original Price (optional)" value={form.originalPrice} onChange={(e) => setForm({...form, originalPrice: e.target.value})} />
-        <select className="border p-2 mr-2 mb-2" value={form.category} onChange={(e) => setForm({...form, category: e.target.value})}>
-          <option value="Apparel">Apparel</option>
-          <option value="Accessories">Accessories</option>
-          <option value="Tech Gear">Tech Gear</option>
-        </select>
-        <input className="border p-2 mr-2 mb-2" placeholder="Badge (optional)" value={form.badge} onChange={(e) => setForm({...form, badge: e.target.value})} />
-        <input className="border p-2 mr-2 mb-2" placeholder="Badge Color" value={form.badgeColor} onChange={(e) => setForm({...form, badgeColor: e.target.value})} />
-        <input className="border p-2 mr-2 mb-2" placeholder="Image URL" value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} />
-        <button onClick={handleAdd} className="bg-green-600 text-white px-4 py-2 rounded">Add</button>
+    <div className="mt-8 space-y-6">
+      <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 px-6 py-5 text-white shadow-xl">
+        <h2 className="text-2xl font-bold">Manage Store Products</h2>
       </div>
 
-      {/* List */}
-      {products.map((prod) => (
-        <div key={prod._id} className="bg-white p-4 rounded shadow mb-2">
-          {editing === prod._id ? (
-            <div>
-              <input className="border p-2 mr-2 mb-2 w-full" placeholder="Name" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} />
-              <input className="border p-2 mr-2 mb-2 w-full" placeholder="Description" value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} />
-              <input className="border p-2 mr-2 mb-2" type="number" placeholder="Price" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} />
-              <input className="border p-2 mr-2 mb-2" type="number" placeholder="Original Price" value={form.originalPrice} onChange={(e) => setForm({...form, originalPrice: e.target.value})} />
-              <select className="border p-2 mr-2 mb-2" value={form.category} onChange={(e) => setForm({...form, category: e.target.value})}>
-                <option value="Apparel">Apparel</option>
-                <option value="Accessories">Accessories</option>
-                <option value="Tech Gear">Tech Gear</option>
-              </select>
-              <input className="border p-2 mr-2 mb-2" placeholder="Badge" value={form.badge} onChange={(e) => setForm({...form, badge: e.target.value})} />
-              <input className="border p-2 mr-2 mb-2" placeholder="Badge Color" value={form.badgeColor} onChange={(e) => setForm({...form, badgeColor: e.target.value})} />
-              <input className="border p-2 mr-2 mb-2 w-full" placeholder="Image URL" value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} />
-              <button onClick={handleSave} className="bg-blue-600 text-white px-4 py-2 rounded mr-2">Save</button>
-              <button onClick={() => setEditing(null)} className="bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
-            </div>
-          ) : (
-            <div className="flex justify-between">
-              <div>
-                <strong>{prod.name}</strong> - ${prod.price} ({prod.category})
-              </div>
-              <div>
-                <button onClick={() => handleEdit(prod)} className="bg-yellow-600 text-white px-4 py-2 rounded mr-2">Edit</button>
-                <button onClick={() => handleDelete(prod._id)} className="bg-red-600 text-white px-4 py-2 rounded">Delete</button>
-              </div>
-            </div>
+      <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 text-white">
+        <h3 className="text-lg font-semibold mb-3">{editingId ? "Edit product" : "Add product"}</h3>
+        <div className="grid gap-2 md:grid-cols-2">
+          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" type="number" step="0.01" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" type="number" step="0.01" placeholder="Original price (optional)" value={form.originalPrice} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} />
+          <select className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+            <option value="apparel">apparel</option>
+            <option value="accessories">accessories</option>
+            <option value="tech">tech</option>
+          </select>
+          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Badge (optional)" value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} />
+          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Badge color" value={form.badgeColor} onChange={(e) => setForm({ ...form, badgeColor: e.target.value })} />
+          <input className="md:col-span-2 rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Image URL" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
+          <textarea className="md:col-span-2 rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Description" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+        </div>
+        <div className="mt-3 flex gap-2">
+          <button type="button" onClick={handleSave} className="rounded-xl bg-acses-yellow-400 px-4 py-2 text-sm font-semibold text-acses-green-900">
+            {editingId ? "Save" : "Add"}
+          </button>
+          {editingId && (
+            <button type="button" onClick={reset} className="rounded-xl border border-acses-green-700 px-4 py-2 text-sm">
+              Cancel
+            </button>
           )}
         </div>
-      ))}
+      </div>
+
+      <div className="space-y-2">
+        {products.map((prod) => (
+          <div key={prod._id} className="flex flex-col gap-2 rounded-2xl border border-acses-green-800 bg-acses-green-900 p-4 text-white sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <strong>{prod.name}</strong> <span className="text-white/70">— GHS {prod.price}</span> <span className="text-xs text-acses-yellow-200">({prod.category})</span>
+            </div>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => handleEdit(prod)} className="rounded-xl bg-acses-green-800 px-3 py-2 text-sm text-acses-yellow-200">
+                Edit
+              </button>
+              <button type="button" onClick={() => handleDelete(prod._id)} className="rounded-xl bg-red-600 px-3 py-2 text-sm text-white">
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

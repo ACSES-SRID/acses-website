@@ -51,7 +51,7 @@ Keep **one module** responsible for:
 
 Avoid adding heavy dependencies unless the team already standardizes on one; `fetch` is enough.
 
-### Step C — Auth flow in `AdminContext` (highest priority)
+### Step C — Auth flow in `src/pages/admin/context/AdminContext.jsx` (highest priority)
 
 1. Replace the current login with:
    - `POST /api/auth/login`

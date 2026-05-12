@@ -60,6 +60,8 @@ The ACSES-SRID Official Website serves as the digital hub for the Association of
 - **Performance Optimized**: Lazy loading, code splitting, and image optimization
 - **Analytics Integration**: Vercel Analytics for visitor insights
 - **Custom Branding**: ACSES green and yellow color scheme throughout
+- **Admin dashboard (`/admin`)**: JWT login against the ACSES API, role-based sections, shared sidebar on all admin routes.
+- **API-backed content**: News, events, gallery, store, leadership, resources, and student projects load from the backend when `VITE_API_BASE_URL` is set.
 
 ### Pages & Sections
 
@@ -69,7 +71,7 @@ The ACSES-SRID Official Website serves as the digital hub for the Association of
 - **Resources**: Educational materials and learning resources
 - **Store**: ACSES merchandise and products
 - **Gallery**: Photo gallery of events and activities
-- **Student Projects**: Showcase of member projects and achievements
+- **Student Projects**: Showcase of member projects; **Submit project** sends pending submissions for admin review
 
 ---
 
@@ -117,11 +119,13 @@ Before you begin, ensure you have the following installed:
 
 ### Installation
 
+The installable **Vite** app lives in the nested `acses-website/` directory (the one that contains `vite.config.js`).
+
 1. Clone the repository
 
 ```bash
 git clone https://github.com/ACSES-SRID/acses-website.git
-cd acses-website
+cd acses-website/acses-website
 ```
 
 2. Install dependencies

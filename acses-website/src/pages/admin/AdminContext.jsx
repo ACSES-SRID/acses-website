@@ -25,7 +25,6 @@ const mapApiUser = (u) => ({
 });
 
 // eslint-disable-next-line react/prop-types -- provider shell
-/** @param {{ children: import('react').ReactNode }} props */
 export const AdminProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => {
     try {

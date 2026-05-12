@@ -21,6 +21,7 @@ const Leadership = () => {
     fetchExecutives();
   }, []);
 
+  /* eslint-disable react/prop-types -- local presentational helpers */
   const Card = ({ children, className }) => (
     <div
       className={`rounded-lg shadow-md overflow-hidden bg-white ${className}`}
@@ -32,6 +33,7 @@ const Leadership = () => {
   const CardContent = ({ children, className }) => (
     <div className={`p-4 ${className}`}>{children}</div>
   );
+  /* eslint-enable react/prop-types */
 
   return (
     <div className="min-h-screen bg-[#f3f4f6] py-28">

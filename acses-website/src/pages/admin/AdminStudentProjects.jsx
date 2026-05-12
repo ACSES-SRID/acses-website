@@ -3,14 +3,14 @@ import { useAdmin } from "./AdminContext";
 import { exportToCsv } from "./adminUtils";
 import { fetchApi, unwrapList } from "../../utils/api";
 
-/** Draft submissions (e.g. from the public form) are listed last, oldest → newest within each group. */
+/** Pending submissions (e.g. from the public form) are listed last, oldest → newest within each group. */
 const sortProjectsForAdmin = (normalized) => {
-  const drafts = normalized.filter((p) => p.status === "draft");
-  const rest = normalized.filter((p) => p.status !== "draft");
+  const pending = normalized.filter((p) => p.status === "pending");
+  const rest = normalized.filter((p) => p.status !== "pending");
   const byCreated = (a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
   rest.sort(byCreated);
-  drafts.sort(byCreated);
-  return [...rest, ...drafts];
+  pending.sort(byCreated);
+  return [...rest, ...pending];
 };
 
 const normalizeProject = (item) => {
@@ -89,11 +89,6 @@ const AdminStudentProjects = () => {
 
   const resolveStatusForSave = () => {
     if (form.approved) return "approved";
-    if (editingId) {
-      const prev = projects.find((p) => p.id === editingId);
-      if (prev?.status === "draft") return "draft";
-      return "pending";
-    }
     return "pending";
   };
 
@@ -137,18 +132,16 @@ const AdminStudentProjects = () => {
         await fetchApi("/api/student-projects", {
           method: "POST",
           body: JSON.stringify(payload),
-          auth: true,
         });
         await loadProjects();
         showToast("Project added.");
       }
+      setEditingId(null);
+      setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", approved: false });
     } catch (error) {
       console.error("API save failed:", error);
       showToast(error instanceof Error ? error.message : "Failed to save project.", "error");
     }
-
-    setEditingId(null);
-    setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", approved: false });
   };
 
   const handleEdit = (project) => {
@@ -189,8 +182,8 @@ const AdminStudentProjects = () => {
       <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 px-6 py-5 shadow-xl shadow-acses-green-900/20">
         <h1 className="text-2xl font-semibold text-white">Student Projects / Initiatives</h1>
         <p className="mt-2 text-sm text-acses-yellow-100">
-          Student form submissions appear as <span className="font-semibold text-white">draft</span> at the bottom of the list until you approve them
-          for the public page.
+          Student form submissions are <span className="font-semibold text-white">pending</span> and appear at the bottom of the list until you approve
+          them for the public page.
         </p>
       </div>
 

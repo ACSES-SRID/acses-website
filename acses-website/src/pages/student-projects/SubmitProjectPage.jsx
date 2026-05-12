@@ -43,7 +43,7 @@ const SubmitProjectPage = () => {
           demo: form.demo.trim() || undefined,
           video: form.video.trim() || undefined,
           submittedBy: form.submittedBy.trim(),
-          status: "draft",
+          status: "pending",
         }),
       });
       navigate("/student-projects", { replace: true });
@@ -58,8 +58,8 @@ const SubmitProjectPage = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Submit Your Project</h1>
 
         <p className="text-gray-600 mb-6">
-          Share your project with the ACSES community. Your submission is saved as a draft for the admin team to review; it will appear on this site
-          only after it is approved and published.
+          Share your project with the ACSES community. Your submission is saved as <strong>pending</strong> for the admin team to review; it appears on
+          this site only after it is approved.
         </p>
 
         {status.error && <p className="mb-4 text-sm text-red-600">{status.error}</p>}

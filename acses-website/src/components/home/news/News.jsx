@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { fetchApi } from "../../utils/api";
+import { fetchApi } from "../../../utils/api";
 
 const formatNewsDate = (value) => {
   if (!value) return "";

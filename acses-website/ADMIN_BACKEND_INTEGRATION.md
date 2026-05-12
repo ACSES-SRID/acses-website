@@ -80,7 +80,7 @@ After each module, **manually verify** in Swagger and in the UI so regressions s
 
 ### Step E — Public site (second wave, same helpers)
 
-Components such as `src/components/events/Events.jsx` already call `/api/events` but assume an array. Reuse the same **pagination unwrap** helper so public pages stay in sync with admin data without a second HTTP stack.
+Components such as `src/components/home/events/Events.jsx` already call `/api/events` but assume an array. Reuse the same **pagination unwrap** helper so public pages stay in sync with admin data without a second HTTP stack.
 
 **Submit project** flow should use `POST /api/student-projects` (public) with the schema’s `StudentProjectInput`; avoid sending `status` from the client if the API sets `pending` by default.
 

@@ -3,7 +3,7 @@ import Calendar from "./Calendar";
 import { format, parseISO, isFuture, isValid } from "date-fns";
 import { motion } from "framer-motion";
 import { CalendarIcon, Clock, MapPin, ArrowRight, Users } from "lucide-react";
-import { fetchApi, unwrapList } from "../../utils/api";
+import { fetchApi, unwrapList } from "../../../utils/api";
 import EventCard from "./EventCard"; // Import the EventCard component
 
 const Events = () => {

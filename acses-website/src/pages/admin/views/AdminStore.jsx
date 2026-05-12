@@ -120,6 +120,9 @@ const AdminStore = () => {
     return <BlockedAccess />;
   }
 
+  // UPDATED: bg-white, text-black, and explicit placeholder-black
+  const inputClass = "rounded-xl border border-gray-300 bg-white px-4 py-3 text-black placeholder:text-black outline-none focus:ring-2 focus:ring-acses-yellow-400 block w-full transition-all font-medium";
+
   return (
     <div className="mt-8 space-y-6">
       <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 px-6 py-5 text-white shadow-xl">
@@ -127,46 +130,43 @@ const AdminStore = () => {
       </div>
 
       <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 text-white">
-        <h3 className="text-lg font-semibold mb-3">{editingId ? "Edit product" : "Add product"}</h3>
-        <div className="grid gap-2 md:grid-cols-2">
-          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" type="number" step="0.01" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" type="number" step="0.01" placeholder="Original price (optional)" value={form.originalPrice} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} />
-          <select className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-            <option value="apparel">apparel</option>
-            <option value="accessories">accessories</option>
-            <option value="tech">tech</option>
+        <h3 className="text-lg font-semibold mb-4">{editingId ? "Edit product" : "Add product"}</h3>
+        <div className="grid gap-4 md:grid-cols-2">
+          <input className={inputClass} placeholder="Product Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <input className={inputClass} type="number" step="0.01" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+          <input className={inputClass} type="number" step="0.01" placeholder="Original price" value={form.originalPrice} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} />
+          <select className={inputClass} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+            <option value="apparel">Apparel</option>
+            <option value="accessories">Accessories</option>
+            <option value="tech">Tech</option>
           </select>
-          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Badge (optional)" value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} />
-          <input className="rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Badge color" value={form.badgeColor} onChange={(e) => setForm({ ...form, badgeColor: e.target.value })} />
-          <input className="md:col-span-2 rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Image URL" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
-          <textarea className="md:col-span-2 rounded-xl border border-acses-green-800 bg-acses-green-950 px-3 py-2" placeholder="Description" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <input className={inputClass} placeholder="Badge" value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} />
+          <input className={inputClass} placeholder="Badge color" value={form.badgeColor} onChange={(e) => setForm({ ...form, badgeColor: e.target.value })} />
+          <input className={`${inputClass} md:col-span-2`} placeholder="Image URL" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
+          <textarea className={`${inputClass} md:col-span-2`} placeholder="Description" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>
-        <div className="mt-3 flex gap-2">
-          <button type="button" onClick={handleSave} className="rounded-xl bg-acses-yellow-400 px-4 py-2 text-sm font-semibold text-acses-green-900">
+        <div className="mt-6 flex gap-3">
+          <button type="button" onClick={handleSave} className="rounded-xl bg-acses-yellow-400 px-6 py-3 text-sm font-bold text-acses-green-950">
             {editingId ? "Save" : "Add"}
           </button>
           {editingId && (
-            <button type="button" onClick={reset} className="rounded-xl border border-acses-green-700 px-4 py-2 text-sm">
+            <button type="button" onClick={reset} className="rounded-xl border border-acses-green-700 px-6 py-3 text-sm">
               Cancel
             </button>
           )}
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {products.map((prod) => (
-          <div key={prod._id} className="flex flex-col gap-2 rounded-2xl border border-acses-green-800 bg-acses-green-900 p-4 text-white sm:flex-row sm:items-center sm:justify-between">
+          <div key={prod._id} className="flex flex-col gap-4 rounded-2xl border border-acses-green-800 bg-acses-green-900 p-5 text-white sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <strong>{prod.name}</strong> <span className="text-white/70">— GHS {prod.price}</span> <span className="text-xs text-acses-yellow-200">({prod.category})</span>
+              <p className="font-bold">{prod.name}</p>
+              <p className="text-sm text-acses-yellow-400">GHS {prod.price}</p>
             </div>
             <div className="flex gap-2">
-              <button type="button" onClick={() => handleEdit(prod)} className="rounded-xl bg-acses-green-800 px-3 py-2 text-sm text-acses-yellow-200">
-                Edit
-              </button>
-              <button type="button" onClick={() => handleDelete(prod._id)} className="rounded-xl bg-red-600 px-3 py-2 text-sm text-white">
-                Delete
-              </button>
+              <button onClick={() => handleEdit(prod)} className="rounded-xl bg-acses-green-800 px-4 py-2 text-sm text-acses-yellow-200">Edit</button>
+              <button onClick={() => handleDelete(prod._id)} className="rounded-xl bg-red-600 px-4 py-2 text-sm text-white">Delete</button>
             </div>
           </div>
         ))}

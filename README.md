@@ -158,7 +158,7 @@ In the **inner** `acses-website/` folder (next to `package.json`), create `.env`
 VITE_API_BASE_URL=http://localhost:3002
 ```
 
-Restart the dev server after changing environment variables. See `acses-website/ADMIN_BACKEND_INTEGRATION.md` for API alignment notes.
+Restart the dev server after changing environment variables. See `acses-website/acses-website/ADMIN_BACKEND_INTEGRATION.md` for API alignment notes.
 
 ### Building for Production
 
@@ -178,7 +178,7 @@ npm run preview
 
 ## 📁 Project Structure
 
-This repository contains the Vite React app under **`acses-website/acses-website/`**. Use that inner folder for `npm install`, `.env`, and day-to-day development. A fuller `src/` tree (including `components/home`, `components/shared`, and `pages/admin/{context,layout,lib,views}`) lives in **`acses-website/README.md`**.
+This repository contains the Vite React app under **`acses-website/acses-website/`**. Use that inner folder for `npm install`, `.env`, and day-to-day development. A fuller `src/` tree (including `components/home`, `components/shared`, and `pages/admin/{context,layout,lib,views}`) lives in **`acses-website/acses-website/README.md`**.
 
 ```
 acses-website/                    # Repository root (this README)

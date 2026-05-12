@@ -13,10 +13,16 @@ const sortProjectsForAdmin = (normalized) => {
   return [...rest, ...pending];
 };
 
+const PUBLICATION_STATUSES = [
+  { value: "pending", label: "Pending (hidden from public page)" },
+  { value: "approved", label: "Approved (published on public page)" },
+];
+
 const normalizeProject = (item) => {
   const id = item._id || item.id;
   const technologies = Array.isArray(item.technologies) ? item.technologies : [];
-  const status = item.status || "pending";
+  const raw = item.status || "pending";
+  const status = raw === "approved" ? "approved" : "pending";
   const approved = status === "approved";
   const student = item.submittedBy || item.student || "";
   return {
@@ -42,7 +48,7 @@ const AdminStudentProjects = () => {
     github: "",
     demo: "",
     video: "",
-    approved: false,
+    status: "pending",
   });
 
   const loadProjects = async () => {
@@ -87,13 +93,9 @@ const AdminStudentProjects = () => {
     );
   }
 
-  const resolveStatusForSave = () => {
-    if (form.approved) return "approved";
-    return "pending";
-  };
-
   const buildPayload = () => {
     const technologies = form.technologies.split(",").map((item) => item.trim()).filter(Boolean);
+    const status = form.status === "approved" ? "approved" : "pending";
     return {
       title: form.title,
       description: form.description,
@@ -103,7 +105,7 @@ const AdminStudentProjects = () => {
       demo: form.demo,
       video: form.video || undefined,
       submittedBy: form.student,
-      status: resolveStatusForSave(),
+      status,
     };
   };
 
@@ -137,7 +139,7 @@ const AdminStudentProjects = () => {
         showToast("Project added.");
       }
       setEditingId(null);
-      setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", approved: false });
+      setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", status: "pending" });
     } catch (error) {
       console.error("API save failed:", error);
       showToast(error instanceof Error ? error.message : "Failed to save project.", "error");
@@ -146,6 +148,7 @@ const AdminStudentProjects = () => {
 
   const handleEdit = (project) => {
     setEditingId(project.id);
+    const st = project.status === "approved" ? "approved" : "pending";
     setForm({
       title: project.title,
       student: project.student || project.submittedBy || "",
@@ -155,7 +158,7 @@ const AdminStudentProjects = () => {
       github: project.github || "",
       demo: project.demo || "",
       video: project.video || "",
-      approved: project.approved || project.status === "approved",
+      status: st,
     });
   };
 
@@ -248,7 +251,10 @@ const AdminStudentProjects = () => {
 
         <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 shadow-xl shadow-acses-green-900/20">
           <h2 className="text-lg font-semibold text-white">{editingId ? "Edit project" : "Add project (admin)"}</h2>
-          <p className="mt-1 text-xs text-white/50">Check “Approved” to publish on the public student projects page.</p>
+          <p className="mt-1 text-xs text-white/50">
+            Set <span className="text-acses-yellow-200">publication status</span> for every project: pending keeps it off the public page; approved lists it
+            on /student-projects.
+          </p>
           <div className="mt-5 space-y-4">
             <Field label="Project title" value={form.title} onChange={(value) => setForm({ ...form, title: value })} />
             <Field label="Submitted by" value={form.student} onChange={(value) => setForm({ ...form, student: value })} />
@@ -258,24 +264,29 @@ const AdminStudentProjects = () => {
             <Field label="GitHub URL" value={form.github} onChange={(value) => setForm({ ...form, github: value })} />
             <Field label="Demo URL" value={form.demo} onChange={(value) => setForm({ ...form, demo: value })} />
             <Field label="Video URL" value={form.video} onChange={(value) => setForm({ ...form, video: value })} />
-            <div className="flex items-center gap-3">
-              <input
-                id="approved"
-                type="checkbox"
-                checked={form.approved}
-                onChange={(e) => setForm({ ...form, approved: e.target.checked })}
-                className="h-4 w-4 rounded border-acses-green-800 bg-acses-green-900 text-amber-400 focus:ring-amber-400"
-              />
-              <label htmlFor="approved" className="text-sm text-white/70">
-                Approved (visible on public projects page)
+            <div>
+              <label className="block text-sm font-medium text-white/70" htmlFor="project-status">
+                Publication status
               </label>
+              <select
+                id="project-status"
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                className="mt-2 w-full rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-3 text-white outline-none"
+              >
+                {PUBLICATION_STATUSES.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
               {editingId && (
                 <button
                   onClick={() => {
                     setEditingId(null);
-                    setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", approved: false });
+                    setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", status: "pending" });
                   }}
                   className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800"
                 >

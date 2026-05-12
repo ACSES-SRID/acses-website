@@ -5,7 +5,7 @@ import AdminNavLinks from "./AdminNavLinks";
  */
 export default function AdminSidebar({ currentUser, hasAccess, onLogout }) {
   return (
-    <aside className="hidden lg:flex lg:w-72 xl:w-80 flex-col border-r border-acses-green-800 bg-acses-green-900 p-6">
+    <aside className="hidden lg:flex lg:w-72 xl:w-80 flex-col border-r border-acses-green-800 bg-acses-green-900 p-6 fixed top-0 left-0 h-screen z-40">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="h-12 w-12 rounded-2xl bg-acses-yellow-400 flex items-center justify-center text-acses-green-900 font-bold">A</div>
@@ -18,7 +18,7 @@ export default function AdminSidebar({ currentUser, hasAccess, onLogout }) {
         <p className="text-sm font-medium text-acses-yellow-300 capitalize">{currentUser?.role}</p>
       </div>
 
-      <nav className="flex-1 space-y-2">
+      <nav className="flex-1 space-y-2 overflow-y-auto">
         <AdminNavLinks hasAccess={hasAccess} variant="desktop" />
       </nav>
 

@@ -12,7 +12,7 @@ const AdminShell = () => {
     <div className="admin-shell flex flex-col lg:flex-row min-h-screen bg-acses-green-900 text-white">
       <AdminSidebar currentUser={currentUser} hasAccess={hasAccess} onLogout={logout} />
 
-      <div className="flex-1 ">
+      <div className="flex-1 lg:ml-72 xl:ml-80">
         <header className="sticky top-0 z-30 border-b border-acses-green-800 bg-acses-green-900/95 backdrop-blur px-4 py-4 shadow-sm shadow-acses-green-900/20 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-3">
@@ -44,7 +44,7 @@ const AdminShell = () => {
                 <button type="button" className="relative rounded-2xl bg-acses-green-900 px-4 py-3 text-white/80 hover:bg-acses-green-800">
                   🔔
                   {notifications.length > 0 && (
-                  <div className="absolute -right-1 -top-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-acses-yellow-400 px-1.5 text-[0.65rem] font-semibold text-acses-green-950">
+                    <div className="absolute -right-1 -top-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-acses-yellow-400 px-1.5 text-[0.65rem] font-semibold text-acses-green-950">
                       {notifications.length}
                     </div>
                   )}

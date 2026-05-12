@@ -181,15 +181,15 @@ npm run preview
 This repository contains the Vite React app under **`acses-website/acses-website/`**. Use that inner folder for `npm install`, `.env`, and day-to-day development. A fuller `src/` tree (including `components/home`, `components/shared`, and `pages/admin/{context,layout,lib,views}`) lives in **`acses-website/acses-website/README.md`**.
 
 ```
-acses-website/                    # Repository root (this README)
-├── acses-website/                # Vite app — `package.json`, `vite.config.js`, `src/`
+<repository root>/              # e.g. folder created by `git clone … acses-website`
+├── README.md                   # Repo overview (this file)
+├── acses-website/              # Vite React app — `package.json`, `vite.config.js`, `src/`
 │   ├── ADMIN_BACKEND_INTEGRATION.md
 │   ├── CHANGELOG.md
-│   ├── README.md                 # App-focused documentation
+│   ├── README.md               # App-focused documentation
 │   ├── public/
 │   └── src/
-├── README.md                     # You are here (repo overview)
-└── …
+└── …                           # other repo-level files if present
 ```
 
 ---

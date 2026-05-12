@@ -9,6 +9,8 @@ All notable changes to the ACSES website frontend (Vite app in this directory) a
 
 ### Changed
 
+- **Admin Forms and UI layout:** Made sidebar unscrollable, ensured easily readability in leadearship, store and resource forms.
+
 - **Admin dashboard file layout:** Route screens live under `src/pages/admin/views/`; shared **sidebar** and shell under `src/pages/admin/layout/` (`AdminShell`, `AdminSidebar`, `AdminNavLinks`, `adminNavConfig.js`); JWT/session context under `context/`; static seeds and CSV helpers under `lib/`. `App.jsx` imports admin views from `pages/admin/views/…`. Desktop and small screens use the same nav definition so every admin page stays consistent.
 
 ---

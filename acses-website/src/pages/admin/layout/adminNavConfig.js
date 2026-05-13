@@ -1,4 +1,3 @@
-/** Single source of truth for admin dashboard navigation (desktop sidebar + mobile drawer). */
 export const ADMIN_NAV_ITEMS = [
   { label: "Overview", to: "/admin", icon: "🏠", key: "overview" },
   { label: "Events", to: "/admin/events", icon: "📅", key: "events" },

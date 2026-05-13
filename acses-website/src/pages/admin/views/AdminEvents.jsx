@@ -8,7 +8,7 @@ import {
   Panel, PanelEmpty, FormPanel, FormActions,
   CardRow, RowActions, Pill,
   Field, TextArea, Select, ExportBtn, BlockedAccess, Pagination,
-} from "./adminUI";
+} from "../layout/adminUI";
 
 const categories = ["seminar", "workshop", "social"];
 const statuses = ["upcoming", "ongoing", "past"];

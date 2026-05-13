@@ -6,7 +6,7 @@ import {
   PageShell, PageHeader, TwoColLayout,
   Panel, PanelEmpty, FormPanel, FormActions,
   Field, TextArea, Select, BlockedAccess, TabBar,
-} from "./adminUI";
+} from "../layout/adminUI";
 
 const emptyGrouped = { academic: [], tools: [], career: [] };
 

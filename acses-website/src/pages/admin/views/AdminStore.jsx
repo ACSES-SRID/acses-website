@@ -6,7 +6,7 @@ import {
   Panel, PanelEmpty, FormPanel, FormActions,
   CardRow, RowActions, Pill,
   Field, TextArea, Select, BlockedAccess,
-} from "./adminUI";
+} from "../layout/adminUI";
 
 const categories = ["apparel", "accessories", "tech"];
 

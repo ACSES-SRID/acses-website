@@ -7,7 +7,7 @@ import {
   Panel, PanelEmpty, FormPanel, FormActions,
   CardRow, RowActions, Pill,
   Field, TextArea, Select, ExportBtn, BlockedAccess,
-} from "./adminUI";
+} from "../layout/adminUI";
 
 const AdminAnnouncements = () => {
   const { searchQuery, showToast, openConfirm, currentUser, hasAccess } = useAdmin();

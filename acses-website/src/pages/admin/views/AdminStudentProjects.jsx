@@ -7,7 +7,7 @@ import {
   Panel, PanelEmpty, FormPanel, FormActions,
   CardRow, RowActions, Pill,
   Field, TextArea, Select, ExportBtn, BlockedAccess,
-} from "./adminUI";
+} from "../layout/adminUI";
 
 const PUBLICATION_STATUSES = [
   { value: "pending", label: "Pending (hidden from public page)" },

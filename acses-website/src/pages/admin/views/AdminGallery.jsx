@@ -7,7 +7,7 @@ import {
   Panel, PanelEmpty, FormPanel, FormActions,
   CardRow, RowActions, Pill,
   Field, ExportBtn, BlockedAccess,
-} from "./adminUI";
+} from "../layout/adminUI";
 
 const AdminGallery = () => {
   const { searchQuery, showToast, openConfirm, hasAccess } = useAdmin();

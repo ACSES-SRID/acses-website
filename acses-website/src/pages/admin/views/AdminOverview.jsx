@@ -3,7 +3,7 @@ import { useAdmin } from "../context/AdminContext";
 import { fetchApi, unwrapList } from "../../../utils/api";
 import { formatDate } from "../lib/adminUtils";
 import { Users, Calendar, FolderOpen, Megaphone, MapPin } from "lucide-react";
-import { PageShell } from "./adminUI";
+import { PageShell } from "../layout/adminUI";
 
 const AdminOverview = () => {
   const { searchQuery, hasAccess, currentUser } = useAdmin();

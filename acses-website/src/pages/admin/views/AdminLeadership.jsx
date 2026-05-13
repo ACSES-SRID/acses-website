@@ -7,7 +7,7 @@ import {
   Panel, PanelEmpty, FormPanel, FormActions,
   CardRow, RowActions,
   Field, TextArea, BlockedAccess,
-} from "./adminUI";
+} from "../layout/adminUI";
 
 const AdminLeadership = () => {
   const { hasAccess, showToast, openConfirm } = useAdmin();

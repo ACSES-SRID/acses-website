@@ -2,8 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { useAdmin } from "../context/AdminContext";
 import { exportToCsv } from "../lib/adminUtils";
 import { fetchApi, unwrapList } from "../../../utils/api";
+import {
+  PageShell, PageHeader, TwoColLayout,
+  Panel, PanelEmpty, FormPanel, FormActions,
+  CardRow, RowActions, Pill,
+  Field, TextArea, Select, ExportBtn, BlockedAccess,
+} from "./adminUI";
 
-/** Pending submissions (e.g. from the public form) are listed last, oldest → newest within each group. */
+const PUBLICATION_STATUSES = [
+  { value: "pending", label: "Pending (hidden from public page)" },
+  { value: "approved", label: "Approved (published on public page)" },
+];
+
 const sortProjectsForAdmin = (normalized) => {
   const pending = normalized.filter((p) => p.status === "pending");
   const rest = normalized.filter((p) => p.status !== "pending");
@@ -13,26 +23,11 @@ const sortProjectsForAdmin = (normalized) => {
   return [...rest, ...pending];
 };
 
-const PUBLICATION_STATUSES = [
-  { value: "pending", label: "Pending (hidden from public page)" },
-  { value: "approved", label: "Approved (published on public page)" },
-];
-
 const normalizeProject = (item) => {
   const id = item._id || item.id;
   const technologies = Array.isArray(item.technologies) ? item.technologies : [];
-  const raw = item.status || "pending";
-  const status = raw === "approved" ? "approved" : "pending";
-  const approved = status === "approved";
-  const student = item.submittedBy || item.student || "";
-  return {
-    id,
-    ...item,
-    status,
-    technologies,
-    approved,
-    student,
-  };
+  const status = (item.status || "pending") === "approved" ? "approved" : "pending";
+  return { id, ...item, status, technologies, approved: status === "approved", student: item.submittedBy || item.student || "" };
 };
 
 const AdminStudentProjects = () => {
@@ -40,35 +35,21 @@ const AdminStudentProjects = () => {
   const [projects, setProjects] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
-    title: "",
-    student: "",
-    description: "",
-    technologies: "",
-    image: "",
-    github: "",
-    demo: "",
-    video: "",
-    status: "pending",
+    title: "", student: "", description: "", technologies: "",
+    image: "", github: "", demo: "", video: "", status: "pending",
   });
 
   const loadProjects = async () => {
     try {
       const data = await fetchApi("/api/student-projects/all?limit=100", { auth: true });
-      const list = unwrapList(data);
-      setProjects(sortProjectsForAdmin(list.map(normalizeProject)));
+      setProjects(sortProjectsForAdmin(unwrapList(data).map(normalizeProject)));
     } catch (error) {
-      console.error("Failed to load projects from API:", error);
+      console.error("Failed to load projects:", error);
       setProjects([]);
     }
   };
 
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const saveProjects = (items) => {
-    setProjects(sortProjectsForAdmin(items.map(normalizeProject)));
-  };
+  useEffect(() => { loadProjects(); }, []);
 
   const filteredProjects = useMemo(
     () =>
@@ -84,71 +65,53 @@ const AdminStudentProjects = () => {
     [projects, searchQuery]
   );
 
-  if (!hasAccess("student-projects")) {
-    return (
-      <div className="rounded-3xl border border-red-700 bg-acses-green-900 p-6 text-white/80">
-        <p className="text-lg font-semibold">Access denied</p>
-        <p className="mt-2 text-sm text-acses-yellow-100">Your role does not have permission to manage student projects.</p>
-      </div>
-    );
-  }
+  if (!hasAccess("student-projects")) return <BlockedAccess message="Your role does not have permission to manage student projects." />;
 
-  const buildPayload = () => {
-    const technologies = form.technologies.split(",").map((item) => item.trim()).filter(Boolean);
-    const status = form.status === "approved" ? "approved" : "pending";
-    return {
-      title: form.title,
-      description: form.description,
-      technologies,
-      image: form.image,
-      github: form.github,
-      demo: form.demo,
-      video: form.video || undefined,
-      submittedBy: form.student,
-      status,
-    };
+  const approvedCount = projects.filter((p) => p.approved || p.status === "approved").length;
+
+  const resetForm = () => {
+    setEditingId(null);
+    setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", status: "pending" });
   };
+
+  const buildPayload = () => ({
+    title: form.title,
+    description: form.description,
+    technologies: form.technologies.split(",").map((t) => t.trim()).filter(Boolean),
+    image: form.image,
+    github: form.github,
+    demo: form.demo,
+    video: form.video || undefined,
+    submittedBy: form.student,
+    status: form.status === "approved" ? "approved" : "pending",
+  });
 
   const handleSave = async () => {
     if (!form.title || !form.student || !form.description) {
       showToast("Title, submitter name and description are required.", "error");
       return;
     }
-
     const payload = buildPayload();
-
     try {
       if (editingId) {
-        await fetchApi(`/api/student-projects/${editingId}`, {
-          method: "PUT",
-          body: JSON.stringify(payload),
-          auth: true,
-        });
-        setProjects(
-          sortProjectsForAdmin(
-            projects.map((project) => (project.id === editingId ? normalizeProject({ ...project, ...payload, _id: editingId }) : project))
-          )
-        );
+        await fetchApi(`/api/student-projects/${editingId}`, { method: "PUT", body: JSON.stringify(payload), auth: true });
+        setProjects(sortProjectsForAdmin(
+          projects.map((p) => (p.id === editingId ? normalizeProject({ ...p, ...payload, _id: editingId }) : p))
+        ));
         showToast("Project updated successfully.");
       } else {
-        await fetchApi("/api/student-projects", {
-          method: "POST",
-          body: JSON.stringify(payload),
-        });
+        await fetchApi("/api/student-projects", { method: "POST", body: JSON.stringify(payload) });
         await loadProjects();
         showToast("Project added.");
       }
-      setEditingId(null);
-      setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", status: "pending" });
+      resetForm();
     } catch (error) {
-      console.error("API save failed:", error);
       showToast(error instanceof Error ? error.message : "Failed to save project.", "error");
     }
   };
 
   const handleEdit = (project) => {
     setEditingId(project.id);
-    const st = project.status === "approved" ? "approved" : "pending";
     setForm({
       title: project.title,
       student: project.student || project.submittedBy || "",
@@ -158,7 +121,7 @@ const AdminStudentProjects = () => {
       github: project.github || "",
       demo: project.demo || "",
       video: project.video || "",
-      status: st,
+      status: project.status === "approved" ? "approved" : "pending",
     });
   };
 
@@ -168,157 +131,123 @@ const AdminStudentProjects = () => {
       onConfirm: async () => {
         try {
           await fetchApi(`/api/student-projects/${id}`, { method: "DELETE", auth: true });
-          saveProjects(projects.filter((project) => project.id !== id));
+          setProjects(sortProjectsForAdmin(projects.filter((p) => p.id !== id).map(normalizeProject)));
           showToast("Project deleted.");
         } catch (error) {
-          console.error("API delete failed:", error);
           showToast(error instanceof Error ? error.message : "Delete failed.", "error");
         }
       },
     });
   };
 
-  const approvedCount = projects.filter((project) => project.approved || project.status === "approved").length;
-
   return (
-    <div className="space-y-6">
-      <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 px-6 py-5 shadow-xl shadow-acses-green-900/20">
-        <h1 className="text-2xl font-semibold text-white">Student Projects / Initiatives</h1>
-        <p className="mt-2 text-sm text-acses-yellow-100">
-          Student form submissions are <span className="font-semibold text-white">pending</span> and appear at the bottom of the list until you approve
-          them for the public page.
-        </p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Student Projects"
+        subtitle={`Submissions are pending until approved for the public page. ${approvedCount} currently live.`}
+        badge={projects.length}
+      />
 
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 shadow-xl shadow-acses-green-900/20">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-white/70">
-              Approved (live on site): <span className="font-semibold text-white">{approvedCount}</span>
+      <TwoColLayout>
+        {/* ── List ── */}
+        <Panel
+          toolbar={
+            <>
+              <div className="flex items-center gap-3">
+                <p className="text-sm font-medium text-acses-yellow-100/60">
+                  {filteredProjects.length} {filteredProjects.length === 1 ? "project" : "projects"}
+                </p>
+                <span className="rounded-full bg-acses-yellow-400/20 border border-acses-yellow-400/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-acses-yellow-300">
+                  {approvedCount} live
+                </span>
+              </div>
+              <ExportBtn onClick={() => exportToCsv("acses-student-projects.csv", projects)} />
+            </>
+          }
+        >
+          <div className="divide-y divide-acses-green-800">
+            {filteredProjects.length === 0 ? (
+              <PanelEmpty message="No projects found." hint="Add one using the form on the right." />
+            ) : (
+              filteredProjects.map((project) => (
+                <CardRow key={project.id} isActive={editingId === project.id}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                        <Pill
+                          label={project.status}
+                          variant={project.status === "approved" ? "active" : "muted"}
+                        />
+                      </div>
+                      <p className="text-sm font-semibold text-white truncate">{project.title}</p>
+                      <p className="mt-0.5 text-xs text-white/40 truncate">{project.student}</p>
+
+                      {/* Tech tags */}
+                      {project.technologies.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {project.technologies.slice(0, 4).map((tech) => (
+                            <span key={tech} className="px-2 py-0.5 rounded-full bg-acses-green-800 border border-acses-green-700 text-[10px] text-white/50">
+                              {tech}
+                            </span>
+                          ))}
+                          {project.technologies.length > 4 && (
+                            <span className="px-2 py-0.5 rounded-full bg-acses-green-800 border border-acses-green-700 text-[10px] text-white/30">
+                              +{project.technologies.length - 4}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <RowActions onEdit={() => handleEdit(project)} onDelete={() => handleDelete(project.id)} />
+                  </div>
+                </CardRow>
+              ))
+            )}
+          </div>
+        </Panel>
+
+        {/* ── Form ── */}
+        <FormPanel title={editingId ? "Edit Project" : "Add Project"}>
+          <Field label="Project Title" value={form.title} onChange={(v) => setForm({ ...form, title: v })} placeholder="e.g. Campus Navigator App" />
+          <Field label="Submitted By" value={form.student} onChange={(v) => setForm({ ...form, student: v })} placeholder="Student name" />
+          <TextArea label="Description" value={form.description} onChange={(v) => setForm({ ...form, description: v })} placeholder="Describe the project…" rows={3} />
+          <Field label="Technologies (comma-separated)" value={form.technologies} onChange={(v) => setForm({ ...form, technologies: v })} placeholder="React, Node.js, MongoDB" />
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="GitHub URL" value={form.github} onChange={(v) => setForm({ ...form, github: v })} placeholder="https://github.com/…" />
+            <Field label="Demo URL" value={form.demo} onChange={(v) => setForm({ ...form, demo: v })} placeholder="https://…" />
+          </div>
+
+          <Field label="Image URL" value={form.image} onChange={(v) => setForm({ ...form, image: v })} placeholder="https://…" />
+          <Field label="Video URL" value={form.video} onChange={(v) => setForm({ ...form, video: v })} placeholder="https://youtube.com/…" />
+
+          <Select
+            label="Publication Status"
+            value={form.status}
+            options={PUBLICATION_STATUSES}
+            onChange={(v) => setForm({ ...form, status: v })}
+          />
+
+          {/* Status hint */}
+          <div className="rounded-2xl bg-acses-green-800/60 border border-acses-green-700 px-4 py-3 flex items-start gap-3">
+            <div className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${form.status === "approved" ? "bg-acses-yellow-400" : "bg-white/30"}`} />
+            <p className="text-xs text-white/50 leading-relaxed">
+              {form.status === "approved"
+                ? "This project will appear on the public /student-projects page."
+                : "This project is hidden from the public page until approved."}
             </p>
-            <button
-              onClick={() => exportToCsv("acses-student-projects.csv", projects)}
-              className="rounded-2xl bg-acses-yellow-400 px-4 py-2 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300"
-            >
-              Export CSV
-            </button>
           </div>
-          <div className="overflow-x-auto rounded-3xl border border-acses-green-800 bg-acses-green-900">
-            <table className="min-w-full border-collapse text-left text-sm text-white/70">
-              <thead className="bg-acses-green-900 text-acses-yellow-100">
-                <tr>
-                  <th className="px-4 py-3">Title</th>
-                  <th className="px-4 py-3">Submitter</th>
-                  <th className="px-4 py-3">Technologies</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProjects.map((project) => (
-                  <tr key={project.id} className="border-t border-acses-green-800 last:border-b last:border-acses-green-800 hover:bg-acses-green-900/60">
-                    <td className="px-4 py-3 text-white">{project.title}</td>
-                    <td className="px-4 py-3">{project.student}</td>
-                    <td className="px-4 py-3">{project.technologies.join(", ")}</td>
-                    <td className="px-4 py-3 capitalize">{project.status}</td>
-                    <td className="px-4 py-3 space-x-2">
-                      <button
-                        onClick={() => handleEdit(project)}
-                        className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(project.id)}
-                        className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {filteredProjects.length === 0 && (
-                  <tr>
-                    <td colSpan="5" className="px-4 py-8 text-center text-acses-yellow-200">
-                      No projects found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
 
-        <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 shadow-xl shadow-acses-green-900/20">
-          <h2 className="text-lg font-semibold text-white">{editingId ? "Edit project" : "Add project (admin)"}</h2>
-          <p className="mt-1 text-xs text-white/50">
-            Set <span className="text-acses-yellow-200">publication status</span> for every project: pending keeps it off the public page; approved lists it
-            on /student-projects.
-          </p>
-          <div className="mt-5 space-y-4">
-            <Field label="Project title" value={form.title} onChange={(value) => setForm({ ...form, title: value })} />
-            <Field label="Submitted by" value={form.student} onChange={(value) => setForm({ ...form, student: value })} />
-            <TextArea label="Description" value={form.description} onChange={(value) => setForm({ ...form, description: value })} />
-            <Field label="Technologies (comma-separated)" value={form.technologies} onChange={(value) => setForm({ ...form, technologies: value })} />
-            <Field label="Image URL" value={form.image} onChange={(value) => setForm({ ...form, image: value })} />
-            <Field label="GitHub URL" value={form.github} onChange={(value) => setForm({ ...form, github: value })} />
-            <Field label="Demo URL" value={form.demo} onChange={(value) => setForm({ ...form, demo: value })} />
-            <Field label="Video URL" value={form.video} onChange={(value) => setForm({ ...form, video: value })} />
-            <div>
-              <label className="block text-sm font-medium text-white/70" htmlFor="project-status">
-                Publication status
-              </label>
-              <select
-                id="project-status"
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="mt-2 w-full rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-3 text-white outline-none"
-              >
-                {PUBLICATION_STATUSES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-              {editingId && (
-                <button
-                  onClick={() => {
-                    setEditingId(null);
-                    setForm({ title: "", student: "", description: "", technologies: "", image: "", github: "", demo: "", video: "", status: "pending" });
-                  }}
-                  className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800"
-                >
-                  Cancel
-                </button>
-              )}
-              <button
-                onClick={handleSave}
-                className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300"
-              >
-                {editingId ? "Save project" : "Add project"}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          <FormActions
+            editingId={editingId}
+            onCancel={resetForm}
+            onSubmit={handleSave}
+            submitLabel={editingId ? "Save Project" : "Add Project"}
+          />
+        </FormPanel>
+      </TwoColLayout>
+    </PageShell>
   );
 };
-
-const Field = ({ label, value, onChange }) => (
-  <div>
-    <label className="block text-sm font-medium text-white/70">{label}</label>
-    <input value={value} onChange={(e) => onChange(e.target.value)} className="mt-2 w-full rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-3 text-white outline-none" />
-  </div>
-);
-
-const TextArea = ({ label, value, onChange }) => (
-  <div>
-    <label className="block text-sm font-medium text-white/70">{label}</label>
-    <textarea rows="4" value={value} onChange={(e) => onChange(e.target.value)} className="mt-2 w-full rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-3 text-white outline-none" />
-  </div>
-);
 
 export default AdminStudentProjects;

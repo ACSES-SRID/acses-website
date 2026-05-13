@@ -2,6 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useAdmin } from "../context/AdminContext";
 import { exportToCsv, formatDate } from "../lib/adminUtils";
 import { fetchApi, unwrapList } from "../../../utils/api";
+import {
+  PageShell, PageHeader, TwoColLayout,
+  Panel, PanelEmpty, FormPanel, FormActions,
+  CardRow, RowActions, Pill,
+  Field, ExportBtn, BlockedAccess,
+} from "./adminUI";
 
 const AdminGallery = () => {
   const { searchQuery, showToast, openConfirm, hasAccess } = useAdmin();
@@ -13,29 +19,24 @@ const AdminGallery = () => {
     try {
       const data = await fetchApi("/api/gallery?limit=100");
       const list = unwrapList(data);
-      const normalized = list.map((item) => ({
-        id: item._id || item.id,
-        image: item.src || item.image || "",
-        caption: item.alt || item.caption || "",
-        eventTag: item.category || item.description || "",
-        uploadedAt: item.createdAt || item.uploadedAt || "",
-        dateUploaded: item.dateUploaded || item.createdAt || "",
-        ...item,
-      }));
-      setGallery(normalized);
+      setGallery(
+        list.map((item) => ({
+          id: item._id || item.id,
+          image: item.src || item.image || "",
+          caption: item.alt || item.caption || "",
+          eventTag: item.category || item.description || "",
+          uploadedAt: item.createdAt || item.uploadedAt || "",
+          dateUploaded: item.dateUploaded || item.createdAt || "",
+          ...item,
+        }))
+      );
     } catch (error) {
-      console.error("Failed to load gallery from API:", error);
+      console.error("Failed to load gallery:", error);
       setGallery([]);
     }
   };
 
-  useEffect(() => {
-    loadGallery();
-  }, []);
-
-  const saveGallery = (items) => {
-    setGallery(items);
-  };
+  useEffect(() => { loadGallery(); }, []);
 
   const filteredGallery = useMemo(
     () =>
@@ -50,54 +51,38 @@ const AdminGallery = () => {
     [gallery, searchQuery]
   );
 
-  if (!hasAccess("gallery")) {
-    return (
-      <div className="rounded-3xl border border-red-700 bg-acses-green-900 p-6 text-white/80">
-        <p className="text-lg font-semibold">Access denied</p>
-        <p className="mt-2 text-sm text-acses-yellow-100">Your role does not have permission to manage gallery photos.</p>
-      </div>
-    );
-  }
+  if (!hasAccess("gallery")) return <BlockedAccess message="Your role does not have permission to manage gallery photos." />;
+
+  const resetForm = () => {
+    setEditingId(null);
+    setForm({ image: "", caption: "", eventTag: "", uploadedAt: "", dateUploaded: "" });
+  };
 
   const handleSave = async () => {
     if (!form.image || !form.caption || !form.eventTag) {
       showToast("Image URL, caption, and category/tag are required.", "error");
       return;
     }
-
-    const payload = {
-      src: form.image,
-      alt: form.caption,
-      description: form.eventTag,
-      category: form.eventTag,
-    };
-
+    const payload = { src: form.image, alt: form.caption, description: form.eventTag, category: form.eventTag };
     try {
       if (editingId) {
-        await fetchApi(`/api/gallery/${editingId}`, {
-          method: "PUT",
-          body: JSON.stringify(payload),
-          auth: true,
-        });
-        setGallery(gallery.map((item) => (item.id === editingId ? { ...item, ...payload, id: editingId, image: payload.src, caption: payload.alt, eventTag: payload.category } : item)));
+        await fetchApi(`/api/gallery/${editingId}`, { method: "PUT", body: JSON.stringify(payload), auth: true });
+        setGallery(gallery.map((item) =>
+          item.id === editingId
+            ? { ...item, ...payload, id: editingId, image: payload.src, caption: payload.alt, eventTag: payload.category }
+            : item
+        ));
         showToast("Gallery photo updated.");
       } else {
-        const result = await fetchApi("/api/gallery", {
-          method: "POST",
-          body: JSON.stringify(payload),
-          auth: true,
-        });
+        const result = await fetchApi("/api/gallery", { method: "POST", body: JSON.stringify(payload), auth: true });
         const newId = result?.id || result?._id;
         setGallery([...gallery, { id: newId || `photo-${Date.now()}`, ...payload, image: payload.src, caption: payload.alt, eventTag: payload.category }]);
         showToast("Photo added to gallery.");
       }
     } catch (error) {
-      console.error("API save failed:", error);
       showToast(error instanceof Error ? error.message : "Failed to save gallery item.", "error");
     }
-
-    setEditingId(null);
-    setForm({ image: "", caption: "", eventTag: "", uploadedAt: "", dateUploaded: "" });
+    resetForm();
   };
 
   const handleEdit = (item) => {
@@ -117,10 +102,9 @@ const AdminGallery = () => {
       onConfirm: async () => {
         try {
           await fetchApi(`/api/gallery/${id}`, { method: "DELETE", auth: true });
-          saveGallery(gallery.filter((item) => item.id !== id));
+          setGallery(gallery.filter((item) => item.id !== id));
           showToast("Gallery item deleted.");
         } catch (error) {
-          console.error("API delete failed:", error);
           showToast(error instanceof Error ? error.message : "Delete failed.", "error");
         }
       },
@@ -128,93 +112,87 @@ const AdminGallery = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 px-6 py-5 shadow-xl shadow-acses-green-900/20">
-        <h1 className="text-2xl font-semibold text-white">Gallery</h1>
-        <p className="mt-2 text-sm text-acses-yellow-100">Upload and manage event photos, captions, and tags.</p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Gallery"
+        subtitle="Upload and manage event photos, captions, and tags."
+        badge={gallery.length}
+      />
 
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 shadow-xl shadow-acses-green-900/20">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <button onClick={() => exportToCsv("acses-gallery.csv", gallery)} className="rounded-2xl bg-acses-yellow-400 px-4 py-2 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
-              Export CSV
-            </button>
-          </div>
-          <div className="overflow-x-auto rounded-3xl border border-acses-green-800 bg-acses-green-900">
-            <table className="min-w-full border-collapse text-left text-sm text-white/70">
-              <thead className="bg-acses-green-900 text-acses-yellow-100">
-                <tr>
-                  <th className="px-4 py-3">Caption</th>
-                  <th className="px-4 py-3">Event tag</th>
-                  <th className="px-4 py-3">Uploaded</th>
-                  <th className="px-4 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredGallery.map((item) => (
-                  <tr key={item.id} className="border-t border-acses-green-800 last:border-b last:border-acses-green-800 hover:bg-acses-green-900/60">
-                    <td className="px-4 py-3 text-white">{item.caption}</td>
-                    <td className="px-4 py-3">{item.eventTag}</td>
-                    <td className="px-4 py-3">{formatDate(item.uploadedAt)}</td>
-                    <td className="px-4 py-3 space-x-2">
-                      <button onClick={() => handleEdit(item)} className="rounded-2xl bg-acses-green-800 px-3 py-2 text-xs text-acses-yellow-300 hover:bg-acses-green-700">
-                        Edit
-                      </button>
-                      <button onClick={() => handleDelete(item.id)} className="rounded-2xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-500">
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {filteredGallery.length === 0 && (
-                  <tr>
-                    <td colSpan="4" className="px-4 py-8 text-center text-acses-yellow-200">
-                      No gallery items found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      <TwoColLayout>
+        {/* ── List ── */}
+        <Panel
+          toolbar={
+            <>
+              <p className="text-sm font-medium text-acses-yellow-100/60">
+                {filteredGallery.length} {filteredGallery.length === 1 ? "photo" : "photos"}
+              </p>
+              <ExportBtn onClick={() => exportToCsv("acses-gallery.csv", gallery)} />
+            </>
+          }
+        >
+          <div className="divide-y divide-acses-green-800">
+            {filteredGallery.length === 0 ? (
+              <PanelEmpty message="No gallery items found." hint="Add a photo using the form on the right." />
+            ) : (
+              filteredGallery.map((item) => (
+                <CardRow key={item.id} isActive={editingId === item.id}>
+                  <div className="flex items-center gap-4 justify-between">
+                    {/* Thumbnail */}
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-acses-green-800 border border-acses-green-700 flex-shrink-0">
+                      {item.image ? (
+                        <img src={item.image} alt={item.caption} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg className="w-5 h-5 text-acses-yellow-400/30" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 3h18M3 21h18" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
 
-        <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 shadow-xl shadow-acses-green-900/20">
-          <h2 className="text-lg font-semibold text-white">{editingId ? "Edit photo" : "Add gallery photo"}</h2>
-          <div className="mt-5 space-y-4">
-            <Field label="Image URL" value={form.image} onChange={(value) => setForm({ ...form, image: value })} />
-            <Field label="Caption" value={form.caption} onChange={(value) => setForm({ ...form, caption: value })} />
-            <Field label="Category / tag" value={form.eventTag} onChange={(value) => setForm({ ...form, eventTag: value })} />
-            <Field label="Upload date" type="date" value={form.uploadedAt} onChange={(value) => setForm({ ...form, uploadedAt: value })} />
-            <Field label="Display date" type="date" value={form.dateUploaded} onChange={(value) => setForm({ ...form, dateUploaded: value })} />
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-              {editingId && (
-                <button
-                  onClick={() => {
-                    setEditingId(null);
-                    setForm({ image: "", caption: "", eventTag: "", uploadedAt: "", dateUploaded: "" });
-                  }}
-                  className="rounded-2xl border border-acses-green-800 px-4 py-3 text-sm text-white/80 hover:bg-acses-green-800"
-                >
-                  Cancel
-                </button>
-              )}
-              <button onClick={handleSave} className="rounded-2xl bg-acses-yellow-400 px-4 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
-                {editingId ? "Save photo" : "Add photo"}
-              </button>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-white truncate">{item.caption}</p>
+                      <div className="mt-1 flex items-center gap-2">
+                        <Pill label={item.eventTag} variant="green" />
+                        <span className="text-[11px] text-white/30">{formatDate(item.uploadedAt)}</span>
+                      </div>
+                    </div>
+                    <RowActions onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item.id)} />
+                  </div>
+                </CardRow>
+              ))
+            )}
+          </div>
+        </Panel>
+
+        {/* ── Form ── */}
+        <FormPanel title={editingId ? "Edit Photo" : "Add Gallery Photo"}>
+          <Field label="Image URL" value={form.image} onChange={(v) => setForm({ ...form, image: v })} placeholder="https://…" />
+
+          {/* Preview */}
+          {form.image && (
+            <div className="w-full h-36 rounded-2xl overflow-hidden border border-acses-green-700 bg-acses-green-800">
+              <img src={form.image} alt="preview" className="w-full h-full object-cover" onError={(e) => (e.target.style.display = "none")} />
             </div>
+          )}
+
+          <Field label="Caption" value={form.caption} onChange={(v) => setForm({ ...form, caption: v })} placeholder="Describe the photo…" />
+          <Field label="Category / Tag" value={form.eventTag} onChange={(v) => setForm({ ...form, eventTag: v })} placeholder="e.g. Orientation 2024" />
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Upload Date" type="date" value={form.uploadedAt} onChange={(v) => setForm({ ...form, uploadedAt: v })} />
+            <Field label="Display Date" type="date" value={form.dateUploaded} onChange={(v) => setForm({ ...form, dateUploaded: v })} />
           </div>
-        </div>
-      </div>
-    </div>
+          <FormActions
+            editingId={editingId}
+            onCancel={resetForm}
+            onSubmit={handleSave}
+            submitLabel={editingId ? "Save Photo" : "Add Photo"}
+          />
+        </FormPanel>
+      </TwoColLayout>
+    </PageShell>
   );
 };
-
-const Field = ({ label, value, onChange, type = "text" }) => (
-  <div>
-    <label className="block text-sm font-medium text-white/70">{label}</label>
-    <input type={type} value={value} onChange={(e) => onChange(e.target.value)} className="mt-2 w-full rounded-2xl border border-acses-green-800 bg-acses-green-900 px-4 py-3 text-white outline-none" />
-  </div>
-);
 
 export default AdminGallery;

@@ -1,43 +1,35 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAdmin } from "../context/AdminContext";
 import { fetchApi, unwrapList } from "../../../utils/api";
+import {
+  PageShell, PageHeader, TwoColLayout,
+  Panel, PanelEmpty, FormPanel, FormActions,
+  CardRow, RowActions, Pill,
+  Field, TextArea, Select, BlockedAccess,
+} from "./adminUI";
 
-const BlockedAccess = () => (
-  <div className="rounded-3xl border border-red-700 bg-acses-green-900 p-6 text-white/80">
-    <p className="text-lg font-semibold">Access denied</p>
-    <p className="mt-2 text-sm text-acses-yellow-100">Your role does not have permission to manage the store.</p>
-  </div>
-);
+const categories = ["apparel", "accessories", "tech"];
 
 const AdminStore = () => {
   const { hasAccess, showToast } = useAdmin();
   const [products, setProducts] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
-    name: "",
-    description: "",
-    price: "",
-    originalPrice: "",
-    category: "apparel",
-    badge: "",
-    badgeColor: "",
-    image: "",
+    name: "", description: "", price: "", originalPrice: "",
+    category: "apparel", badge: "", badgeColor: "", image: "",
   });
 
   const load = async () => {
     try {
       const data = await fetchApi("/api/store?limit=100");
-      const list = unwrapList(data);
-      setProducts(list);
+      setProducts(unwrapList(data));
     } catch (e) {
       console.error(e);
       setProducts([]);
     }
   };
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, []);
 
   const toPayload = () => ({
     name: form.name,
@@ -50,18 +42,9 @@ const AdminStore = () => {
     image: form.image || undefined,
   });
 
-  const reset = () => {
+  const resetForm = () => {
     setEditingId(null);
-    setForm({
-      name: "",
-      description: "",
-      price: "",
-      originalPrice: "",
-      category: "apparel",
-      badge: "",
-      badgeColor: "",
-      image: "",
-    });
+    setForm({ name: "", description: "", price: "", originalPrice: "", category: "apparel", badge: "", badgeColor: "", image: "" });
   };
 
   const handleEdit = (prod) => {
@@ -85,21 +68,13 @@ const AdminStore = () => {
     }
     try {
       if (editingId) {
-        await fetchApi(`/api/store/${editingId}`, {
-          method: "PUT",
-          body: JSON.stringify(toPayload()),
-          auth: true,
-        });
+        await fetchApi(`/api/store/${editingId}`, { method: "PUT", body: JSON.stringify(toPayload()), auth: true });
         showToast("Product updated.");
       } else {
-        await fetchApi("/api/store", {
-          method: "POST",
-          body: JSON.stringify(toPayload()),
-          auth: true,
-        });
+        await fetchApi("/api/store", { method: "POST", body: JSON.stringify(toPayload()), auth: true });
         showToast("Product added.");
       }
-      reset();
+      resetForm();
       load();
     } catch (e) {
       showToast(e instanceof Error ? e.message : "Save failed.", "error");
@@ -116,62 +91,101 @@ const AdminStore = () => {
     }
   };
 
-  if (!hasAccess("store")) {
-    return <BlockedAccess />;
-  }
-
-  // UPDATED: bg-white, text-black, and explicit placeholder-black
-  const inputClass = "rounded-xl border border-gray-300 bg-white px-4 py-3 text-black placeholder:text-black outline-none focus:ring-2 focus:ring-acses-yellow-400 block w-full transition-all font-medium";
+  if (!hasAccess("store")) return <BlockedAccess message="Your role does not have permission to manage the store." />;
 
   return (
-    <div className="mt-8 space-y-6">
-      <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 px-6 py-5 text-white shadow-xl">
-        <h2 className="text-2xl font-bold">Manage Store Products</h2>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Store Products"
+        subtitle="Manage merchandise, pricing, and product listings."
+        badge={products.length}
+      />
 
-      <div className="rounded-3xl border border-acses-green-800 bg-acses-green-900 p-6 text-white">
-        <h3 className="text-lg font-semibold mb-4">{editingId ? "Edit product" : "Add product"}</h3>
-        <div className="grid gap-4 md:grid-cols-2">
-          <input className={inputClass} placeholder="Product Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <input className={inputClass} type="number" step="0.01" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-          <input className={inputClass} type="number" step="0.01" placeholder="Original price" value={form.originalPrice} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} />
-          <select className={inputClass} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-            <option value="apparel">Apparel</option>
-            <option value="accessories">Accessories</option>
-            <option value="tech">Tech</option>
-          </select>
-          <input className={inputClass} placeholder="Badge" value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} />
-          <input className={inputClass} placeholder="Badge color" value={form.badgeColor} onChange={(e) => setForm({ ...form, badgeColor: e.target.value })} />
-          <input className={`${inputClass} md:col-span-2`} placeholder="Image URL" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
-          <textarea className={`${inputClass} md:col-span-2`} placeholder="Description" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-        </div>
-        <div className="mt-6 flex gap-3">
-          <button type="button" onClick={handleSave} className="rounded-xl bg-acses-yellow-400 px-6 py-3 text-sm font-bold text-acses-green-950">
-            {editingId ? "Save" : "Add"}
-          </button>
-          {editingId && (
-            <button type="button" onClick={reset} className="rounded-xl border border-acses-green-700 px-6 py-3 text-sm">
-              Cancel
-            </button>
-          )}
-        </div>
-      </div>
+      <TwoColLayout>
+        {/* ── Product list ── */}
+        <Panel
+          toolbar={
+            <p className="text-sm font-medium text-acses-yellow-100/60">
+              {products.length} {products.length === 1 ? "product" : "products"}
+            </p>
+          }
+        >
+          <div className="divide-y divide-acses-green-800">
+            {products.length === 0 ? (
+              <PanelEmpty message="No products yet." hint="Add the first product using the form on the right." />
+            ) : (
+              products.map((prod) => (
+                <CardRow key={prod._id} isActive={editingId === prod._id}>
+                  <div className="flex items-center gap-4 justify-between">
+                    {/* Product image */}
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-acses-green-800 border border-acses-green-700 flex-shrink-0">
+                      {prod.image ? (
+                        <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg className="w-5 h-5 text-acses-yellow-400/30" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
 
-      <div className="space-y-3">
-        {products.map((prod) => (
-          <div key={prod._id} className="flex flex-col gap-4 rounded-2xl border border-acses-green-800 bg-acses-green-900 p-5 text-white sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="font-bold">{prod.name}</p>
-              <p className="text-sm text-acses-yellow-400">GHS {prod.price}</p>
-            </div>
-            <div className="flex gap-2">
-              <button onClick={() => handleEdit(prod)} className="rounded-xl bg-acses-green-800 px-4 py-2 text-sm text-acses-yellow-200">Edit</button>
-              <button onClick={() => handleDelete(prod._id)} className="rounded-xl bg-red-600 px-4 py-2 text-sm text-white">Delete</button>
-            </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <Pill label={prod.category} variant="green" />
+                        {prod.badge && <Pill label={prod.badge} variant="active" />}
+                      </div>
+                      <p className="text-sm font-semibold text-white truncate">{prod.name}</p>
+                      <div className="mt-0.5 flex items-center gap-2">
+                        <span className="text-sm font-bold text-acses-yellow-400">GHS {prod.price}</span>
+                        {prod.originalPrice && (
+                          <span className="text-xs text-white/30 line-through">GHS {prod.originalPrice}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <RowActions
+                      onEdit={() => handleEdit(prod)}
+                      onDelete={() => handleDelete(prod._id)}
+                    />
+                  </div>
+                </CardRow>
+              ))
+            )}
           </div>
-        ))}
-      </div>
-    </div>
+        </Panel>
+
+        {/* ── Form ── */}
+        <FormPanel title={editingId ? "Edit Product" : "Add Product"}>
+          <Field label="Product Name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} placeholder="e.g. ACSES Hoodie" />
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Price (GHS)" type="number" value={form.price} onChange={(v) => setForm({ ...form, price: v })} placeholder="0.00" />
+            <Field label="Original Price" type="number" value={form.originalPrice} onChange={(v) => setForm({ ...form, originalPrice: v })} placeholder="Optional" />
+          </div>
+          <Select label="Category" value={form.category} options={categories} onChange={(v) => setForm({ ...form, category: v })} />
+          <Field label="Image URL" value={form.image} onChange={(v) => setForm({ ...form, image: v })} placeholder="https://…" />
+
+          {/* Image preview */}
+          {form.image && (
+            <div className="w-full h-32 rounded-2xl overflow-hidden border border-acses-green-700 bg-acses-green-800">
+              <img src={form.image} alt="preview" className="w-full h-full object-cover" onError={(e) => (e.target.style.display = "none")} />
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Badge Label" value={form.badge} onChange={(v) => setForm({ ...form, badge: v })} placeholder="e.g. New" />
+            <Field label="Badge Color" value={form.badgeColor} onChange={(v) => setForm({ ...form, badgeColor: v })} placeholder="e.g. yellow" />
+          </div>
+          <TextArea label="Description" value={form.description} onChange={(v) => setForm({ ...form, description: v })} placeholder="Describe the product…" rows={3} />
+          <FormActions
+            editingId={editingId}
+            onCancel={resetForm}
+            onSubmit={handleSave}
+            submitLabel={editingId ? "Save Changes" : "Add Product"}
+          />
+        </FormPanel>
+      </TwoColLayout>
+    </PageShell>
   );
 };
 

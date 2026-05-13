@@ -40,23 +40,7 @@ const AdminShell = () => {
                 <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-acses-yellow-200">🔎</span>
               </div>
 
-              <div className="flex items-center gap-3">
-                <button type="button" className="relative rounded-2xl bg-acses-green-900 px-4 py-3 text-white/80 hover:bg-acses-green-800">
-                  🔔
-                  {notifications.length > 0 && (
-                    <div className="absolute -right-1 -top-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-acses-yellow-400 px-1.5 text-[0.65rem] font-semibold text-acses-green-950">
-                      {notifications.length}
-                    </div>
-                  )}
-                </button>
-                <div className="flex items-center gap-3 rounded-2xl bg-acses-green-900 px-4 py-3 text-white/80">
-                  <div className="h-10 w-10 rounded-full bg-acses-yellow-400 text-acses-green-950 flex items-center justify-center font-bold">{currentUser?.name.charAt(0)}</div>
-                  <div className="hidden sm:block text-left">
-                    <p className="text-sm font-medium text-white">{currentUser?.name}</p>
-                    <p className="text-xs text-acses-yellow-200">{currentUser?.role}</p>
-                  </div>
-                </div>
-              </div>
+              
             </div>
           </div>
           {mobileMenu && (

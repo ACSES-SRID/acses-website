@@ -7,11 +7,45 @@ All notable changes to the ACSES website frontend (Vite app in this directory) a
 
 ## [Unreleased]
 
+## 2026-05-13
+
+### Added
+- **Unified Design System (`adminUI.jsx`)**: A new single-source-of-truth module for all UI primitives.
+  - **Layouts**: `PageShell`, `PageHeader`, `TwoColLayout`.
+  - **Containers**: `Panel`, `FormPanel`, `TabBar`.
+  - **Interactions**: `CardRow`, `RowActions`, `FormActions`.
+  - **Data Display**: `Pill`, `Pagination`, `ExportBtn`.
+  - **Form Controls**: `Field`, `TextArea`, `Select` with standardized focus rings and tracked labels.
+  - **States**: `PanelEmpty` and `BlockedAccess` (standardized error/empty states).
+- **Collapsible Desktop Sidebar**: 
+  - Added a "Rail" mode (80px) to maximize workspace for data management.
+  - Hover tooltips (title attributes) added to nav icons when collapsed.
+  - Smooth CSS transitions for sidebar width and main content margins.
+- **Smart Search Logic**:
+  - Implemented **Local-State Debouncing (400ms)** in the header to reduce API overhead.
+  - Global `searchQuery` now updates only after the user stops typing, allowing for efficient server-side filtering.
+
 ### Changed
+- **Navigation Structure**: 
+  - Added **Users** and **Home Editor** to the sidebar navigation.
+  - Updated `hasAccess` logic to include these new modules in standard editor permissions.
+- **Page Architecture**: Migrated all 10 admin modules (Events, Leadership, Resources, etc.) from raw tables to a **Two-Column Card Layout**.
+  - Left Column: List of items in `CardRow` format with hover-activated actions.
+  - Right Column: Sticky `FormPanel` for rapid creation and editing.
+- **Header Refinement**: 
+  - Standardized the `Welcome back` greeting and typography.
+  - Search bar now features a yellow focus ring consistent with the new design system.
+- **Component Specific Enhancements**:
+  - **Gallery/Leadership/Store**: Integrated thumbnail previews and avatar support in both lists and forms.
+  - **Events**: Added inline toolbar filters for category and status.
+  - **Student Projects**: Implemented tech-tag chips in row views.
+  - **Users**: Added initial avatars and role-based hint text in forms.
 
-- **Admin Forms and UI layout:** Made sidebar unscrollable, ensured easily readability in leadearship, store and resource forms.
+### Fixed
+- **Visual Inconsistency**: Eliminated varied button styles, input sizes, and table borders across the panel by forcing all pages to use `adminUI.jsx` primitives.
+- **Mobile Experience**: Improved the mobile drawer toggle logic to ensure navigation remains accessible regardless of desktop collapse state.
+- **Access Control**: Fixed a bug where "Users" and "Home Editor" links remained hidden for authorized roles.
 
-- **Admin dashboard file layout:** Route screens live under `src/pages/admin/views/`; shared **sidebar** and shell under `src/pages/admin/layout/` (`AdminShell`, `AdminSidebar`, `AdminNavLinks`, `adminNavConfig.js`); JWT/session context under `context/`; static seeds and CSV helpers under `lib/`. `App.jsx` imports admin views from `pages/admin/views/…`. Desktop and small screens use the same nav definition so every admin page stays consistent.
 
 ---
 
@@ -43,6 +77,9 @@ This section records the full set of changes from the integration and UX work th
 - **`News.jsx` (home):** Loads **published** + **public** announcements from `GET /api/announcements`, sorted newest first; loading / error / empty states (no mock list).
 - **`StudentProjectsPage.jsx`:** API-only list from `GET /api/student-projects` (no mock fallback); loading / error / empty UI; optional links only when URLs exist; `submittedBy` when present.
 - **Student project submissions:** New submissions use **`pending`** (not `draft`), aligned with the API and admin list ordering.
+- **Admin Forms and UI layout:** Made sidebar unscrollable, ensured easily readability in leadearship, store and resource forms.
+
+- **Admin dashboard file layout:** Route screens live under `src/pages/admin/views/`; shared **sidebar** and shell under `src/pages/admin/layout/` (`AdminShell`, `AdminSidebar`, `AdminNavLinks`, `adminNavConfig.js`); JWT/session context under `context/`; static seeds and CSV helpers under `lib/`. `App.jsx` imports admin views from `pages/admin/views/…`. Desktop and small screens use the same nav definition so every admin page stays consistent.
 
 ### Component layout (maintainability)
 

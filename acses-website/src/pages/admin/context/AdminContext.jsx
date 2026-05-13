@@ -4,7 +4,7 @@ import { fetchApi, setAdminToken, clearAdminToken, getAdminToken } from "../../.
 
 const AdminContext = createContext(null);
 
-const editorPermissions = ["overview", "events", "executives", "announcements", "student-projects", "gallery", "resources", "store"];
+const editorPermissions = ["overview", "events", "executives", "announcements", "student-projects", "gallery", "resources", "store", "users", "home-editor"];
 
 export const AdminProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => {

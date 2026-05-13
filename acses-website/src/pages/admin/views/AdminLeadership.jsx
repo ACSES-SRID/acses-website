@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useAdmin } from "../context/AdminContext";
 import { fetchApi } from "../../../utils/api";
-import { 
-  UserPlus, 
-  UserCircle, 
-  Image as ImageIcon, 
-  Layers, 
-  Edit3, 
-  Trash2, 
-  Type, 
-  Hash 
-} from "lucide-react";
+import { UserCircle } from "lucide-react";
+import {
+  PageShell, PageHeader, TwoColLayout,
+  Panel, PanelEmpty, FormPanel, FormActions,
+  CardRow, RowActions,
+  Field, TextArea, BlockedAccess,
+} from "./adminUI";
 
 const AdminLeadership = () => {
   const { hasAccess, showToast, openConfirm } = useAdmin();
@@ -22,19 +19,23 @@ const AdminLeadership = () => {
     try {
       const data = await fetchApi("/api/leadership");
       setExecutives(Array.isArray(data) ? data : []);
-    } catch (e) { 
-      setExecutives([]); 
+    } catch (e) {
+      setExecutives([]);
     }
   };
 
   useEffect(() => { load(); }, []);
+
+  const resetForm = () => {
+    setEditingId(null);
+    setForm({ name: "", role: "", image: "", icon: "", description: "", order: 0 });
+  };
 
   const handleSave = async () => {
     if (!form.name || !form.role) {
       showToast("Name and Position are required", "error");
       return;
     }
-
     try {
       const method = editingId ? "PUT" : "POST";
       const url = editingId ? `/api/leadership/${editingId}` : "/api/leadership";
@@ -42,8 +43,8 @@ const AdminLeadership = () => {
       showToast(editingId ? "Profile updated" : "Member added");
       resetForm();
       load();
-    } catch (e) { 
-      showToast("Operation failed", "error"); 
+    } catch (e) {
+      showToast("Operation failed", "error");
     }
   };
 
@@ -55,138 +56,124 @@ const AdminLeadership = () => {
           await fetchApi(`/api/leadership/${id}`, { method: "DELETE", auth: true });
           showToast("Member removed");
           load();
-        } catch (e) { showToast("Delete failed", "error"); }
-      }
+        } catch (e) {
+          showToast("Delete failed", "error");
+        }
+      },
     });
   };
 
-  const resetForm = () => {
-    setEditingId(null);
-    setForm({ name: "", role: "", image: "", icon: "", description: "", order: 0 });
-  };
+  if (!hasAccess("executives")) return <BlockedAccess message="You do not have permission to manage the executive board." />;
 
-  if (!hasAccess("executives")) {
-    return (
-      <div className="rounded-3xl border border-red-700 bg-acses-green-900 p-6 text-white/80">
-        <p className="text-lg font-semibold">Access Denied</p>
-        <p className="mt-2 text-sm text-acses-yellow-100">You do not have permission to manage the executive board.</p>
-      </div>
-    );
-  }
+  const sorted = [...executives].sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-white tracking-tight">Leadership & Executive Board</h1>
-        <p className="text-acses-yellow-100/60 mt-1">Manage the profiles of current student association leaders.</p>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Leadership & Executive Board"
+        subtitle="Manage the profiles of current student association leaders."
+        badge={executives.length}
+      />
 
-      <div className="grid gap-8 xl:grid-cols-[1fr_0.7fr]">
-        
-        {/* Left: Current Board Preview */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-white">Current Board</h2>
-            <span className="text-xs font-bold text-acses-yellow-400 uppercase tracking-widest bg-acses-green-800 px-3 py-1 rounded-full">
-              {executives.length} Members
-            </span>
-          </div>
-          
-          <div className="grid gap-4 sm:grid-cols-2">
-            {executives.sort((a,b) => a.order - b.order).map((member) => (
-              <div key={member._id || member.id} className="group relative flex items-center gap-4 p-4 rounded-3xl border border-acses-green-800 bg-acses-green-900/40 hover:border-acses-green-600 transition-all">
-                <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-2xl bg-acses-green-800 border border-acses-green-700">
-                  {member.image ? (
-                    <img src={member.image} alt={member.name} className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-acses-yellow-400/30">
-                      <UserCircle size={32} />
+      <TwoColLayout>
+        {/* ── Board grid ── */}
+        <Panel
+          toolbar={
+            <p className="text-sm font-medium text-acses-yellow-100/60">
+              {executives.length} {executives.length === 1 ? "member" : "members"}
+            </p>
+          }
+        >
+          {sorted.length === 0 ? (
+            <PanelEmpty message="No board members yet." hint="Add the first member using the form on the right." />
+          ) : (
+            <div className="p-4 grid gap-3 sm:grid-cols-2">
+              {sorted.map((member) => {
+                const id = member._id || member.id;
+                return (
+                  <div
+                    key={id}
+                    className={`group flex items-center gap-4 p-4 rounded-2xl border transition-colors ${
+                      editingId === id
+                        ? "border-acses-yellow-400/30 bg-acses-green-800/50"
+                        : "border-acses-green-800 bg-acses-green-900/40 hover:border-acses-green-700"
+                    }`}
+                  >
+                    {/* Avatar */}
+                    <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-2xl bg-acses-green-800 border border-acses-green-700">
+                      {member.image ? (
+                        <img src={member.image} alt={member.name} className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-acses-yellow-400/30">
+                          <UserCircle size={28} />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-white font-bold truncate">{member.name}</h4>
-                  <p className="text-acses-yellow-400/80 text-xs font-medium truncate uppercase tracking-wider">{member.role}</p>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <button onClick={() => { setEditingId(member._id || member.id); setForm(member); }} className="p-2 text-white/40 hover:text-acses-yellow-400 transition-colors">
-                    <Edit3 size={16} />
-                  </button>
-                  <button onClick={() => handleDelete(member._id || member.id)} className="p-2 text-white/40 hover:text-red-400 transition-colors">
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
-        {/* Right: Management Form */}
-        <aside className="sticky top-6 h-fit rounded-3xl border border-acses-green-800 bg-acses-green-900 p-8 shadow-2xl">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 bg-acses-yellow-400 rounded-xl text-acses-green-900">
-              <UserPlus size={20} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-white truncate">{member.name}</p>
+                      <p className="text-[11px] font-semibold text-acses-yellow-400/80 uppercase tracking-wider truncate mt-0.5">{member.role}</p>
+                      {member.description && (
+                        <p className="text-[11px] text-white/30 mt-1 line-clamp-1">{member.description}</p>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                      <button
+                        onClick={() => { setEditingId(id); setForm({ ...member, order: member.order || 0 }); }}
+                        className="rounded-xl bg-acses-green-800 border border-acses-green-700 px-2.5 py-1.5 text-xs font-semibold text-acses-yellow-300 hover:bg-acses-green-700 transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(id)}
+                        className="rounded-xl bg-red-900/40 border border-red-800/50 px-2.5 py-1.5 text-xs font-semibold text-red-400 hover:bg-red-800/60 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <h2 className="text-xl font-bold text-white">{editingId ? "Update Profile" : "Add Executive"}</h2>
+          )}
+        </Panel>
+
+        {/* ── Form ── */}
+        <FormPanel title={editingId ? "Update Profile" : "Add Executive"}>
+          <Field label="Full Name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} placeholder="John Doe" />
+          <Field label="Position" value={form.role} onChange={(v) => setForm({ ...form, role: v })} placeholder="e.g. President" />
+          <div className="grid grid-cols-[1fr_80px] gap-3">
+            <Field label="Image URL" value={form.image} onChange={(v) => setForm({ ...form, image: v })} placeholder="https://…" />
+            <Field label="Order" type="number" value={form.order} onChange={(v) => setForm({ ...form, order: v })} />
           </div>
 
-          <div className="space-y-5">
-            <div className="space-y-4">
-              <ModernInput label="Full Name" icon={<Type size={14}/>} value={form.name} onChange={v => setForm({...form, name: v})} placeholder="John Doe" />
-              <ModernInput label="Position" icon={<Layers size={14}/>} value={form.role} onChange={v => setForm({...form, role: v})} placeholder="e.g. President" />
-              
-              <div className="grid grid-cols-[1fr_80px] gap-4">
-                <ModernInput label="Image URL" icon={<ImageIcon size={14}/>} value={form.image} onChange={v => setForm({...form, image: v})} placeholder="https://..." />
-                <ModernInput label="Order" icon={<Hash size={14}/>} type="number" value={form.order} onChange={v => setForm({...form, order: v})} />
+          {/* Avatar preview */}
+          {form.image && (
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-acses-green-800/60 border border-acses-green-700">
+              <div className="w-12 h-12 rounded-xl overflow-hidden border border-acses-green-600 flex-shrink-0">
+                <img src={form.image} alt="preview" className="w-full h-full object-cover" onError={(e) => (e.target.style.display = "none")} />
               </div>
-
-              <ModernInput label="Icon Key" icon={<UserCircle size={14}/>} value={form.icon} onChange={v => setForm({...form, icon: v})} placeholder="e.g. shield" />
-              
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-acses-yellow-100/50 uppercase tracking-widest ml-1">Bio / Description</label>
-                <textarea 
-                  rows="4" 
-                  value={form.description} 
-                  onChange={e => setForm({...form, description: e.target.value})}
-                  className="w-full bg-acses-green-800/50 border border-acses-green-700 text-white rounded-2xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-acses-yellow-400 resize-none transition-all"
-                  placeholder="Tell us about this leader..."
-                />
+              <div>
+                <p className="text-xs font-semibold text-white">{form.name || "Name"}</p>
+                <p className="text-[11px] text-acses-yellow-400/70 uppercase tracking-wider">{form.role || "Role"}</p>
               </div>
             </div>
+          )}
 
-            <div className="pt-4 space-y-3">
-              <button onClick={handleSave} className="w-full bg-acses-yellow-400 text-acses-green-950 font-bold py-4 rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-acses-yellow-400/10">
-                {editingId ? "Save Changes" : "Confirm Appointment"}
-              </button>
-              {editingId && (
-                <button onClick={resetForm} className="w-full text-white/40 text-sm hover:text-white transition-colors">
-                  Discard Changes
-                </button>
-              )}
-            </div>
-          </div>
-        </aside>
-      </div>
-    </div>
+          <Field label="Icon Key" value={form.icon} onChange={(v) => setForm({ ...form, icon: v })} placeholder="e.g. shield" />
+          <TextArea label="Bio / Description" value={form.description} onChange={(v) => setForm({ ...form, description: v })} placeholder="Tell us about this leader…" rows={3} />
+          <FormActions
+            editingId={editingId}
+            onCancel={resetForm}
+            onSubmit={handleSave}
+            submitLabel={editingId ? "Save Changes" : "Confirm Appointment"}
+            cancelLabel="Discard"
+          />
+        </FormPanel>
+      </TwoColLayout>
+    </PageShell>
   );
 };
-
-/* Consistency Helper Components */
-
-const ModernInput = ({ label, value, onChange, type = "text", placeholder, icon }) => (
-  <div className="space-y-1.5">
-    <label className="flex items-center gap-2 text-xs font-bold text-acses-yellow-100/50 uppercase tracking-widest ml-1">
-      {icon} {label}
-    </label>
-    <input 
-      type={type} 
-      value={value} 
-      onChange={e => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="w-full bg-acses-green-800/50 border border-acses-green-700 text-white rounded-2xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-acses-yellow-400 placeholder:text-white/20 transition-all"
-    />
-  </div>
-);
 
 export default AdminLeadership;

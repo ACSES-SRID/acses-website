@@ -1,5 +1,5 @@
 import { } from "react";
-import Xlogo from "../xlogo/XLogo";
+import Xlogo from "../../shared/xlogo/XLogo";
 import { motion } from "framer-motion";
 
 const SocialLinks = () => {

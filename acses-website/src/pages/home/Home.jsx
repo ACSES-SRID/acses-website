@@ -1,13 +1,13 @@
 import React from "react";
-import About from "../../components/about/About";
-import WelcomeMessage from "../../components/welcome/WelcomeMessage";
-import Patrons from "../../components/patrons/Patrons";
-import Programs from "../../components/programs/Programs";
-import Statistics from "../../components/statistics/Statistics";
-import Contact from "../../components/contact/Contact";
-import Events from "../../components/events/Events";
-import News from "../../components/news/News";
-import HeroSection01 from "../../components/hero-section/HeroSection01";
+import About from "../../components/home/about/About";
+import WelcomeMessage from "../../components/home/welcome/WelcomeMessage";
+import Patrons from "../../components/home/patrons/Patrons";
+import Programs from "../../components/home/programs/Programs";
+import Statistics from "../../components/home/statistics/Statistics";
+import Contact from "../../components/home/contact/Contact";
+import Events from "../../components/home/events/Events";
+import News from "../../components/home/news/News";
+import HeroSection01 from "../../components/home/hero-section/HeroSection01";
 
 const Home = () => {
   return (

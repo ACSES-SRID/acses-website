@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Xlogo from "../xlogo/XLogo";
+import Xlogo from "../../shared/xlogo/XLogo";
 import { motion } from "framer-motion"; // For animations
 import { LucideCode, LucideDatabase, Linkedin, Instagram } from "lucide-react"; // Icons from lucid-react
 

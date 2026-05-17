@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { AdminProvider, useAdmin } from "./AdminContext";
-import AdminShell from "./AdminShell";
+import { useState } from "react";
+import { AdminProvider, useAdmin } from "./context/AdminContext";
+import AdminShell from "./layout/AdminShell";
 
 const AdminContent = () => {
   const { currentUser, login } = useAdmin();
@@ -51,11 +51,11 @@ const AdminContent = () => {
               Sign in
             </button>
           </form>
-          <div className="mt-6 rounded-2xl bg-acses-green-900 p-4 text-sm text-acses-yellow-100">
-            <p>Use the following test accounts:</p>
-            <p className="mt-2">superadmin / AcseS2026!</p>
-            <p>editor / Editor123!</p>
-          </div>
+          {import.meta.env.DEV && (
+            <div className="mt-6 rounded-2xl bg-acses-green-900 p-4 text-sm text-acses-yellow-100">
+              <p>Local dev: use credentials provisioned on your API (see backend seed or admin user docs).</p>
+            </div>
+          )}
         </div>
       </div>
     );

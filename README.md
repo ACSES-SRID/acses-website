@@ -60,6 +60,8 @@ The ACSES-SRID Official Website serves as the digital hub for the Association of
 - **Performance Optimized**: Lazy loading, code splitting, and image optimization
 - **Analytics Integration**: Vercel Analytics for visitor insights
 - **Custom Branding**: ACSES green and yellow color scheme throughout
+- **Admin dashboard (`/admin`)**: JWT login against the ACSES API, role-based sections, shared sidebar on all admin routes.
+- **API-backed content**: News, events, gallery, store, leadership, resources, and student projects load from the backend when `VITE_API_BASE_URL` is set.
 
 ### Pages & Sections
 
@@ -69,7 +71,7 @@ The ACSES-SRID Official Website serves as the digital hub for the Association of
 - **Resources**: Educational materials and learning resources
 - **Store**: ACSES merchandise and products
 - **Gallery**: Photo gallery of events and activities
-- **Student Projects**: Showcase of member projects and achievements
+- **Student Projects**: Showcase of member projects; **Submit project** sends pending submissions for admin review
 
 ---
 
@@ -117,11 +119,13 @@ Before you begin, ensure you have the following installed:
 
 ### Installation
 
+The installable **Vite** app lives in the nested `acses-website/` directory (the one that contains `vite.config.js`).
+
 1. Clone the repository
 
 ```bash
 git clone https://github.com/ACSES-SRID/acses-website.git
-cd acses-website
+cd acses-website/acses-website
 ```
 
 2. Install dependencies
@@ -144,7 +148,17 @@ Start the development server with hot module replacement (HMR):
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The application will be available at `http://localhost:5173`.
+
+### Backend API URL
+
+In the **inner** `acses-website/` folder (next to `package.json`), create `.env`:
+
+```bash
+VITE_API_BASE_URL=http://localhost:3002
+```
+
+Restart the dev server after changing environment variables. See `acses-website/acses-website/ADMIN_BACKEND_INTEGRATION.md` for API alignment notes.
 
 ### Building for Production
 
@@ -164,53 +178,18 @@ npm run preview
 
 ## 📁 Project Structure
 
+This repository contains the Vite React app under **`acses-website/acses-website/`**. Use that inner folder for `npm install`, `.env`, and day-to-day development. A fuller `src/` tree (including `components/home`, `components/shared`, and `pages/admin/{context,layout,lib,views}`) lives in **`acses-website/acses-website/README.md`**.
+
 ```
-acses-website/
-├── public/                  # Static assets
-│   ├── images/             # Image assets
-│   ├── logo/               # ACSES logos
-│   └── Screenshots/        # Application screenshots
-├── src/
-│   ├── assets/             # Source assets (images, fonts, etc.)
-│   ├── components/         # Reusable React components
-│   │   ├── about/
-│   │   ├── contact/
-│   │   ├── events/
-│   │   ├── footer/
-│   │   ├── hero-section/
-│   │   ├── navbar/
-│   │   ├── news/
-│   │   ├── patrons/
-│   │   ├── programs/
-│   │   ├── resources/
-│   │   ├── statistics/
-│   │   ├── store/
-│   │   ├── welcome/
-│   │   └── xlogo/
-│   ├── data/               # Static data and constants
-│   ├── layouts/            # Layout components
-│   ├── pages/              # Page components
-│   │   ├── error/
-│   │   ├── executives/
-│   │   ├── gallery/
-│   │   ├── home/
-│   │   ├── leadership/
-│   │   ├── programs/
-│   │   ├── resources/
-│   │   ├── store/
-│   │   └── student-projects/
-│   ├── App.jsx             # Main application component
-│   ├── main.jsx            # Application entry point
-│   ├── index.css           # Global styles
-│   └── service-worker.js   # PWA service worker
-├── .gitignore
-├── eslint.config.js        # ESLint configuration
-├── index.html              # HTML entry point
-├── package.json            # Project dependencies
-├── postcss.config.js       # PostCSS configuration
-├── tailwind.config.js      # Tailwind CSS configuration
-├── vercel.json             # Vercel deployment config
-└── vite.config.js          # Vite configuration
+<repository root>/              # e.g. folder created by `git clone … acses-website`
+├── README.md                   # Repo overview (this file)
+├── acses-website/              # Vite React app — `package.json`, `vite.config.js`, `src/`
+│   ├── ADMIN_BACKEND_INTEGRATION.md
+│   ├── CHANGELOG.md
+│   ├── README.md               # App-focused documentation
+│   ├── public/
+│   └── src/
+└── …                           # other repo-level files if present
 ```
 
 ---

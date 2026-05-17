@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { PRODUCTS } from "../../data/storeData";
-import { fetchApi } from "../../utils/api";
+import { fetchApi, unwrapList } from "../../utils/api";
 import Navbar from "../../components/store/navbar/navbar";
 import Hero from "../../components/store/hero/hero";
 import FiltersCard from "../../components/store/filter-card/FiltersCard";
@@ -23,8 +23,9 @@ const StorePage = () => {
     const loadProducts = async () => {
       try {
         // Prefer admin-managed products, but keep bundled data available if the API is down.
-        const data = await fetchApi("/api/store");
-        const normalized = data.map((product) => ({
+        const data = await fetchApi("/api/store?limit=100");
+        const list = unwrapList(data);
+        const normalized = list.map((product) => ({
           id: product._id || product.id,
           ...product,
         }));

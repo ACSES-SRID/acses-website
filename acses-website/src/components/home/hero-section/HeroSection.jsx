@@ -1,6 +1,6 @@
 import {} from "react";
 import { motion } from "framer-motion";
-import Xlogo from "../xlogo/XLogo";
+import Xlogo from "../../shared/xlogo/XLogo";
 import StackedImages from "./StackedImages";
 
 const HeroSection = () => {

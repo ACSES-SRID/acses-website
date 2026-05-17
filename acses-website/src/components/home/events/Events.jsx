@@ -3,7 +3,7 @@ import Calendar from "./Calendar";
 import { format, parseISO, isFuture, isValid } from "date-fns";
 import { motion } from "framer-motion";
 import { CalendarIcon, Clock, MapPin, ArrowRight, Users } from "lucide-react";
-import { fetchApi } from "../../utils/api";
+import { fetchApi, unwrapList } from "../../../utils/api";
 import EventCard from "./EventCard"; // Import the EventCard component
 
 const Events = () => {
@@ -18,8 +18,7 @@ const Events = () => {
     const fetchEvents = async () => {
       try {
         // Pull events from the API first so admin changes appear on the public site.
-        const apiEvents = await fetchApi('/api/events');
-        console.log('Fetched events:', apiEvents);
+        const apiEvents = unwrapList(await fetchApi('/api/events?limit=200'));
         // Transform API data to match the calendar/event-card structure.
         const transformedEvents = apiEvents.map(event => {
           let formattedDate;

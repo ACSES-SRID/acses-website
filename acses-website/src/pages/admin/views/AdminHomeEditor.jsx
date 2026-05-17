@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useAdmin } from "./AdminContext";
-import { fetchApi } from "../../utils/api";
+import { useAdmin } from "../context/AdminContext";
+import { fetchApi } from "../../../utils/api";
 
 const AdminHomeEditor = () => {
   const { showToast, hasAccess } = useAdmin();
@@ -10,7 +10,11 @@ const AdminHomeEditor = () => {
     const loadHome = async () => {
       try {
         const data = await fetchApi("/api/home");
-        setHome(data);
+        setHome({
+          presidentMessage: data?.presidentMessage || "",
+          hodMessage: data?.hodMessage || "",
+          statistics: data?.statistics && typeof data.statistics === "object" ? data.statistics : {},
+        });
       } catch (error) {
         console.error("Failed to load home data from API:", error);
         setHome({ presidentMessage: "", hodMessage: "", statistics: {} });
@@ -40,12 +44,17 @@ const AdminHomeEditor = () => {
     try {
       await fetchApi("/api/home", {
         method: "PUT",
-        body: JSON.stringify(home),
+        body: JSON.stringify({
+          presidentMessage: home.presidentMessage,
+          hodMessage: home.hodMessage,
+          statistics: home.statistics,
+        }),
+        auth: true,
       });
       showToast("Home page messages and statistics updated.");
     } catch (error) {
       console.error("API save failed:", error);
-      showToast("Failed to save home page content.", "error");
+      showToast(error instanceof Error ? error.message : "Failed to save home page content.", "error");
     }
   };
 
@@ -84,7 +93,9 @@ const AdminHomeEditor = () => {
       </div>
 
       <div className="flex justify-end">
-        <button onClick={saveHome} className="rounded-2xl bg-acses-yellow-400 px-6 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">Save updates</button>
+        <button onClick={saveHome} className="rounded-2xl bg-acses-yellow-400 px-6 py-3 text-sm font-semibold text-acses-green-900 hover:bg-acses-yellow-300">
+          Save updates
+        </button>
       </div>
     </div>
   );
@@ -105,5 +116,3 @@ const NumericField = ({ label, value, onChange }) => (
 );
 
 export default AdminHomeEditor;
-
-

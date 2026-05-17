@@ -60,6 +60,8 @@ The ACSES-SRID Official Website serves as the digital hub for the Association of
 - **Performance Optimized**: Lazy loading, code splitting, and image optimization
 - **Analytics Integration**: Vercel Analytics for visitor insights
 - **Custom Branding**: ACSES green and yellow color scheme throughout
+- **Admin dashboard (`/admin`)**: JWT login against the ACSES API, role-based access to dashboard sections, and a single shared sidebar for every admin route.
+- **API-backed content**: Home news and events, gallery, store catalog, leadership, resources, and student projects read from the backend when `VITE_API_BASE_URL` is configured.
 
 ### Pages & Sections
 
@@ -69,7 +71,7 @@ The ACSES-SRID Official Website serves as the digital hub for the Association of
 - **Resources**: Educational materials and learning resources
 - **Store**: ACSES merchandise and products
 - **Gallery**: Photo gallery of events and activities
-- **Student Projects**: Showcase of member projects and achievements
+- **Student Projects**: Public directory and **Submit project** (`/submit-project`) for pending submissions
 
 ---
 
@@ -121,8 +123,10 @@ Before you begin, ensure you have the following installed:
 
 ```bash
 git clone https://github.com/ACSES-SRID/acses-website.git
-cd acses-website
+cd acses-website/acses-website
 ```
+
+If your checkout only contains one `acses-website` folder with `package.json` next to this README, stay in that directory.
 
 2. Install dependencies
 
@@ -144,7 +148,17 @@ Start the development server with hot module replacement (HMR):
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The application will be available at `http://localhost:5173`.
+
+### Backend API URL
+
+Create a `.env` file next to `package.json` (this directory) so the app can reach the ACSES API:
+
+```bash
+VITE_API_BASE_URL=http://localhost:3002
+```
+
+Use your deployed API origin in production. Restart the dev server after changing environment variables.
 
 ### Building for Production
 
@@ -164,32 +178,27 @@ npm run preview
 
 ## 📁 Project Structure
 
+Paths below are relative to this folder (the Vite app root: contains `package.json` and `vite.config.js`). The Vite alias `@` maps to `src/`.
+
 ```
-acses-website/
-├── public/                  # Static assets
-│   ├── images/             # Image assets
-│   ├── logo/               # ACSES logos
-│   └── Screenshots/        # Application screenshots
+.
+├── public/                  # Static assets (images, logos, manifest)
 ├── src/
-│   ├── assets/             # Source assets (images, fonts, etc.)
-│   ├── components/         # Reusable React components
-│   │   ├── about/
-│   │   ├── contact/
-│   │   ├── events/
-│   │   ├── footer/
-│   │   ├── hero-section/
-│   │   ├── navbar/
-│   │   ├── news/
-│   │   ├── patrons/
-│   │   ├── programs/
-│   │   ├── resources/
-│   │   ├── statistics/
-│   │   ├── store/
-│   │   ├── welcome/
-│   │   └── xlogo/
-│   ├── data/               # Static data and constants
-│   ├── layouts/            # Layout components
-│   ├── pages/              # Page components
+│   ├── assets/              # Bundled images/fonts used by components
+│   ├── components/
+│   │   ├── home/            # Sections used by the public home page
+│   │   ├── shared/          # Site-wide chrome (navbar, footer, xlogo)
+│   │   ├── resources/       # Resources page UI
+│   │   └── store/           # Store page UI (including store navbar)
+│   ├── data/                # Static data and constants
+│   ├── layouts/             # `RouteLayout` (public site shell + `<Outlet />`)
+│   ├── pages/
+│   │   ├── admin/           # Admin app (mounted at `/admin` in `App.jsx`)
+│   │   │   ├── Admin.jsx    # Login gate + `AdminProvider`
+│   │   │   ├── context/     # `AdminContext.jsx` (JWT session, `hasAccess`, toasts)
+│   │   │   ├── layout/      # `AdminShell`, `AdminSidebar`, `AdminNavLinks`, `adminNavConfig.js`
+│   │   │   ├── lib/         # `adminData.js`, `adminUtils.js` (seeds, CSV, date helpers)
+│   │   │   └── views/       # Dashboard route components (`AdminEvents`, …)
 │   │   ├── error/
 │   │   ├── executives/
 │   │   ├── gallery/
@@ -199,19 +208,23 @@ acses-website/
 │   │   ├── resources/
 │   │   ├── store/
 │   │   └── student-projects/
-│   ├── App.jsx             # Main application component
-│   ├── main.jsx            # Application entry point
-│   ├── index.css           # Global styles
-│   └── service-worker.js   # PWA service worker
-├── .gitignore
-├── eslint.config.js        # ESLint configuration
-├── index.html              # HTML entry point
-├── package.json            # Project dependencies
-├── postcss.config.js       # PostCSS configuration
-├── tailwind.config.js      # Tailwind CSS configuration
-├── vercel.json             # Vercel deployment config
-└── vite.config.js          # Vite configuration
+│   ├── utils/
+│   │   └── api.js           # `fetchApi`, `unwrapList`, `VITE_API_BASE_URL`
+│   ├── App.jsx              # Router: public `RouteLayout` + admin routes
+│   ├── main.jsx
+│   ├── index.css
+│   └── service-worker.js    # PWA (injectManifest)
+├── .env                     # Local `VITE_API_BASE_URL` (not committed; create locally)
+├── eslint.config.js
+├── index.html
+├── package.json
+├── postcss.config.js
+├── tailwind.config.js
+├── vercel.json
+└── vite.config.js           # `@` → `src`
 ```
+
+See `ADMIN_BACKEND_INTEGRATION.md` for how public and admin screens talk to the API.
 
 ---
 

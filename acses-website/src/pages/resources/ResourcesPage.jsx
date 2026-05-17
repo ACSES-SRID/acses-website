@@ -27,8 +27,19 @@ const ResourcesPage = () => {
       try {
         // Resources are grouped by the API into page sections.
         const data = await fetchApi("/api/resources");
-        setAcademicResources(data.academic || fallbackAcademicResources);
-        setCareerResources(data.career || fallbackCareerResources);
+        const mapAcademic = (list) =>
+          (list || []).map((r) => ({
+            ...r,
+            id: r._id || r.id,
+            tags: Array.isArray(r.tags) ? r.tags : [],
+          }));
+        const mapCareer = (list) =>
+          (list || []).map((r) => ({
+            ...r,
+            id: r._id || r.id,
+          }));
+        setAcademicResources(data.academic != null ? mapAcademic(data.academic) : fallbackAcademicResources);
+        setCareerResources(data.career != null ? mapCareer(data.career) : fallbackCareerResources);
       } catch (error) {
         // Local fallback keeps the resource page visible when the API is unavailable.
         console.error("Failed to load resources from API:", error);

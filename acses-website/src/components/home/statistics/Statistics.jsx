@@ -56,6 +56,11 @@ const yearlyData = [
     CE: 125,
     DS: 65,
   },
+  {
+    year: "2026",
+    CE: 150,
+    DS: 85,
+  },
 ];
 
 const Statistics = () => {

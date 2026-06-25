@@ -54,7 +54,7 @@ const executives = [
   },
   {
     name: "Hon. Amoah Boadi Mensah",
-    role: "Organizer",
+    role: "Deputy Organizer",
     image: "/images/executives/vardy.jpg?height=400&width=400",
     icon: Calendar,
     description: "Planning and executing events",

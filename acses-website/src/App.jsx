@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { useEffect } from "react";
 import { Analytics } from '@vercel/analytics/react';
+import ScrollToTop from "./components/ScrollToTop";
 
 // Pages
 import Home from "./pages/home/Home";

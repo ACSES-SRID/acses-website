@@ -7,7 +7,7 @@ const lecturers = [
     id: 59,
     name: "Engr Dr Albert Kofi Kwansah Ansah",
     role: "Head of Department",
-    image: "https://www.umat.edu.gh/staffinfo/staffpix/afkansah211296852.jpg",
+    image: "/images/lecturers/ansah.jpg",
     field: "Blockchain Technology, Cyberspace Security, Cryptocurrencies, Mobile Computing and Communications",
     isHOD: true,
   },

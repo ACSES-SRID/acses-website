@@ -14,7 +14,7 @@ const Programs = () => {
             icon={<Code2 className="w-10 h-10 text-white" />} 
             title="Computer Science & Engineering" 
             description="Our Computer Science & Engineering program offers a comprehensive curriculum that combines theoretical foundations with practical applications. Students learn software development, computer systems, algorithms, and more." 
-            lists={["Software Engineering", "Computer Networks", "Artificial Intelligence", "Operating Systems", "Web Development"]} 
+            lists={["Software Engineering", "Computer Networks", "CyberSecurity", "Operating Systems", "Robotics"]} 
           />
 
           {/* Program Card: Data Science & Analytics */}
@@ -22,7 +22,7 @@ const Programs = () => {
             icon={<Database className="w-10 h-10 text-white" />} 
             title="Data Science & Analytics" 
             description="The Data Science & Analytics program equips students with the skills to analyze and interpret complex data. Students learn statistical methods, machine learning, and data visualization techniques." 
-            lists={["Machine Learning", "Statistical Analysis", "Big Data Processing", "Data Visualization", "Predictive Modeling"]}
+            lists={["Machine Learning", "Statistical Analysis", "Big Data Processing", "Data Visualization", "Predictive Modeling", "Artificial Intelligence"]}
           />
         </div>
       </div>

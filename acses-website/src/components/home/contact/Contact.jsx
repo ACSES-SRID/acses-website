@@ -62,7 +62,7 @@ const Contact = () => {
                     icon: MapPin,
                     title: "Visit Us",
                     content:
-                      "UMaT, School of Railways and Infrastructure Development",
+                      "UMaT, Essikado-Campus",
                   },
                   {
                     icon: Phone,

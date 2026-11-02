@@ -42,7 +42,7 @@ const Footer = () => {
           >
             <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
               <div className="flex text-white text-center font-bold">
-                <span className="font-normal pr-2">Launched by</span> SARPONG-OWUSU ANSAH LED ADMINISTRATION
+                <span className="font-normal pr-2">Launched by</span> Mensah-Filson LED ADMINISTRATION
               </div>
               <p className="text-sm text-gray-300">
                 © {new Date().getFullYear()} ACSES. All rights reserved.

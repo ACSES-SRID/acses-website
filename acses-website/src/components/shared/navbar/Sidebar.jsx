@@ -148,7 +148,7 @@ const Sidebar = ({ isOpen, onClose, navItems }) => {
               {/* Sidebar Footer */}
               <div className="p-6 border-t">
               <p className="flex text-acses-green-500 text-center font-bold">
-                 SARPONG-OWUSU ANSAH LED ADMINISTRATION
+                 Mensah-Filson LED ADMINISTRATION
               </p>
               </div>
             </div>

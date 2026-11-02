@@ -12,7 +12,9 @@ const Leadership = () => {
         // Use API-managed leadership profiles when available.
         const data = await fetchApi("/api/leadership");
         const list = Array.isArray(data) ? data : [];
-        setExecutivesData(list);
+        // Sort by order field (ascending)
+        const sorted = list.sort((a, b) => (a.order || 0) - (b.order || 0));
+        setExecutivesData(sorted);
       } catch {
         // Fall back to static data so the public page still renders offline.
         setExecutivesData(executives);

@@ -1,7 +1,27 @@
-import React from "react";
-import MessageCard from "./MessageCard"; 
+import { useState, useEffect } from "react";
+import MessageCard from "./MessageCard";
+import { fetchApi } from "../../../utils/api";
 
 const WelcomeMessage = () => {
+  const [president, setPresident] = useState(null);
+
+  useEffect(() => {
+    const fetchPresident = async () => {
+      try {
+        const data = await fetchApi("/api/leadership");
+        const list = Array.isArray(data) ? data : [];
+        // Find the president (assuming role contains "President")
+        const pres = list.find((leader) =>
+          leader.role?.toLowerCase().includes("president")
+        );
+        setPresident(pres);
+      } catch (error) {
+        console.error("Failed to fetch president data:", error);
+      }
+    };
+    fetchPresident();
+  }, []);
+
   return (
     <section className="py-16 flex justify-center md:py-24">
       <div className="container px-4 md:px-6">
@@ -19,13 +39,15 @@ const WelcomeMessage = () => {
             "
           />
 
-          {/* President Card */}
-          <MessageCard
-            title="Message from the President"
-            name="Judah Larbi Sarpong"
-            imageSrc="/images/executives/Lawson.jpg"
-            message="As the President of ACSES, I welcome you to our vibrant community. Our association represents the diverse talents and aspirations of students in Computer Science, Engineering, and Data Science. Together, we create opportunities for growth, learning, and professional development."
-          />
+          {/* President Card - Dynamic */}
+          {president && (
+            <MessageCard
+              title="Message from the President"
+              name={president.name}
+              imageSrc={president.image || "/images/executives/default-president.jpg"}
+              message="As the President of ACSES, I welcome you to our vibrant community. Our association represents the diverse talents and aspirations of students in Computer Science, Engineering, and Data Science. Together, we create opportunities for growth, learning, and professional development."
+            />
+          )}
         </div>
       </div>
     </section>

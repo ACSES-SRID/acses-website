@@ -12,8 +12,12 @@ import {
 const AdminGallery = () => {
   const { searchQuery, showToast, openConfirm, hasAccess } = useAdmin();
   const [gallery, setGallery] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ image: "", caption: "", eventTag: "", uploadedAt: "", dateUploaded: "" });
+  const [albumForm, setAlbumForm] = useState({ title: "", url: "", description: "" });
+  const [editingAlbumId, setEditingAlbumId] = useState(null);
+  const [activeTab, setActiveTab] = useState("photos"); // "photos" or "albums"
 
   const loadGallery = async () => {
     try {
@@ -36,7 +40,21 @@ const AdminGallery = () => {
     }
   };
 
-  useEffect(() => { loadGallery(); }, []);
+  const loadAlbums = async () => {
+    try {
+      const data = await fetchApi("/api/gallery/albums");
+      const list = unwrapList(data);
+      setAlbums(list);
+    } catch (error) {
+      console.error("Failed to load albums:", error);
+      setAlbums([]);
+    }
+  };
+
+  useEffect(() => { 
+    loadGallery(); 
+    loadAlbums();
+  }, []);
 
   const filteredGallery = useMemo(
     () =>
@@ -111,6 +129,55 @@ const AdminGallery = () => {
     });
   };
 
+  const resetAlbumForm = () => {
+    setEditingAlbumId(null);
+    setAlbumForm({ title: "", url: "", description: "" });
+  };
+
+  const handleSaveAlbum = async () => {
+    if (!albumForm.title || !albumForm.url) {
+      showToast("Title and URL are required.", "error");
+      return;
+    }
+    try {
+      if (editingAlbumId) {
+        await fetchApi(`/api/gallery/albums/${editingAlbumId}`, { 
+          method: "PUT", 
+          body: JSON.stringify(albumForm), 
+          auth: true 
+        });
+        setAlbums(albums.map((a) => a._id === editingAlbumId ? { ...a, ...albumForm } : a));
+        showToast("Album updated.");
+      } else {
+        const result = await fetchApi("/api/gallery/albums", { 
+          method: "POST", 
+          body: JSON.stringify(albumForm), 
+          auth: true 
+        });
+        setAlbums([...albums, { _id: result._id || result.id, ...albumForm }]);
+        showToast("Album added.");
+      }
+      resetAlbumForm();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Failed to save album.", "error");
+    }
+  };
+
+  const handleDeleteAlbum = (id) => {
+    openConfirm({
+      message: "Delete this album link?",
+      onConfirm: async () => {
+        try {
+          await fetchApi(`/api/gallery/albums/${id}`, { method: "DELETE", auth: true });
+          setAlbums(albums.filter((a) => a._id !== id));
+          showToast("Album deleted.");
+        } catch (error) {
+          showToast(error instanceof Error ? error.message : "Delete failed.", "error");
+        }
+      },
+    });
+  };
+
   return (
     <PageShell>
       <PageHeader
@@ -119,6 +186,31 @@ const AdminGallery = () => {
         badge={gallery.length}
       />
 
+      {/* Tab Navigation */}
+      <div className="mb-6 flex gap-2 border-b border-acses-green-800">
+        <button
+          onClick={() => setActiveTab("photos")}
+          className={`px-4 py-2 font-semibold transition-colors ${
+            activeTab === "photos"
+              ? "text-acses-yellow-400 border-b-2 border-acses-yellow-400"
+              : "text-white/60 hover:text-white"
+          }`}
+        >
+          Individual Photos ({gallery.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("albums")}
+          className={`px-4 py-2 font-semibold transition-colors ${
+            activeTab === "albums"
+              ? "text-acses-yellow-400 border-b-2 border-acses-yellow-400"
+              : "text-white/60 hover:text-white"
+          }`}
+        >
+          Photo Albums ({albums.length})
+        </button>
+      </div>
+
+      {activeTab === "photos" ? (
       <TwoColLayout>
         {/* ── List ── */}
         <Panel
@@ -191,6 +283,85 @@ const AdminGallery = () => {
           />
         </FormPanel>
       </TwoColLayout>
+      ) : (
+      <TwoColLayout>
+        {/* ── Albums List ── */}
+        <Panel
+          toolbar={
+            <p className="text-sm font-medium text-acses-yellow-100/60">
+              {albums.length} {albums.length === 1 ? "album" : "albums"}
+            </p>
+          }
+        >
+          <div className="divide-y divide-acses-green-800">
+            {albums.length === 0 ? (
+              <PanelEmpty message="No photo albums yet." hint="Add an album link using the form on the right." />
+            ) : (
+              albums.map((album) => (
+                <CardRow key={album._id} isActive={editingAlbumId === album._id}>
+                  <div className="flex items-center gap-4 justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-white truncate">{album.title}</p>
+                      <p className="text-xs text-white/50 truncate mt-1">{album.url}</p>
+                      {album.description && (
+                        <p className="text-xs text-white/30 mt-1 line-clamp-1">{album.description}</p>
+                      )}
+                    </div>
+                    <RowActions 
+                      onEdit={() => {
+                        setEditingAlbumId(album._id);
+                        setAlbumForm({
+                          title: album.title,
+                          url: album.url,
+                          description: album.description || "",
+                        });
+                      }} 
+                      onDelete={() => handleDeleteAlbum(album._id)} 
+                    />
+                  </div>
+                </CardRow>
+              ))
+            )}
+          </div>
+        </Panel>
+
+        {/* ── Album Form ── */}
+        <FormPanel title={editingAlbumId ? "Edit Album" : "Add Photo Album"}>
+          <Field 
+            label="Album Title" 
+            value={albumForm.title} 
+            onChange={(v) => setAlbumForm({ ...albumForm, title: v })} 
+            placeholder="e.g. Bits to Bytes 2024" 
+          />
+          <Field 
+            label="Album URL" 
+            value={albumForm.url} 
+            onChange={(v) => setAlbumForm({ ...albumForm, url: v })} 
+            placeholder="https://braoseistudios.picflow.com/..." 
+          />
+          <Field 
+            label="Description (Optional)" 
+            value={albumForm.description} 
+            onChange={(v) => setAlbumForm({ ...albumForm, description: v })} 
+            placeholder="Brief description of this album" 
+          />
+          
+          <div className="p-3 rounded-2xl bg-acses-green-800/40 border border-acses-green-700">
+            <p className="text-xs text-white/70">
+              <strong>Supported platforms:</strong> Google Drive, Picflow, Flickr, or any public gallery link. 
+              Visitors will be redirected to view the full album.
+            </p>
+          </div>
+
+          <FormActions
+            editingId={editingAlbumId}
+            onCancel={resetAlbumForm}
+            onSubmit={handleSaveAlbum}
+            submitLabel={editingAlbumId ? "Update Album" : "Add Album"}
+          />
+        </FormPanel>
+      </TwoColLayout>
+      )}
     </PageShell>
   );
 };

@@ -39,15 +39,17 @@ const WelcomeMessage = () => {
             "
           />
 
+
           {/* President Card - Dynamic */}
           {president && (
             <MessageCard
               title="Message from the President"
               name={president.name}
-              imageSrc={president.image || "/images/executives/default-president.jpg"}
+              imageSrc={president.image}
               message="As the President of ACSES, I welcome you to our vibrant community. Our association represents the diverse talents and aspirations of students in Computer Science, Engineering, and Data Science. Together, we create opportunities for growth, learning, and professional development."
             />
           )}
+
         </div>
       </div>
     </section>

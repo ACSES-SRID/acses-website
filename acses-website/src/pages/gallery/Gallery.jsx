@@ -204,6 +204,14 @@ const Gallery = () => {
                 ACSES Week 2024
               </a>
             </li>
+            <li>
+              <a
+                href="https://baffcomcpts.pixieset.com/acsesinterlevelfootball/"
+                className="hover:underline"
+              >
+                Inter Level Football competition 2026
+              </a>
+            </li>
             {/* <li>
               <a href="/activities" className="hover:underline">
                 Activities

@@ -1,21 +1,21 @@
 const galleryItems = [
   {
     id: 1,
-    src: "https://res.cloudinary.com/dwcoos4ry/image/upload/v1736214005/photo_2025-01-07_01-38-55_queko3.jpg",
-    alt: "Bits to Bytes",
-    description: "A seminar for capacity building in tech",
+    src: "https://res.cloudinary.com/dwcoos4ry/image/upload/v1780842961/About005_ygvxum.jpg",
+    alt: "Women in Engineering",
+    description: "A night full of fun activities and networking among ACSES female members",
     category: "Seminar",
   },
   {
     id: 2,
-    src: "https://res.cloudinary.com/dwcoos4ry/image/upload/v1736213938/ACSES24-79_afirvy.jpg",
-    alt: "ACSES WEEK 24",
-    description: "Our annual week celebration",
+    src: "https://res.cloudinary.com/dwcoos4ry/image/upload/v1780843423/IMG_4683_iwvwox.jpg",
+    alt: "ACSES INTER LEVEL FOOTBALL",
+    description: "Football competion between the various levels of the association",
     category: "Events",
   },
   {
     id: 3,
-    src: "https://res.cloudinary.com/dwcoos4ry/image/upload/v1736213937/ACSES24-81_nbuwcp.jpg",
+    src: "https://res.cloudinary.com/dwcoos4ry/image/upload/v1780843719/About001_y8wprc.jpg",
     alt: "ACSES WEEK 24",
     description: "Our annual week celebration",
     category: "Events",
